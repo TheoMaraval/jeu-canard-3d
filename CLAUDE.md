@@ -70,7 +70,7 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
   `build_assets.py` (canard et leurres) → `build_kit.py` (personnages, véhicules, arbres,
   mobilier) → `build_quartier.py` → `place_objets.py` → `render_ville.py`.
   `blender/*.blend` et `blender/scenes/` sont générés.
-- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres. `assets/kit.glb` : 87 modèles
+- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres. `assets/kit.glb` : 81 modèles
   instanciés. Les deux sont communs aux villes.
 - `assets/scenes/<ville>/` : `quartier.glb` (objets `Quartier` et `Vitres` : le bâti),
   `decor.json` (instances du kit : type, position, rotation, échelle, teintes),
@@ -85,7 +85,7 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
 
 ## Le kit de modèles (`blender/build_kit.py` + `blender/kit_loufoque.py`)
 
-- 87 modèles tournés vers +x, posés à z = 0, construits avec `Builder` : `lathe`
+- 81 modèles tournés vers +x, posés à z = 0, construits avec `Builder` : `lathe`
   (révolution), `tube` (membres), `rbox` (boîte chanfreinée), `ico`, `sphere`, `box`.
 - Matériaux `T_<rôle>` : teinte propre à chaque instance (4 rôles au plus par modèle) ;
   `K_<nom>` : couleur fixe.
@@ -184,7 +184,7 @@ Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.part
 ## État
 
 - Fait : quatre villes jouables (Paris, New York, Lille, Delhi), style dessiné, vitres,
-  kit de 87 modèles, saynètes loufoques, animaux, tags, désordre, végétation variée,
+  kit de 81 modèles, saynètes loufoques, animaux, tags, désordre, végétation variée,
   22 leurres jaunes, menu des villes.
 - Par ville : 30 canards (6 à 12 vérifiés derrière une vitre) et 270 leurres ; canards
   visibles à 55–57 % en moyenne. Une case en plage de visibilité élargie (New York C2).
