@@ -42,6 +42,10 @@ class TestPlacement(unittest.TestCase):
     def test_un_canard_par_case(self):
         self.assertEqual(len({o["zone"] for o in self.canards}), 30)
 
+    def test_canards_dans_des_lieux_varies(self):
+        for lieu in THEME["leurres_par_lieu"]:
+            self.assertGreaterEqual(sum(1 for o in self.canards if o["lieu"] == lieu), 8, lieu)
+
     def test_plages_de_visibilite(self):
         lo, hi = THEME["visibilite_canard"]
         for o in self.canards:
