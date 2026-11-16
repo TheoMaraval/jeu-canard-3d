@@ -43,8 +43,13 @@ def material(name):
     mat = bpy.data.materials.get(name) or bpy.data.materials.new(name)
     hexa, rough = COULEURS[name]
     rgb = [srgb_to_linear(int(hexa[i:i + 2], 16) / 255) for i in (1, 3, 5)]
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if mat.node_tree is None:  # Blender < 5 : arbre absent tant que use_nodes est faux
+        mat.use_nodes = True
+    tree = mat.node_tree
+    tree.nodes.clear()  # Blender 5 : l'arbre existe mais peut être vide
+    bsdf = tree.nodes.new("ShaderNodeBsdfPrincipled")
+    out = tree.nodes.new("ShaderNodeOutputMaterial")
+    tree.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
     bsdf.inputs["Roughness"].default_value = rough
     bsdf.inputs["Metallic"].default_value = 0.0
@@ -196,7 +201,9 @@ def taille_jaune(obj):
 
 
 def main():
-    old = bpy.data.collections.get(COLLECTION)
+    if bpy.app.background:  # pas de cube/caméra par défaut dans props.blend
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+    old =bpy.data.collections.get(COLLECTION)
     if old:  # reconstruction idempotente : on ne touche qu'à notre collection
         for o in list(old.objects):
             bpy.data.objects.remove(o, do_unlink=True)

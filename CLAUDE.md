@@ -31,8 +31,9 @@ stylisé. Un canard trouvé passe en vert, +1 au compteur. Fin de partie à 30/3
 
 ## Architecture
 
-**Pas encore validée.** Proposition en cours : 3D temps réel, Blender → `.glb` → Three.js,
-caméra orthographique. Rien n'est à coder dans `app/` avant validation.
+Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, caméra orthographique
+à angle isométrique fixe (pan + zoom, pas de rotation en v1). Détail dans
+`docs/superpowers/specs/2026-11-16-jeu-canard-3d-design.md` (en attente de relecture).
 
 ## Arborescence
 
@@ -47,18 +48,26 @@ caméra orthographique. Rien n'est à coder dans `app/` avant validation.
 ## Lancer
 
 ```bash
-blender --background --python blender/build_assets.py   # écrit blender/props.blend et assets/props.glb
+blender --background --python blender/build_assets.py                      # blender/props.blend + assets/props.glb
+blender --background blender/props.blend --python blender/render_preview.py # docs/previews/*.png
 ```
+
+Blender 5.3 : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe` (pas dans le PATH).
 
 ## État
 
-- Fait : arborescence, skills, script des assets de base.
-- **Bloqué** : Blender n'est pas installé sur la machine (16/11/2026), le serveur MCP
-  `blender` ne répond pas sur `localhost:9876`. Le script n'a **jamais été exécuté**.
-- À faire : installer Blender + add-on MCP, exécuter et contrôler les assets à l'image,
-  valider l'architecture, écrire la spec, puis générer le quartier.
+- Fait : arborescence, skills, canard + 7 leurres générés, exportés et contrôlés à l'image
+  (`docs/previews/`).
+- Le serveur MCP `blender` (`localhost:9876`) n'est pas démarré : les scripts tournent en
+  mode `--background`, ce qui suffit. Le MCP ne sert que pour travailler dans Blender ouvert.
+- À faire : relecture de la spec, plan d'implémentation, puis quartier, placements et app.
 
 ## Pièges connus
+
+- Blender 5 : un matériau créé par script a un arbre de nœuds vide. Créer explicitement
+  le Principled BSDF et la sortie (voir `material()` dans `build_assets.py`).
+- En mode `--background`, la scène par défaut (cube, caméra) se retrouve dans le `.blend`
+  sauvegardé si on ne repart pas d'une scène vide.
 
 - Les scripts Blender doivent être idempotents et ne toucher qu'à leur propre collection.
 - Le navigateur intégré de Claude ne fait pas tourner `requestAnimationFrame` : le rendu
