@@ -4,17 +4,25 @@ import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
 import { charger, effacer, enregistrer } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
-import { GABARIT_M, borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
-import { afficherAide, afficherCompteur, afficherFin, afficherMessage } from './hud.js';
+import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
+import { afficherAide, afficherCompteur, afficherFin, afficherMessage, afficherVilles } from './hud.js';
 
 const canvas = document.getElementById('scene');
 
 async function choisirVille() {
   const r = await fetch('scenes.json');
   if (!r.ok) throw new Error('scenes.json introuvable : lancer le pipeline Blender.');
-  const scenes = await r.json();
+  // Vite renvoie index.html pour un fichier absent : un JSON illisible veut dire « pas d'index »
+  const scenes = await r.json().catch(() => {
+    throw new Error('scenes.json est absent : lancer blender/tout_generer.sh.');
+  });
+  if (!scenes.length) throw new Error('scenes.json ne liste aucune ville.');
   const demandee = new URLSearchParams(location.search).get('ville');
-  return scenes.find((s) => s.id === demandee) ?? scenes[0];
+  const info = scenes.find((s) => s.id === demandee) ?? scenes[0];
+  afficherVilles(scenes, info.id, (id) => {
+    location.search = `?ville=${encodeURIComponent(id)}`;
+  });
+  return info;
 }
 
 async function demarrer() {
@@ -28,10 +36,11 @@ async function demarrer() {
 
   const ecran = () => ({ w: canvas.clientWidth, h: canvas.clientHeight });
   let vue = creerVue(ecran(), scene.limites);
+  const revele = () => estRevele(vue, scene.gabarit);
   const rafraichir = () => {
     vue = borner(vue, ecran(), scene.limites);
-    scene.appliquerVue(vue, ecran(), estRevele(vue));
-    afficherAide(estRevele(vue));
+    scene.appliquerVue(vue, ecran(), revele());
+    afficherAide(revele());
   };
 
   // temps de jeu : ne compte que lorsque la page est visible et la partie en cours
@@ -70,8 +79,8 @@ async function demarrer() {
       const e = ecran();
       const aLEcran = scene.canards
         .filter((c) => !partie.trouves.has(c.id))
-        .map((c) => ({ id: c.id, ...projeter(c.centre, vue, e, scene.axes), rayon: (GABARIT_M / 2) * vue.ppm }));
-      const resultat = taper(partie, choisirCanard(point, aLEcran, { revele: estRevele(vue) }));
+        .map((c) => ({ id: c.id, ...projeter(c.centre, vue, e, scene.axes), rayon: (scene.gabarit / 2) * vue.ppm }));
+      const resultat = taper(partie, choisirCanard(point, aLEcran, { revele: revele() }));
       partie = resultat.partie;
       if (resultat.trouve) {
         scene.marquerTrouve([...partie.trouves].at(-1), true);

@@ -14,8 +14,22 @@ export function afficherCompteur(trouves, total) {
 /** Aide contextuelle : dit quoi faire tant que la vue ne révèle pas les canards. */
 export function afficherAide(revele) {
   $('aide').textContent = revele
-    ? 'Touchez un canard : bec orange, œil noir.'
+    ? 'Touchez un canard : bec orange, œil noir. Regardez aussi derrière les vitres.'
     : 'Zoomez sur un point jaune pour voir si c’est un canard.';
+}
+
+/** Menu des villes disponibles (scenes.json). */
+export function afficherVilles(scenes, courante, choisir) {
+  const menu = $('ville');
+  menu.replaceChildren(...scenes.map((s) => {
+    const o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.nom;
+    o.selected = s.id === courante;
+    return o;
+  }));
+  menu.hidden = scenes.length < 2;
+  menu.onchange = () => choisir(menu.value);
 }
 
 export function afficherMessage(texte) {

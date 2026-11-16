@@ -9,6 +9,7 @@ la conversion glTF est faite par place_objets.py.
 import random
 
 CANARD = "Canard"
+VIS_MIN_ABSOLUE = 0.15  # en dessous, un canard serait introuvable : jamais accepté
 
 
 class PlacementImpossible(Exception):
@@ -52,14 +53,24 @@ def choisir(slots, theme):
         # lieu préféré à tour de rôle : sinon les balcons, plus nombreux, auraient tous les canards
         prefere = lieux[i % len(lieux)]
         candidats = sorted(par_zone[z], key=lambda s: s["lieu"] != prefere)  # tri stable
-        choix = next((s for s in candidats if lo <= s["vis"] <= hi
-                      and s.get("rot_canard", s["rot"]) is not None
-                      and all(_dist(s["pos"], c["pos"]) >= dcan for c in canards)), None)
+        # Plage voulue d'abord ; si la case n'a rien, on élargit par paliers plutôt que
+        # d'échouer (case presque entièrement cachée par des immeubles, toits en pente…).
+        choix = None
+        for palier, (a, b, d) in enumerate(((lo, hi, dcan), (lo - 0.1, hi + 0.1, dcan),
+                                            (lo - 0.1, hi + 0.1, dcan / 2), (VIS_MIN_ABSOLUE, 1.0, dcan / 2))):
+            choix = next((s for s in candidats if a <= s["vis"] <= b
+                          and s.get("rot_canard", s["rot"]) is not None
+                          and all(_dist(s["pos"], c["pos"]) >= d for c in canards)), None)
+            if choix is not None:
+                break
         if choix is None:
             raise PlacementImpossible(
-                f"case {z} : aucune cachette de visibilité {lo}–{hi} à plus de {dcan} m des autres canards")
-        canards.append(_objet(f"canard-{len(canards) + 1:02d}", CANARD,
-                              dict(choix, rot=choix.get("rot_canard", choix["rot"])), z))
+                f"case {z} : aucune cachette visible à plus de {VIS_MIN_ABSOLUE:.0%} où la tête du canard se voit")
+        canard = _objet(f"canard-{len(canards) + 1:02d}", CANARD,
+                        dict(choix, rot=choix.get("rot_canard", choix["rot"])), z)
+        if palier:
+            canard["assoupli"] = palier
+        canards.append(canard)
     if len(canards) != theme["canards"]:
         raise PlacementImpossible(f"la grille {cols}x{rangs} ne donne pas {theme['canards']} canards")
 
@@ -107,6 +118,8 @@ def valider(objets, theme):
     assert len({o["zone"] for o in canards}) == len(canards), "deux canards dans la même case"
     for o in objets:
         lo, hi = theme["visibilite_canard" if o["type"] == CANARD else "visibilite_leurre"]
+        if o.get("assoupli"):  # case difficile : plage élargie, signalée dans le rapport
+            lo, hi = VIS_MIN_ABSOLUE, 1.0
         assert lo <= o["visibilite"] <= hi, f"{o['id']} visibilité {o['visibilite']}"
         assert o["zone"] == cellule(o["pos"], theme), f"{o['id']} zone incohérente"
         if o["type"] != CANARD:
@@ -116,4 +129,5 @@ def valider(objets, theme):
             d = _dist(a["pos"], b["pos"])
             assert d >= theme["distance_min"] - 1e-9, f"{a['id']} et {b['id']} à {d:.2f} m"
             if a["type"] == CANARD and b["type"] == CANARD:
-                assert d >= theme["distance_min_canards"] - 1e-9, f"canards {a['id']}/{b['id']} à {d:.2f} m"
+                mini = theme["distance_min_canards"] / (2 if a.get("assoupli", 0) > 1 or b.get("assoupli", 0) > 1 else 1)
+                assert d >= mini - 1e-9, f"canards {a['id']}/{b['id']} à {d:.2f} m"

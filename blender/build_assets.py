@@ -120,7 +120,34 @@ def casque():
     return b
 
 
-ASSETS = [canard, canard_loin, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
+def arrosoir():
+    """Silhouette proche du canard : un corps rond et un bec... jaune, sans œil."""
+    b = Builder("Leurre_Arrosoir")
+    b.cyl(J, 0.13, 0.24, xf((-0.04, 0, 0.12)))
+    b.cone(J, 0.04, 0.025, 0.22, xf((0.15, 0, 0.20), rot=(0, math.radians(55), 0)), seg=10)
+    b.cyl(J, 0.05, 0.03, xf((0.245, 0, 0.265), rot=(0, math.radians(55), 0)), seg=10)
+    b.box(J, (0.03, 0.03, 0.20), (-0.185, 0, 0.14))
+    b.box(J, (0.05, 0.03, 0.03), (-0.165, 0, 0.235))
+    return b
+
+
+def botte():
+    b = Builder("Leurre_Botte")
+    b.box(N, (0.30, 0.12, 0.03), (0.03, 0, 0.015))
+    b.sphere(J, 1, xf((0.04, 0, 0.085), (0.15, 0.065, 0.06)))
+    b.cyl(J, 0.065, 0.30, xf((-0.05, 0, 0.20)))
+    b.cyl(J, 0.075, 0.03, xf((-0.05, 0, 0.36)))
+    return b
+
+
+def ballon():
+    b = Builder("Leurre_Ballon")
+    b.sphere(J, 0.20, xf((0, 0, 0.20)))
+    b.sphere(N, 0.02, xf((0, 0, 0.40)), u=8, v=6)
+    return b
+
+
+ASSETS = [arrosoir, botte, ballon, canard, canard_loin, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
 
 
 def taille_jaune(obj):

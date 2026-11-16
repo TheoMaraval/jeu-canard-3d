@@ -2,12 +2,16 @@
 
 make_layout(theme) renvoie :
   prims : primitives à mailler (contrat dans le plan du pipeline)
-  slots : cachettes candidates {lieu, pos, rot}
+  slots : cachettes candidates {lieu, pos, rot}, lieu = sol | balcon | toit | vitre
   lots  : emprises des immeubles [x0, y0, x1, y1]
   blocs : emprises des îlots, trottoir compris
 
 Repère Blender : Z vers le haut, carte centrée sur l'origine, mètres.
-La caméra de jeu est côté (+x, -y) : les façades visibles regardent le sud et l'est.
+La caméra de jeu est côté (+x, -y) : seules les façades sud et est sont détaillées.
+
+Une ville = themes/<id>.json fusionné avec themes/_commun.json. Tout ce qui distingue
+Paris de Delhi passe par theme["style"] ; aucune ville n'est codée en dur ici, sauf le
+contenu de la place centrale (une fonction square_<nom> par ville).
 """
 import json
 import math
@@ -16,11 +20,14 @@ import random
 
 AZIMUT = 45.0
 ELEVATION = 35.264
-LOIN = (-math.sqrt(0.5), math.sqrt(0.5))  # direction horizontale qui s'éloigne de la caméra
-H_TROTTOIR = 0.15
+LOIN = (-math.sqrt(0.5), math.sqrt(0.5))    # direction horizontale qui s'éloigne de la caméra
 LATERAL = (math.sqrt(0.5), math.sqrt(0.5))  # perpendiculaire à LOIN, à l'horizontale
+PENTE = math.tan(math.radians(ELEVATION))   # un rayon vers la caméra monte de PENTE m par mètre
+H_TROTTOIR = 0.15
 MARGE_SLOT = 0.3
-PENTE = math.tan(math.radians(ELEVATION))  # un rayon vers la caméra monte de PENTE m par mètre
+EP = 0.6          # profondeur des niches derrière les vitres
+VISIBLES = "SE"   # façades tournées vers la caméra
+DOSSIER_THEMES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes")
 
 FACADES = {  # côté -> (coin d'origine, direction le long du mur, normale sortante)
     "S": (("x0", "y0"), (1, 0), (0, -1)),
@@ -30,19 +37,34 @@ FACADES = {  # côté -> (coin d'origine, direction le long du mur, normale sort
 }
 
 
-def charger_theme(ville):
-    chemin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", ville + ".json")
-    with open(chemin, encoding="utf8") as f:
+def _lire(nom):
+    with open(os.path.join(DOSSIER_THEMES, nom + ".json"), encoding="utf8") as f:
         return json.load(f)
+
+
+def villes():
+    return sorted(f[:-5] for f in os.listdir(DOSSIER_THEMES) if f.endswith(".json") and not f.startswith("_"))
+
+
+def charger_theme(ville):
+    """Thème d'une ville ; palette et style héritent de _commun.json."""
+    commun, theme = _lire("_commun"), _lire(ville)
+    theme = {**{k: v for k, v in commun.items() if k not in ("palette", "style")}, **theme}
+    theme["palette"] = {**commun["palette"], **theme.get("palette", {})}
+    theme["style"] = {**commun["style"], **theme.get("style", {})}
+    return theme
 
 
 class Plan:
     def __init__(self, theme):
-        self.t = theme
+        self.t, self.s = theme, theme["style"]
         self.rng = random.Random(theme["graine"])
         self.demi = theme["taille"] / 2
         self.prims, self.slots = [], []
         self.lots, self.blocs, self.herbes, self.emprises = [], [], [], []
+
+    def choix(self, cle):
+        return self.rng.choice(self.s[cle])
 
     # ---- primitives -------------------------------------------------------
     def box(self, mat, size, pos, rot=0.0, haut=None, emprise=False):
@@ -51,12 +73,12 @@ class Plan:
             p["haut"] = list(haut)
         self.prims.append(p)
         if emprise:
-            r = max(size[0], size[1]) / 2 if rot else None
+            r = max(size[0], size[1]) / 2
             hx, hy = (r, r) if rot else (size[0] / 2, size[1] / 2)
             self.emprises.append((pos[0] - hx, pos[1] - hy, pos[0] + hx, pos[1] + hy))
 
-    def cyl(self, mat, r, h, base, r2=None, seg=10, emprise=False):
-        """base = centre de la face du bas."""
+    def cyl(self, mat, r, h, base, r2=None, seg=8, emprise=False):
+        """base = centre de la face du bas. seg >= 8 : pas de trait d'encre sur les flancs."""
         self.prims.append({"t": "cyl", "mat": mat, "r1": r, "r2": r if r2 is None else r2,
                            "h": h, "seg": seg, "pos": [base[0], base[1], base[2] + h / 2]})
         if emprise:
@@ -89,28 +111,68 @@ class Plan:
         if self.libre(x, y):
             self.slot("sol", x, y, self.sol_z(x, y))
 
-    def slot_derriere(self, x, y, r, h, n=3):
-        """n cachettes derrière un obstacle (demi-largeur r, hauteur h), vu de la caméra.
+    def _derriere(self, x, y, r, h):
+        """Point derrière un obstacle (demi-largeur r, hauteur h), plus ou moins masqué."""
+        d = self.rng.uniform(r + 0.5, max(r + 0.7, h / PENTE + 0.2))
+        lat = self.rng.uniform(-(r + 0.3), r + 0.3)
+        return x + LOIN[0] * d + LATERAL[0] * lat, y + LOIN[1] * d + LATERAL[1] * lat
 
-        La distance va jusqu'à l'endroit où le rayon passe par-dessus l'obstacle et le
-        décalage latéral dépasse ses bords : on obtient des objets à moitié cachés,
-        pas seulement tout visibles ou tout invisibles.
-        """
+    def slot_derriere(self, x, y, r, h, n=3):
+        """n cachettes au sol derrière un obstacle : à moitié cachées, pas tout ou rien."""
         for _ in range(n):
-            d = self.rng.uniform(r + 0.5, max(r + 0.7, h / PENTE + 0.2))
-            lat = self.rng.uniform(-(r + 0.3), r + 0.3)
-            self.slot_sol(x + LOIN[0] * d + LATERAL[0] * lat, y + LOIN[1] * d + LATERAL[1] * lat)
+            self.slot_sol(*self._derriere(x, y, r, h))
+
+    # ---- passants ---------------------------------------------------------
+    def passant(self, x, y, z, emprise=True):
+        """Personnage cartoon : environ 4 têtes de haut, grosse tête, bras, cheveux ou chapeau."""
+        rng = self.rng
+        self.cyl(self.choix("pantalons"), 0.13, 0.55, (x, y, z))
+        haut = self.choix("vetements")
+        if rng.random() < 0.12:  # maillot rayé
+            haut, a = "blanc", self.choix("rayures")
+            for i in range(3):
+                self.cyl(a if i % 2 == 0 else "blanc", 0.19, 0.2, (x, y, z + 0.55 + i * 0.2))
+        else:
+            self.cyl(haut, 0.2, 0.6, (x, y, z + 0.55), r2=0.17)
+        angle = rng.uniform(0, math.pi)
+        for cote in (-1, 1):  # bras ; un sur dix fait signe
+            leve = rng.random() < 0.1
+            self.box(haut, (0.09, 0.09, 0.5),
+                     (x + cote * 0.25 * math.cos(angle), y + cote * 0.25 * math.sin(angle),
+                      z + (1.45 if leve else 0.87)), rot=angle)
+        self.sph(self.choix("peaux"), 0.2, (x, y, z + 1.34))
+        if rng.random() < 0.2:  # chapeau
+            self.cyl(self.choix("vetements"), 0.24, 0.05, (x, y, z + 1.44))
+            self.cyl(self.choix("vetements"), 0.16, 0.14, (x, y, z + 1.49))
+        else:
+            self.cyl(self.choix("cheveux"), 0.205, 0.13, (x, y, z + 1.41), r2=0.14)
+        if emprise:
+            self.emprises.append((x - 0.25, y - 0.25, x + 0.25, y + 0.25))
+            if rng.random() < 0.35:
+                self.slot_derriere(x, y, 0.2, 1.6, n=1)
+
+    def buste(self, x, y, z):
+        """Quelqu'un à sa fenêtre ou attablé."""
+        self.cyl(self.choix("vetements"), 0.18, 0.45, (x, y, z), r2=0.16)
+        self.sph(self.choix("peaux"), 0.19, (x, y, z + 0.62))
+        self.cyl(self.choix("cheveux"), 0.195, 0.12, (x, y, z + 0.69), r2=0.13)
+
+    def foule(self, n, tirage):
+        for _ in range(n):
+            x, y = tirage()
+            if self.libre(x, y):
+                self.passant(x, y, self.sol_z(x, y))
 
     # ---- mobilier ---------------------------------------------------------
-    def arbre(self, x, y, z):
-        self.cyl("tronc", 0.13, 2.4, (x, y, z), seg=6, emprise=True)
+    def arbre(self, x, y, z, k=1.0):
+        self.cyl("tronc", 0.13 * k, 2.4 * k, (x, y, z), emprise=True)
         f = self.rng.choice(["feuillage", "feuillage2"])
-        r = self.rng.uniform(1.0, 1.35)
-        self.sph(f, r, (x, y, z + 3.2), (1, 1, 0.9))
-        self.sph(f, r * 0.65, (x + self.rng.uniform(-0.5, 0.5), y + self.rng.uniform(-0.5, 0.5), z + 4.1))
-        self.slot_derriere(x, y, 0.13, 2.4, n=2)
+        r = self.rng.uniform(1.0, 1.35) * k
+        self.sph(f, r, (x, y, z + 3.2 * k), (1, 1, 0.9))
+        self.sph(f, r * 0.65, (x + self.rng.uniform(-0.5, 0.5) * k, y + self.rng.uniform(-0.5, 0.5) * k, z + 4.1 * k))
+        self.slot_derriere(x, y, 0.13 * k, 2.4 * k, n=2)
         for _ in range(2):  # sous le feuillage, vu de la caméra
-            d, lat = self.rng.uniform(3.3, 5.6), self.rng.uniform(-1.3, 1.3)
+            d, lat = self.rng.uniform(3.3, 5.6) * k, self.rng.uniform(-1.3, 1.3)
             self.slot_sol(x + LOIN[0] * d + LATERAL[0] * lat, y + LOIN[1] * d + LATERAL[1] * lat)
 
     def haie(self, x, y, longueur, le_long_de_x, mat="feuillage2", ep=0.5, h=0.6):
@@ -136,203 +198,553 @@ class Plan:
         self.slot_derriere(x, y, 0.75, 0.9)
 
     def poubelle(self, x, y, z):
-        self.cyl("vertfonce", 0.25, 0.85, (x, y, z), seg=8, emprise=True)
+        self.cyl("vertfonce", 0.25, 0.85, (x, y, z), emprise=True)
         self.slot_derriere(x, y, 0.25, 0.85)
 
-    def voiture(self, x, y, le_long_de_x):
-        mat = self.rng.choice(self.t["immeuble"]["voitures"])
-        long, larg = 4.2, 1.8
-        sx, sy = (long, larg) if le_long_de_x else (larg, long)
-        kx, ky = (0.55, 0.88) if le_long_de_x else (0.88, 0.55)
-        self.box("fer", (sx * 0.85, sy * 1.04, 0.4), (x, y, 0.25))            # roues
-        self.box(mat, (sx, sy, 0.65), (x, y, 0.60), emprise=True)             # caisse
-        self.box(mat, (sx * kx, sy * ky, 0.5), (x, y, 1.17), haut=(0.8, 0.8))  # habitacle
-        self.slot_derriere(x, y, 1.0, 1.4)
+    def rayures(self, mats, taille, centre, le_long_de_x, pas=0.6):
+        """Toile rayée : bandes alternées de deux couleurs (store, auvent d'étal)."""
+        long = taille[0] if le_long_de_x else taille[1]
+        n = max(1, round(long / pas))
+        for i in range(n):
+            d = -long / 2 + (i + 0.5) * long / n
+            size = (long / n, taille[1], taille[2]) if le_long_de_x else (taille[0], long / n, taille[2])
+            pos = (centre[0] + d, centre[1], centre[2]) if le_long_de_x else (centre[0], centre[1] + d, centre[2])
+            self.box(mats[i % len(mats)], size, pos)
 
-    # ---- immeubles --------------------------------------------------------
+    def toile(self):
+        """Couleurs d'une toile : parfois jaune (gros leurre de décor), souvent rayée."""
+        if self.rng.random() < self.s["toile_jaune"]:
+            return ["jaune"]
+        a = self.choix("auvents")
+        return [a, "blanc"] if self.rng.random() < 0.6 else [a]
+
+    def etal(self, x, y, z, le_long_de_x):
+        """Étal de marché : table, auvent, marchandises, cachettes sur et derrière la table."""
+        rng = self.rng
+        tx, ty = (2.0, 0.8) if le_long_de_x else (0.8, 2.0)
+        self.box("bois", (tx, ty, 0.8), (x, y, z + 0.4), emprise=True)
+        for d in (-0.95, 0.95):
+            px, py = (x + d, y) if le_long_de_x else (x, y + d)
+            self.cyl("fer", 0.04, 2.1, (px, py, z), seg=6)
+        self.rayures(self.toile(), (2.3, 1.3, 0.1) if le_long_de_x else (1.3, 2.3, 0.1), (x, y, z + 2.15), le_long_de_x)
+        for i in range(4):
+            d = -0.75 + i * 0.5
+            px, py = (x + d, y) if le_long_de_x else (x, y + d)
+            if rng.random() < 0.3:
+                self.slot("sol", px, py, z + 0.8)
+            elif rng.random() < 0.5:
+                self.sph(self.choix("fleurs"), 0.13, (px, py, z + 0.9))
+            else:
+                self.box(self.choix("couleurs"), (0.3, 0.3, 0.25), (px, py, z + 0.925))
+        self.slot_derriere(x, y, 1.0, 0.8, n=2)
+
+    def fontaine(self, cx, cy, z):
+        self.cyl("pierre", 3.0, 0.5, (cx, cy, z), seg=20, emprise=True)
+        self.cyl("eau", 2.6, 0.52, (cx, cy, z), seg=20)
+        self.cyl("pierre", 0.4, 1.7, (cx, cy, z))
+        self.cyl("pierre", 1.0, 0.25, (cx, cy, z + 1.7), r2=1.3, seg=12)
+        for _ in range(12):  # sur la margelle
+            a = self.rng.uniform(0, 2 * math.pi)
+            self.slot("sol", cx + 2.8 * math.cos(a), cy + 2.8 * math.sin(a), z + 0.5)
+
+    def arche(self, cx, cy, z, large, haut, ep, mat, le_long_de_x=True):
+        """Porte monumentale : deux piles et un linteau."""
+        pile = large * 0.28
+        for d in (-(large - pile) / 2, (large - pile) / 2):
+            pos = (cx + d, cy, z + haut * 0.35) if le_long_de_x else (cx, cy + d, z + haut * 0.35)
+            self.box(mat, (pile, ep, haut * 0.7) if le_long_de_x else (ep, pile, haut * 0.7), pos, emprise=True)
+            self.slot_derriere(pos[0], pos[1], pile / 2, 2.0, n=3)
+        self.box(mat, (large, ep, haut * 0.3) if le_long_de_x else (ep, large, haut * 0.3), (cx, cy, z + haut * 0.85))
+        self.box("pierre", (large + 0.6, ep + 0.6, 0.4) if le_long_de_x else (ep + 0.6, large + 0.6, 0.4),
+                 (cx, cy, z + haut + 0.2))
+
+    # ---- véhicules --------------------------------------------------------
+    def vehicule(self, x, y, le_long_de_x, typ=None):
+        """Pose un véhicule et renvoie sa longueur. Taxis, camionnettes et rickshaws sont jaunes."""
+        typ = typ or self.choix("vehicules")
+        long, larg, h = {"camionnette": (5.0, 2.0, 2.2), "bus": (9.0, 2.5, 2.9),
+                         "rickshaw": (2.6, 1.4, 1.7)}.get(typ, (4.2, 1.8, 1.4))
+        sx, sy = (long, larg) if le_long_de_x else (larg, long)
+        self.box("fer", (sx * 0.85, sy * 1.04, 0.4), (x, y, 0.25))  # roues
+        if typ == "camionnette":
+            self.box("jaune", (sx, sy, 1.8), (x, y, 1.2), emprise=True)
+            self.box("interieur", (sx * 0.98, sy * 0.98, 0.5), (x, y, 1.75))
+            self.box("jaune", (sx, sy, 0.15), (x, y, 2.1))
+        elif typ == "bus":
+            self.box(self.choix("bus"), (sx, sy, 2.5), (x, y, 1.55), emprise=True)
+            self.box("interieur", (sx * 1.01, sy * 1.01, 0.8), (x, y, 2.0))
+        elif typ == "rickshaw":
+            self.box("vertfonce", (sx, sy, 0.7), (x, y, 0.65), emprise=True)
+            self.box("interieur", (sx * 0.8, sy * 0.9, 0.6), (x, y, 1.3))
+            self.box("jaune", (sx * 0.95, sy, 0.15), (x, y, 1.67))
+        else:
+            mat = "jaune" if typ == "taxi" else self.choix("voitures")
+            kx, ky = (0.55, 0.88) if le_long_de_x else (0.88, 0.55)
+            self.box(mat, (sx, sy, 0.65), (x, y, 0.60), emprise=True)
+            self.box(mat, (sx * kx, sy * ky, 0.5), (x, y, 1.17), haut=(0.8, 0.8))
+            if typ == "taxi":
+                self.box("blanc", (0.5, 0.3, 0.15) if le_long_de_x else (0.3, 0.5, 0.15), (x, y, 1.5))
+        self.slot_derriere(x, y, larg / 2 + 0.1, h)
+        return long
+
+    def vache(self, x, y, z):
+        self.box("blanc", (1.6, 0.6, 0.7), (x, y, z + 0.95), emprise=True)
+        for dx in (-0.6, 0.6):
+            for dy in (-0.2, 0.2):
+                self.box("blanc", (0.14, 0.14, 0.6), (x + dx, y + dy, z + 0.3))
+        self.box("blanc", (0.45, 0.35, 0.4), (x + 0.95, y, z + 1.25))
+        self.slot_derriere(x, y, 0.8, 1.3, n=2)
+
+    # ---- façades ----------------------------------------------------------
     def _facade(self, rect, cote):
         coins = dict(zip(("x0", "y0", "x1", "y1"), rect))
         (cx, cy), u, n = FACADES[cote]
         longueur = (rect[2] - rect[0]) if u[0] else (rect[3] - rect[1])
         return (coins[cx], coins[cy]), u, n, longueur
 
-    def _element(self, facade, mat, s, la, o, th, zc, hz):
-        """Boîte posée sur une façade : s le long du mur, o vers l'extérieur."""
-        a, u, n, _ = facade
-        pos = (a[0] + u[0] * s + n[0] * o, a[1] + u[1] * s + n[1] * o, zc)
-        self.box(mat, (la, th, hz) if u[0] else (th, la, hz), pos)
-        return pos
+    @staticmethod
+    def _pt(f, s, o):
+        a, u, n, _ = f
+        return a[0] + u[0] * s + n[0] * o, a[1] + u[1] * s + n[1] * o
 
-    def immeuble(self, rect, cotes):
-        rng, im = self.rng, self.t["immeuble"]
+    def _el(self, f, mat, s0, s1, o0, o1, zb, zh, haut=None):
+        """Boîte sur une façade : [s0, s1] le long du mur, [o0, o1] vers l'extérieur, [zb, zh]."""
+        x, y = self._pt(f, (s0 + s1) / 2, (o0 + o1) / 2)
+        la, th = s1 - s0, o1 - o0
+        self.box(mat, (la, th, zh - zb) if f[1][0] else (th, la, zh - zb), (x, y, (zb + zh) / 2), haut=haut)
+
+    def facade(self, f, n, haut, mur, trim):
+        """Façade détaillée : vitrine au rez-de-chaussée, fenêtres en niche derrière une vitre.
+
+        Le mur est une peau de EP m devant le noyau de l'immeuble : bandeaux horizontaux
+        (allèges et linteaux) et trumeaux verticaux. Les trous entre eux sont de vraies
+        niches où l'on peut poser un objet, fermées par une vitre.
+        """
+        rng, s = self.rng, self.s
+        long = f[3]
+        z0, he, rdc, al, wf = H_TROTTOIR, s["hauteur_etage"], s["rdc"], 0.9, 1.1
+        hf = he - 1.4
+        self._el(f, "interieur", 0, long, -EP, -EP + 0.05, z0, z0 + haut)  # fond sombre des niches
+
+        # rez-de-chaussée : vitrine
+        zl = z0 + rdc - 0.6
+        self._el(f, trim, 0, long, -EP, 0, z0, z0 + 0.4)
+        for s0, s1 in ((0, 0.45), (long - 0.45, long)):
+            self._el(f, mur, s0, s1, -EP, 0.06, z0, z0 + rdc)
+        porte = rng.uniform(1.3, long - 1.3) if long > 4 else None
+        if porte:
+            self._el(f, "porte", porte - 0.5, porte + 0.5, -EP, -0.12, z0, zl)
+        self._el(f, "verre", 0.45, long - 0.45, -0.1, -0.07, z0 + 0.4, zl)
+        sx = 0.45
+        while sx < long - 0.4:  # montants de vitrine
+            self._el(f, "blanc", sx - 0.035, sx + 0.035, -0.14, -0.06, z0 + 0.4, zl)
+            sx += (long - 0.9) / max(1, round((long - 0.9) / 1.7))
+        if rng.random() < s["auvent"]:
+            x, y = self._pt(f, long / 2, 0.66)
+            taille = (long - 1.2, 1.2, 0.1) if f[1][0] else (1.2, long - 1.2, 0.1)
+            self.rayures(self.toile(), taille, (x, y, z0 + rdc - 0.45), bool(f[1][0]), pas=0.7)
+        sx = 0.9
+        while sx < long - 0.9:
+            if porte is None or abs(sx - porte) > 0.85:
+                x, y = self._pt(f, sx, -rng.uniform(0.24, 0.36))
+                if rng.random() < 0.45:  # marchandise en vitrine
+                    h = rng.uniform(0.25, 0.6)
+                    self.box(self.choix("couleurs"), (0.3, 0.3, h), (x, y, z0 + 0.4 + h / 2))
+                else:
+                    self.slot("vitre", x, y, z0 + 0.4)
+            sx += rng.uniform(0.9, 1.5)
+
+        # étages : trumeaux sur toute la hauteur, bandeaux sur toute la longueur
+        k = max(1, int(long / 2.4))
+        centres = [(i + 0.5) * long / k for i in range(k)]
+        bords = [0.0] + [c + d for c in centres for d in (-wf / 2, wf / 2)] + [long]
+        for i in range(0, len(bords), 2):
+            self._el(f, mur, bords[i], bords[i + 1], -EP, 0.06, z0 + rdc, z0 + haut)
+        for e in range(n + 1):
+            zb = z0 + rdc + e * he - (0.6 if e == 0 else 0.5)
+            self._el(f, trim, 0, long, -EP, 0, zb, min(z0 + haut, z0 + rdc + e * he + al))
+        volets = self.choix("volets") if s["volets"] and rng.random() < 0.6 else None
+        for e in range(n):
+            zs = z0 + rdc + e * he + al  # appui de fenêtre = sol de la niche
+            self._el(f, "verre", 0.1, long - 0.1, -0.1, -0.07, zs, zs + hf)
+            for c in centres:
+                if s["balcons"] == "jharokha" and e >= 1 and rng.random() < 0.22:
+                    self._el(f, self.choix("accents"), c - 0.75, c + 0.75, 0.06, 0.7, zs - 0.3, zs + hf + 0.2)
+                    self._el(f, "interieur", c - 0.4, c + 0.4, 0.7, 0.72, zs, zs + hf - 0.2)
+                    self._el(f, "blanc", c - 0.85, c + 0.85, 0.0, 0.8, zs + hf + 0.2, zs + hf + 0.6, haut=(0.5, 0.5))
+                    continue
+                # croisée : un montant et une traverse, qui masquent un peu ce qui est derrière
+                self._el(f, "blanc", c - 0.03, c + 0.03, -0.14, -0.06, zs, zs + hf)
+                self._el(f, "blanc", c - wf / 2, c + wf / 2, -0.14, -0.06, zs + hf * 0.62, zs + hf * 0.62 + 0.05)
+                if volets:
+                    self._el(f, volets, c - wf / 2 - 0.3, c - wf / 2, 0.06, 0.11, zs, zs + hf)
+                    self._el(f, volets, c + wf / 2, c + wf / 2 + 0.3, 0.06, 0.11, zs, zs + hf)
+                x, y = self._pt(f, c + rng.uniform(-0.25, 0.25), -rng.uniform(0.24, 0.36))
+                tirage = rng.random()
+                if tirage < 0.30:
+                    self.slot("vitre", x, y, zs)
+                elif tirage < 0.40:
+                    self.buste(x, y, zs)
+                elif tirage < 0.40 + s["jardinieres_fenetre"]:
+                    self._el(f, "terre", c - 0.45, c + 0.45, 0.0, 0.22, zs - 0.22, zs)
+                    fleur = self.choix("fleurs")
+                    for d in (-0.28, 0.0, 0.28):
+                        px, py = self._pt(f, c + d, 0.11)
+                        self.sph(fleur, 0.1, (px, py, zs + 0.06))
+
+    def balcons(self, f, n):
+        rng, s = self.rng, self.s
+        long, z0, he, rdc = f[3], H_TROTTOIR, s["hauteur_etage"], s["rdc"]
+        if s["balcons"] == "filants":
+            for e in {1, n - 2}:
+                if e < 1:
+                    continue
+                zf = z0 + rdc + e * he
+                self._el(f, "pierre", 0.3, long - 0.3, 0.0, 0.8, zf - 0.12, zf)
+                self._el(f, "fer", 0.3, long - 0.3, 0.75, 0.8, zf, zf + 0.45)
+                sx = 0.8
+                while sx < long - 0.8:
+                    x, y = self._pt(f, sx, rng.uniform(0.25, 0.55))
+                    if rng.random() < 0.08:
+                        self.passant(x, y, zf, emprise=False)
+                    else:
+                        self.slot("balcon", x, y, zf)
+                    sx += 1.3
+        elif s["balcons"] == "secours":  # escalier de secours new-yorkais
+            c = rng.uniform(1.7, long - 1.7) if long > 3.6 else long / 2
+            demi = min(1.3, long / 2 - 0.2)
+            for e in range(1, n):
+                zf = z0 + rdc + e * he
+                self._el(f, "fer", c - demi, c + demi, 0.06, 0.96, zf - 0.08, zf)
+                self._el(f, "fer", c - demi, c + demi, 0.92, 0.96, zf, zf + 0.5)
+                echelle = c + (demi - 0.3) * (1 if e % 2 else -1)
+                self._el(f, "fer", echelle - 0.2, echelle + 0.2, 0.5, 0.55, zf - he, zf)
+                for d in (-0.5, 0.5):
+                    x, y = self._pt(f, c + d * demi, rng.uniform(0.3, 0.7))
+                    self.slot("balcon", x, y, zf)
+
+    # ---- toits ------------------------------------------------------------
+    def extra_toit(self, typ, x, y, z):
+        """Pose un élément de toit, renvoie (demi-largeur, hauteur) pour les cachettes."""
+        rng = self.rng
+        if typ == "chateau_eau":
+            for dx in (-0.6, 0.6):
+                for dy in (-0.6, 0.6):
+                    self.box("fer", (0.12, 0.12, 1.6), (x + dx, y + dy, z + 0.8))
+            self.cyl("bois", 1.0, 1.7, (x, y, z + 1.6), seg=10)
+            self.cyl("zinc", 1.1, 0.7, (x, y, z + 3.3), r2=0.05, seg=10)
+            return 1.0, 4.0
+        if typ == "clim":
+            self.box("metal", (1.2, 0.9, 0.8), (x, y, z + 0.4))
+            return 0.6, 0.8
+        if typ == "citerne":
+            self.cyl("citerne", 0.6, 1.1, (x, y, z), seg=10)
+            return 0.6, 1.1
+        if typ == "cabanon":
+            self.box("pierre", (1.8, 2.2, 2.1), (x, y, z + 1.05))
+            self.box("porte", (0.8, 0.05, 1.7), (x, y - 1.12, z + 0.85))
+            return 1.1, 2.1
+        if typ == "dome":
+            self.box("blanc", (2.0, 2.0, 1.5), (x, y, z + 0.75))
+            self.sph(self.choix("accents"), 1.0, (x, y, z + 1.5), (1, 1, 0.95))
+            self.cyl("fer", 0.05, 0.6, (x, y, z + 2.4), seg=6)
+            return 1.0, 2.5
+        if typ == "linge":
+            for dx in (-1.4, 1.4):
+                self.cyl("fer", 0.04, 1.9, (x + dx, y, z), seg=6)
+            for i in range(5):
+                h = rng.uniform(0.5, 0.9)
+                self.box(self.choix("linge"), (0.45, 0.04, h), (x - 1.1 + i * 0.55, y, z + 1.85 - h / 2))
+            return 1.4, 1.9
+        self.box("cheminee", (0.7, 0.7, 1.3), (x, y, z + 0.65))
+        return 0.35, 1.3
+
+    def _garnir_toit(self, rect, z, marge):
+        """Éléments de toit, cachettes derrière eux, quelques cachettes libres, des gens."""
+        rng = self.rng
         x0, y0, x1, y1 = rect
-        lx, ly, cx, cy = x1 - x0, y1 - y0, (x0 + x1) / 2, (y0 + y1) / 2
-        n, he, rdc, z0 = rng.randint(*im["etages"]), im["hauteur_etage"], im["rdc"], H_TROTTOIR
-        haut = rdc + n * he
-        self.lots.append(list(rect))
-        self.box(rng.choice(im["murs"]), (lx, ly, haut), (cx, cy, z0 + haut / 2))
-        self.box("pierre", (lx + 0.4, ly + 0.4, 0.25), (cx, cy, z0 + haut - 0.125))  # corniche
+        if x1 - x0 < 2 * marge + 0.6 or y1 - y0 < 2 * marge + 0.6:
+            return
+        poses = []
+        for _ in range(rng.randint(1, 1 + int((x1 - x0) * (y1 - y0) / 30))):
+            for _ in range(6):
+                px, py = rng.uniform(x0 + marge, x1 - marge), rng.uniform(y0 + marge, y1 - marge)
+                if all(math.hypot(px - a, py - b) > 2.8 for a, b in poses):
+                    break
+            else:
+                continue
+            poses.append((px, py))
+            r, h = self.extra_toit(self.choix("toit_extras"), px, py, z)
+            for _ in range(3):
+                sx, sy = self._derriere(px, py, r, h)
+                if x0 + 0.9 < sx < x1 - 0.9 and y0 + 0.9 < sy < y1 - 0.9 \
+                        and all(math.hypot(sx - a, sy - b) > 1.0 for a, b in poses):
+                    self.slot("toit", sx, sy, z)
+        for _ in range(3):
+            self.slot("toit", rng.uniform(x0 + marge, x1 - marge), rng.uniform(y0 + marge, y1 - marge), z)
+        if rng.random() < self.s["gens_sur_toits"]:
+            self.passant(rng.uniform(x0 + marge, x1 - marge), rng.uniform(y0 + marge, y1 - marge), z, emprise=False)
 
-        # toit mansardé : dessus rétréci de 0,9 m par côté
-        self.box("zinc", (lx + 0.3, ly + 0.3, 2.4), (cx, cy, z0 + haut + 1.2),
-                 haut=((lx - 1.8) / (lx + 0.3), (ly - 1.8) / (ly + 0.3)))
-        ztoit, m = z0 + haut + 2.4, 1.5
-        for _ in range(rng.randint(1, 3)):
-            px, py = rng.uniform(x0 + m + 0.3, x1 - m - 0.3), rng.uniform(y0 + m + 0.3, y1 - m - 0.3)
-            self.box("cheminee", (0.7, 0.7, 1.3), (px, py, ztoit + 0.65))
-            for _ in range(3):  # cachettes derrière la cheminée, plus ou moins masquées
-                d, lat = rng.uniform(0.9, 1.9), rng.uniform(-0.55, 0.55)
-                sx = px + LOIN[0] * d + LATERAL[0] * lat
-                sy = py + LOIN[1] * d + LATERAL[1] * lat
-                if x0 + m < sx < x1 - m and y0 + m < sy < y1 - m:
-                    self.slot("toit", sx, sy, ztoit)
-        # acrotère : muret bas au bord du toit plat, cachettes derrière les côtés sud et est
-        a0, b0, a1, b1 = x0 + 0.96, y0 + 0.96, x1 - 0.96, y1 - 0.96
-        for size, pos in (((a1 - a0, 0.12, 0.4), (cx, b0, ztoit + 0.2)),
-                          ((a1 - a0, 0.12, 0.4), (cx, b1, ztoit + 0.2)),
-                          ((0.12, b1 - b0, 0.4), (a0, cy, ztoit + 0.2)),
-                          ((0.12, b1 - b0, 0.4), (a1, cy, ztoit + 0.2))):
-            self.box("zinc", size, pos)
-        s = a0 + 0.6
+    def _acrotere(self, a0, b0, a1, b1, z, mat, ep, h):
+        """Muret bas au bord d'un toit plat, cachettes derrière les côtés sud et est."""
+        rng = self.rng
+        cx, cy = (a0 + a1) / 2, (b0 + b1) / 2
+        for size, pos in (((a1 - a0, ep, h), (cx, b0 + ep / 2, z + h / 2)), ((a1 - a0, ep, h), (cx, b1 - ep / 2, z + h / 2)),
+                          ((ep, b1 - b0, h), (a0 + ep / 2, cy, z + h / 2)), ((ep, b1 - b0, h), (a1 - ep / 2, cy, z + h / 2))):
+            self.box(mat, size, pos)
+        s = a0 + 0.7
         while s < a1 - 0.9:
-            self.slot("toit", s, b0 + 0.06 + rng.uniform(0.28, 0.6), ztoit)
+            self.slot("toit", s, b0 + ep + rng.uniform(0.2, 0.5), z)
             s += rng.uniform(1.2, 2.0)
         s = b0 + 0.9
-        while s < b1 - 0.6:
-            self.slot("toit", a1 - 0.06 - rng.uniform(0.28, 0.6), s, ztoit)
+        while s < b1 - 0.7:
+            self.slot("toit", a1 - ep - rng.uniform(0.2, 0.5), s, z)
             s += rng.uniform(1.2, 2.0)
-        for _ in range(4):
-            self.slot("toit", rng.uniform(x0 + m, x1 - m), rng.uniform(y0 + m, y1 - m), ztoit)
 
-        for cote in cotes:
+    def toit_mansarde(self, rect, haut):
+        x0, y0, x1, y1 = rect
+        lx, ly, cx, cy, z0 = x1 - x0, y1 - y0, (x0 + x1) / 2, (y0 + y1) / 2, H_TROTTOIR
+        self.box("pierre", (lx + 0.4, ly + 0.4, 0.25), (cx, cy, z0 + haut - 0.125))  # corniche
+        self.box("zinc", (lx + 0.3, ly + 0.3, 2.4), (cx, cy, z0 + haut + 1.2),
+                 haut=(max(0.1, (lx - 1.8) / (lx + 0.3)), max(0.1, (ly - 1.8) / (ly + 0.3))))
+        z = z0 + haut + 2.4
+        self._acrotere(x0 + 0.9, y0 + 0.9, x1 - 0.9, y1 - 0.9, z, "zinc", 0.12, 0.4)
+        self._garnir_toit(rect, z, 1.6)
+
+    def toit_plat(self, rect, haut, mur):
+        x0, y0, x1, y1 = rect
+        lx, ly, cx, cy = x1 - x0, y1 - y0, (x0 + x1) / 2, (y0 + y1) / 2
+        z = H_TROTTOIR + haut + 0.1
+        self.box("toiture", (lx - 0.3, ly - 0.3, 0.1), (cx, cy, z - 0.05))
+        self._acrotere(x0, y0, x1, y1, z - 0.1, mur, 0.25, 0.7)
+        self._garnir_toit(rect, z, 1.5)
+
+    def toit_pignon(self, rect, haut, mur, cotes):
+        """Toit à deux pentes ; pignon à gradins flamand côté rue si le style le demande."""
+        x0, y0, x1, y1 = rect
+        lx, ly, cx, cy, z0 = x1 - x0, y1 - y0, (x0 + x1) / 2, (y0 + y1) / 2, H_TROTTOIR
+        cote = next((c for c in cotes if c in VISIBLES), cotes[0])
+        faitage_y = cote in "SN"  # le pignon regarde la rue
+        hr = min(5.0, (lx if faitage_y else ly) * 0.55)
+        self.box(self.choix("toits"), (lx + 0.3, ly + 0.3, hr), (cx, cy, z0 + haut + hr / 2),
+                 haut=(0.04, 1) if faitage_y else (1, 0.04))
+        # Souche de cheminée sur le faîtage : seul endroit plat d'un toit en pente. Son
+        # rebord sud et est cache à moitié ce qu'on y perche.
+        d = self.rng.uniform(-0.25, 0.25) * (ly if faitage_y else lx)
+        px, py = (cx, cy + d) if faitage_y else (cx + d, cy)
+        zs = z0 + haut + hr + 0.5
+        self.box("cheminee", (1.0, 1.0, hr + 0.5), (px, py, z0 + haut + (hr + 0.5) / 2))
+        self.box("cheminee", (1.0, 0.1, 0.2), (px, py - 0.45, zs + 0.1))
+        self.box("cheminee", (0.1, 1.0, 0.2), (px + 0.45, py, zs + 0.1))
+        self.slot("toit", px - 0.1 + self.rng.uniform(-0.1, 0.1), py + 0.1 + self.rng.uniform(-0.1, 0.1), zs)
+        if self.s["gradins"] and cote in VISIBLES:
             f = self._facade(rect, cote)
             long = f[3]
-            self._element(f, "vitrine", long / 2, long - 1.0, 0.05, 0.1, z0 + 1.6, 2.6)
-            if rng.random() < 0.6:
-                self._element(f, rng.choice(im["auvents"]), long / 2, long - 1.2, 0.6, 1.2, z0 + 3.2, 0.12)
-            k = max(1, int((long - 1) / 2.2))
-            for etage in range(n):
-                zf = z0 + rdc + etage * he
-                for i in range(k):
-                    self._element(f, "fenetre", (i + 0.5) * long / k, 1.0, 0.03, 0.06, zf + 1.5, 1.7)
-                if etage in (1, n - 2):  # balcons filants, 2e et avant-dernier étage
-                    self._element(f, "pierre", long / 2, long - 0.6, 0.4, 0.8, zf - 0.06, 0.12)
-                    self._element(f, "fer", long / 2, long - 0.6, 0.78, 0.05, zf + 0.225, 0.45)
-                    s = 0.8
-                    while s < long - 0.8:
-                        o = rng.uniform(0.25, 0.55)
-                        a, u, nrm, _ = f
-                        self.slot("balcon", a[0] + u[0] * s + nrm[0] * o, a[1] + u[1] * s + nrm[1] * o, zf)
-                        s += 1.3
+            for i in range(4):
+                demi = long / 2 * (1 - i / 4)
+                self._el(f, mur, long / 2 - demi, long / 2 + demi, -0.4, 0.06,
+                         z0 + haut + i * hr / 4, z0 + haut + (i + 1) * hr / 4 + (0.5 if i == 3 else 0))
+
+    # ---- immeubles et îlots -----------------------------------------------
+    def immeuble(self, rect, cotes, tour=False):
+        rng, s = self.rng, self.s
+        x0, y0, x1, y1 = rect
+        n = rng.randint(*(s["etages_tour"] if tour else s["etages"]))
+        haut = s["rdc"] + n * s["hauteur_etage"]
+        mur = self.choix("murs")
+        trim = self.choix("bandeaux") if s["bandeaux"] else mur
+        visibles = [c for c in cotes if c in VISIBLES]
+        self.lots.append(list(rect))
+        # noyau : en retrait de EP derrière chaque façade détaillée
+        nx1 = x1 - EP if "E" in visibles else x1
+        ny0 = y0 + EP if "S" in visibles else y0
+        self.box(mur, (nx1 - x0, y1 - ny0, haut), ((x0 + nx1) / 2, (ny0 + y1) / 2, H_TROTTOIR + haut / 2))
+        for c in visibles:
+            f = self._facade(rect, c)
+            self.facade(f, n, haut, mur, trim)
+            self.balcons(f, n)
+        toit = "plat" if tour or (s["toit"] == "pignon" and rng.random() < s["part_toit_plat"]) else s["toit"]
+        if toit == "mansarde":
+            self.toit_mansarde(rect, haut)
+        elif toit == "pignon":
+            self.toit_pignon(rect, haut, mur, cotes)
+        else:
+            self.toit_plat(rect, haut, mur)
 
     def _decoupe(self, a, b):
-        """Coupe [a, b] en 2 ou 3 lots de largeurs inégales."""
-        k = self.rng.choice([2, 3])
+        """Coupe [a, b] en lots de largeur proche de style.largeur_lot."""
+        k = max(1, round((b - a) / self.rng.uniform(*self.s["largeur_lot"])))
         pas = (b - a) / k
-        coupes = [a] + [a + pas * i + self.rng.uniform(-1.5, 1.5) for i in range(1, k)] + [b]
+        j = min(1.5, pas * 0.2)
+        coupes = [a] + [a + pas * i + self.rng.uniform(-j, j) for i in range(1, k)] + [b]
         return list(zip(coupes[:-1], coupes[1:]))
 
-    def ilot_bati(self, bx, by, bloc):
-        t, d = self.t["trottoir"], self.t["immeuble"]["profondeur"]
+    def ilot_bati(self, bx, by, bloc, fond):
+        """Immeubles en anneau autour d'une cour. fond : îlot du bord nord ou ouest (tours permises)."""
+        t, d = self.t["trottoir"], self.s["profondeur"]
         x0, y0, x1, y1 = bx + t, by + t, bx + bloc - t, by + bloc - t
+        tour = lambda: fond and self.rng.random() < self.s["tours"]  # noqa: E731
         sud, nord = self._decoupe(x0, x1), self._decoupe(x0, x1)
         for i, (a, b) in enumerate(sud):
             self.immeuble((a, y0, b, y0 + d), "S" + ("W" if i == 0 else "") + ("E" if i == len(sud) - 1 else ""))
         for i, (a, b) in enumerate(nord):
-            self.immeuble((a, y1 - d, b, y1), "N" + ("W" if i == 0 else "") + ("E" if i == len(nord) - 1 else ""))
-        self.immeuble((x0, y0 + d, x0 + d, y1 - d), "W")
-        self.immeuble((x1 - d, y0 + d, x1, y1 - d), "E")
+            self.immeuble((a, y1 - d, b, y1), "N" + ("W" if i == 0 else "") + ("E" if i == len(nord) - 1 else ""), tour())
+        for a, b in self._decoupe(y0 + d, y1 - d):
+            self.immeuble((x0, a, x0 + d, b), "W", tour())
+            self.immeuble((x1 - d, a, x1, b), "E")
         self._trottoirs(bx, by, bloc)
 
     def _trottoirs(self, bx, by, bloc):
-        rng, t, z = self.rng, self.t["trottoir"], H_TROTTOIR
+        rng, s, t, z = self.rng, self.s, self.t["trottoir"], H_TROTTOIR
         bandes = {  # côté -> fonction (s le long, o depuis la bordure) -> (x, y)
-            "S": lambda s, o: (bx + s, by + o),
-            "N": lambda s, o: (bx + s, by + bloc - o),
-            "W": lambda s, o: (bx + o, by + s),
-            "E": lambda s, o: (bx + bloc - o, by + s),
+            "S": lambda a, o: (bx + a, by + o),
+            "N": lambda a, o: (bx + a, by + bloc - o),
+            "W": lambda a, o: (bx + o, by + a),
+            "E": lambda a, o: (bx + bloc - o, by + a),
         }
         for cote, pt in bandes.items():
-            s = 2.0
-            while s < bloc - 2.0:
-                x, y = pt(s + rng.uniform(-0.6, 0.6), 0.8)
+            a = 2.0
+            while a < bloc - 2.0:
+                x, y = pt(a + rng.uniform(-0.6, 0.6), 0.7)
                 tirage = rng.random()
-                if tirage < 0.30:
+                if tirage < s["arbres"]:
                     self.arbre(x, y, z)
-                elif tirage < 0.40:
+                elif tirage < s["arbres"] + 0.10:
                     self.lampadaire(x, y, z)
-                elif tirage < 0.48:
+                elif tirage < s["arbres"] + 0.18:
                     self.banc(x, y, z, 0.0 if cote in "SN" else math.pi / 2)
-                elif tirage < 0.54:
+                elif tirage < s["arbres"] + 0.24:
                     self.poubelle(x, y, z)
-                s += 3.5
-            if cote in "SE":  # claustras de terrasse devant les façades visibles
-                s = 4.0
-                while s < bloc - 4.0:
-                    if rng.random() < 0.45:
-                        self.haie(*pt(s, 1.35), 2.6, cote == "S",
+                a += 3.5
+            if cote in VISIBLES:  # devant les façades visibles : étals ou claustras de terrasse
+                a = 4.0
+                while a < bloc - 4.0:
+                    tirage = rng.random()
+                    if tirage < s["etals"]:
+                        self.etal(*pt(a, t * 0.56), z, cote == "S")
+                    elif tirage < s["etals"] + 0.4:
+                        self.haie(*pt(a, t * 0.54), 2.6, cote == "S",
                                   mat=rng.choice(["bois", "vertfonce"]), ep=0.1, h=0.55)
-                    s += 5.0
+                    a += 5.0
             for _ in range(28):  # cachettes libres sur le trottoir
                 self.slot_sol(*pt(rng.uniform(0.5, bloc - 0.5), rng.uniform(0.3, t - 0.3)))
-            s = 3.5
-            while s < bloc - 3.0:  # stationnement le long de la bordure, côté chaussée
+            self.foule(s["foule"], lambda: pt(rng.uniform(0.5, bloc - 0.5), rng.uniform(0.3, t - 0.3)))
+            a = 3.5
+            while a < bloc - 4.5:  # stationnement le long de la bordure, côté chaussée
                 if rng.random() < 0.5:
-                    self.voiture(*pt(s, -1.2), le_long_de_x=cote in "SN")
-                s += 5.5
+                    typ = self.choix("vehicules")
+                    typ = "voiture" if typ == "bus" else typ
+                    a += self.vehicule(*pt(a, -1.3), le_long_de_x=cote in "SN", typ=typ) + 1.3
+                else:
+                    a += 5.5
 
-    # ---- square -----------------------------------------------------------
-    def ilot_square(self, bx, by, bloc):
-        rng, z = self.rng, H_TROTTOIR
-        cx, cy = bx + bloc / 2, by + bloc / 2
+    # ---- places centrales, une par ville ----------------------------------
+    def _place(self, bx, by, bloc, sol):
+        """Dalle de la place ; renvoie (cx, cy, z)."""
         m = 1.5
-        self.box("herbe", (bloc - 2 * m, bloc - 2 * m, 0.06), (cx, cy, z + 0.03))
+        self.box(sol, (bloc - 2 * m, bloc - 2 * m, 0.06), (bx + bloc / 2, by + bloc / 2, H_TROTTOIR + 0.03))
         self.herbes.append((bx + m, by + m, bx + bloc - m, by + bloc - m))
-        zh = z + 0.06
+        return bx + bloc / 2, by + bloc / 2, H_TROTTOIR + 0.06
 
-        self.cyl("pierre", 3.0, 0.5, (cx, cy, zh), seg=20, emprise=True)   # fontaine
-        self.cyl("eau", 2.6, 0.52, (cx, cy, zh), seg=20)
-        self.cyl("pierre", 0.4, 1.7, (cx, cy, zh), seg=8)
-        self.cyl("pierre", 1.0, 0.25, (cx, cy, zh + 1.7), r2=1.3, seg=12)
-        for _ in range(12):  # sur la margelle
-            a = rng.uniform(0, 2 * math.pi)
-            self.slot("sol", cx + 2.8 * math.cos(a), cy + 2.8 * math.sin(a), zh + 0.5)
-
-        for i in range(6):  # bancs en cercle
-            a = i * math.pi / 3 + 0.3
-            self.banc(cx + 5.5 * math.cos(a), cy + 5.5 * math.sin(a), zh, a + math.pi / 2)
-
-        kx, ky = bx + 5.0, by + bloc - 5.0  # kiosque
-        self.cyl("vertfonce", 1.2, 3.0, (kx, ky, zh), seg=8, emprise=True)
-        self.cyl("vertfonce", 1.6, 0.9, (kx, ky, zh + 3.0), r2=0.1, seg=8)
-        self.slot_derriere(kx, ky, 1.2, 3.5, n=5)
-
-        for i in range(6):  # terrasse de café
-            tx, ty = bx + bloc - 9.0 + (i % 3) * 3.0, by + 4.0 + (i // 3) * 3.2
-            self.cyl("fer", 0.05, 0.72, (tx, ty, zh), seg=6, emprise=True)
-            self.cyl("parasol2", 0.45, 0.04, (tx, ty, zh + 0.72), seg=10)
-            for dx in (-0.7, 0.7):
-                self.box("bois", (0.4, 0.4, 0.45), (tx + dx, ty, zh + 0.225), emprise=True)
-            if i % 2 == 0:
-                self.cyl("fer", 0.03, 2.3, (tx + 0.1, ty + 0.9, zh), seg=6, emprise=True)
-                self.cyl(rng.choice(["parasol1", "parasol2"]), 1.2, 0.4, (tx + 0.1, ty + 0.9, zh + 2.2), r2=0.0, seg=8)
-            self.slot_derriere(tx, ty, 0.5, 0.75, n=2)
-
-        for dx, dy, le_long_de_x in ((0, -9.5, True), (9.5, 0, False), (-6, -11.5, True), (11.5, 6, False)):
-            self.haie(cx + dx, cy + dy, 5.0, le_long_de_x)
-
-        arbres = 0
-        while arbres < 10:
+    def _animer_place(self, bx, by, bloc, cx, cy, z, arbres, gens, rayon_libre=7.5):
+        rng = self.rng
+        pose = 0
+        for _ in range(arbres * 20):
+            if pose == arbres:
+                break
             x, y = rng.uniform(bx + 2.5, bx + bloc - 2.5), rng.uniform(by + 2.5, by + bloc - 2.5)
-            if math.hypot(x - cx, y - cy) > 7.5 and self.libre(x, y):
-                self.arbre(x, y, zh)
-                arbres += 1
+            if math.hypot(x - cx, y - cy) > rayon_libre and self.libre(x, y):
+                self.arbre(x, y, z)
+                pose += 1
         for _ in range(140):
             self.slot_sol(rng.uniform(bx + 0.5, bx + bloc - 0.5), rng.uniform(by + 0.5, by + bloc - 0.5))
+        self.foule(gens, lambda: (rng.uniform(bx + 1, bx + bloc - 1), rng.uniform(by + 1, by + bloc - 1)))
+
+    def _terrasse(self, x, y, z, n=6):
+        rng = self.rng
+        for i in range(n):
+            tx, ty = x + (i % 3) * 3.0, y + (i // 3) * 3.2
+            self.cyl("fer", 0.05, 0.72, (tx, ty, z), seg=6, emprise=True)
+            self.cyl("blanc", 0.45, 0.04, (tx, ty, z + 0.72), seg=10)
+            for dx in (-0.7, 0.7):
+                self.box("bois", (0.4, 0.4, 0.45), (tx + dx, ty, z + 0.225), emprise=True)
+                if rng.random() < 0.5:
+                    self.buste(tx + dx, ty, z + 0.45)
+            if i % 2 == 0:
+                self.cyl("fer", 0.03, 2.3, (tx + 0.1, ty + 0.9, z), seg=6, emprise=True)
+                toile = self.toile()
+                self.cyl(toile[0], 1.2, 0.4, (tx + 0.1, ty + 0.9, z + 2.2), r2=0.0)
+            self.slot_derriere(tx, ty, 0.5, 0.75, n=2)
+
+    def square_paris(self, bx, by, bloc):
+        cx, cy, z = self._place(bx, by, bloc, "herbe")
+        self.fontaine(cx, cy, z)
+        for i in range(6):
+            a = i * math.pi / 3 + 0.3
+            self.banc(cx + 5.5 * math.cos(a), cy + 5.5 * math.sin(a), z, a + math.pi / 2)
+        kx, ky = bx + 5.0, by + bloc - 5.0  # kiosque
+        self.cyl("vertfonce", 1.2, 3.0, (kx, ky, z), emprise=True)
+        self.cyl("vertfonce", 1.6, 0.9, (kx, ky, z + 3.0), r2=0.1)
+        self.slot_derriere(kx, ky, 1.2, 3.5, n=5)
+        self._terrasse(bx + bloc - 9.0, by + 4.0, z)
+        for dx, dy, le_long_de_x in ((0, -9.5, True), (9.5, 0, False), (-6, -11.5, True), (11.5, 6, False)):
+            self.haie(cx + dx, cy + dy, 5.0, le_long_de_x)
+        self._animer_place(bx, by, bloc, cx, cy, z, 10, 45)
+
+    def square_new_york(self, bx, by, bloc):
+        cx, cy, z = self._place(bx, by, bloc, "herbe")
+        self.fontaine(cx, cy - 2, z)
+        self.arche(cx, by + bloc - 4.5, z, 8.0, 8.5, 2.2, "pierre")
+        for i in range(6):
+            a = i * math.pi / 3
+            self.banc(cx + 5.5 * math.cos(a), cy - 2 + 5.5 * math.sin(a), z, a + math.pi / 2)
+        for dx, dy in ((-8, -8), (8, -9), (9, 4)):  # chariots à hot-dogs
+            x, y = cx + dx, cy + dy
+            self.box("metal", (1.6, 0.9, 1.0), (x, y, z + 0.5), emprise=True)
+            self.cyl("fer", 0.03, 2.3, (x + 0.6, y, z), seg=6)
+            self.cyl(self.toile()[0], 1.2, 0.4, (x + 0.6, y, z + 2.2), r2=0.0)
+            self.slot_derriere(x, y, 0.8, 1.0)
+        self.haie(cx - 9, cy + 3, 5.0, False)
+        self.haie(cx + 3, cy - 10, 5.0, True)
+        self._animer_place(bx, by, bloc, cx, cy, z, 12, 60)
+
+    def square_lille(self, bx, by, bloc):
+        cx, cy, z = self._place(bx, by, bloc, "paves")
+        self.box("pierre", (2.4, 2.4, 1.2), (cx, cy, z + 0.6), emprise=True)  # colonne de la place
+        self.cyl("pierre", 0.5, 8.0, (cx, cy, z + 1.2))
+        self.sph("bronze", 0.7, (cx, cy, z + 9.8), (1, 1, 1.4))
+        self.slot_derriere(cx, cy, 1.2, 1.2, n=4)
+        tx, ty = bx + 5.5, by + bloc - 5.5  # beffroi, au fond pour ne rien masquer
+        self.box("brique", (5.0, 5.0, 20.0), (tx, ty, z + 10.0), emprise=True)
+        self.box("pierre", (5.4, 5.4, 0.6), (tx, ty, z + 20.3))
+        self.box("brique", (3.6, 3.6, 9.0), (tx, ty, z + 25.1))
+        self.box("blanc", (1.6, 0.1, 1.6), (tx, ty - 1.85, z + 26.5))  # horloge
+        self.box("blanc", (0.1, 1.6, 1.6), (tx + 1.85, ty, z + 26.5))
+        self.box("ardoise", (4.2, 4.2, 5.0), (tx, ty, z + 32.1), haut=(0.08, 0.08))
+        for i in range(10):  # braderie : deux rangées d'étals
+            self.etal(bx + 6.0 + (i % 5) * 4.2, by + 5.0 + (i // 5) * 5.0, z, True)
+        for dx, dy in ((7, 8), (-8, 2)):  # tas de coquilles de moules
+            self.cyl("ardoise", 0.9, 0.8, (cx + dx, cy + dy, z), r2=0.1, emprise=True)
+            self.slot_derriere(cx + dx, cy + dy, 0.9, 0.8, n=2)
+        self._terrasse(bx + bloc - 10.0, by + bloc - 9.0, z)
+        self._animer_place(bx, by, bloc, cx, cy, z, 3, 90, rayon_libre=4.0)
+
+    def square_delhi(self, bx, by, bloc):
+        cx, cy, z = self._place(bx, by, bloc, "terre_battue")
+        gy = by + bloc - 3.5  # porte monumentale en grès rouge, au fond
+        self.arche(cx, gy, z, 9.0, 9.0, 2.4, "gres")
+        for d in (-3.2, 0.0, 3.2):  # chhatris
+            self.sph("blanc", 0.8 if d else 1.1, (cx + d, gy, z + 9.9), (1, 1, 0.9))
+        self.arbre(bx + 4.5, by + 5.0, z, k=1.9)  # banyan
+        for i in range(6):
+            self.etal(bx + bloc - 4.0 - (i % 3) * 4.0, by + 4.0 + (i // 3) * 4.6, z, True)
+        for dx, dy in ((-3, 0), (2, 3)):
+            self.vache(cx + dx, cy + dy, z)
+        self._animer_place(bx, by, bloc, cx, cy, z, 2, 70, rayon_libre=3.0)
 
     # ---- ensemble ---------------------------------------------------------
     def construire(self):
-        t = self.t
+        t, s, rng = self.t, self.s, self.rng
         taille, n, rue = t["taille"], t["ilots"], t["rue"]
         bloc = (taille - n * rue) / n  # demi-rue en bordure de carte
         self.box("asphalte", (taille, taille, 0.2), (0, 0, -0.1))
@@ -341,18 +753,34 @@ class Plan:
             for by in origines:
                 self.box("trottoir", (bloc, bloc, H_TROTTOIR), (bx + bloc / 2, by + bloc / 2, H_TROTTOIR / 2))
                 self.blocs.append((bx, by, bx + bloc, by + bloc))
-        for c in origines[1:]:  # pointillés au milieu des rues intérieures
-            s = -self.demi + 2
-            while s < self.demi - 2:
-                self.box("marquage", (0.15, 1.6, 0.02), (c - rue / 2, s, 0.01))
-                self.box("marquage", (1.6, 0.15, 0.02), (s, c - rue / 2, 0.01))
-                s += 4.0
+        for c in origines[1:]:  # rues intérieures : pointillés, passages piétons, circulation
+            axe = c - rue / 2
+            a = -self.demi + 2
+            while a < self.demi - 2:
+                self.box("marquage", (0.15, 1.6, 0.02), (axe, a, 0.01))
+                self.box("marquage", (1.6, 0.15, 0.02), (a, axe, 0.01))
+                a += 4.0
+            for o in origines:  # zébras aux deux bouts de chaque îlot
+                for bout in (o + 1.8, o + bloc - 1.8):
+                    for k in range(int((rue - 1.5) / 1.3)):
+                        d = axe - rue / 2 + 1.0 + k * 1.3
+                        self.box("marquage", (0.6, 2.6, 0.02), (d, bout, 0.012))
+                        self.box("marquage", (2.6, 0.6, 0.02), (bout, d, 0.012))
+            for _ in range(s["trafic"]):
+                voie = rng.choice((-1, 1)) * rue * 0.2
+                o = rng.choice(origines)
+                a = rng.uniform(o + 5, o + bloc - 5)
+                if rng.random() < 0.5:
+                    self.vehicule(axe + voie, a, False)
+                else:
+                    self.vehicule(a, axe + voie, True)
+        square = getattr(self, "square_" + s["square"])
         for i, bx in enumerate(origines):
             for j, by in enumerate(origines):
                 if [i, j] == t["square"]:
-                    self.ilot_square(bx, by, bloc)
+                    square(bx, by, bloc)
                 else:
-                    self.ilot_bati(bx, by, bloc)
+                    self.ilot_bati(bx, by, bloc, fond=(i == 0 or j == n - 1))
         return {"prims": self.prims, "slots": self.slots, "lots": self.lots,
                 "blocs": [list(b) for b in self.blocs]}
 

@@ -3,7 +3,7 @@ import { creerPartie, precision, serialiser, taper, terminee } from '../src/part
 import { charger, cle, effacer, enregistrer } from '../src/sauvegarde.js';
 import { choisirCanard } from '../src/picking.js';
 import {
-  PPM_REVELATION, borner, creerVue, deplacer, estRevele, ppmMini, projeter, zoomer,
+  axesCamera, borner, creerVue, deplacer, estRevele, limitesCarte, ppmMini, ppmRevelation, projeter, zoomer,
 } from '../src/vue.js';
 
 const IDS = ['canard-01', 'canard-02', 'canard-03'];
@@ -134,13 +134,13 @@ describe('vue', () => {
     const v = creerVue(ecran, limites);
     expect(v.ppm).toBeCloseTo(ppmMini(ecran, limites));
     expect((limites.uMax - limites.uMin) * v.ppm).toBeLessThanOrEqual(ecran.w + 1e-6);
-    expect(estRevele(v)).toBe(false);
+    expect(estRevele(v, 0.35)).toBe(false);
   });
 
   it('révèle les canards à partir du seuil', () => {
-    expect(estRevele({ ppm: PPM_REVELATION - 0.1 })).toBe(false);
-    expect(estRevele({ ppm: PPM_REVELATION })).toBe(true);
-    expect(PPM_REVELATION * 0.5).toBe(28); // un canard de 0,5 m fait 28 px
+    expect(estRevele({ ppm: 79.9 }, 0.35)).toBe(false);
+    expect(estRevele({ ppm: 80 }, 0.35)).toBe(true); // un canard de 0,35 m fait alors 28 px
+    expect(ppmRevelation(0.5)).toBe(56); // un canard plus gros se révèle plus tôt
   });
 
   it('glisser à droite déplace la vue vers la gauche', () => {
@@ -165,6 +165,15 @@ describe('vue', () => {
     const b = borner({ u: 999, v: -999, ppm: 100 }, ecran, limites);
     expect(b.u).toBe(85);
     expect(b.v).toBe(-49);
+  });
+
+  it('déduit le zoom maximal du gabarit et les bornes de la carte', () => {
+    const axes = axesCamera([0.57735, 0.57735, 0.57735]);
+    const lim = limitesCarte(120, 30, axes, 0.35);
+    expect(lim.ppmMax).toBeCloseTo(120 / 0.35);
+    expect(lim.uMax).toBeCloseTo(84.85, 1);
+    expect(lim.uMin).toBeCloseTo(-84.85, 1);
+    expect(lim.vMax).toBeGreaterThan(lim.vMin);
   });
 
   it('projette un point du monde à l’écran', () => {

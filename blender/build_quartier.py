@@ -2,8 +2,9 @@
 
     blender --background --python blender/build_quartier.py -- --ville paris
 
-Le décor est un seul maillage, un slot par matériau de la palette : une poignée de
-draw calls côté app. Aucun objet jaune ici : canards et leurres viennent de props.glb.
+Deux maillages : « Quartier » (un slot par matériau de la palette) et « Vitres ».
+Le seul jaune du décor est le matériau « jaune » des gros leurres (taxis, stores) ;
+canards et petits leurres viennent de props.glb.
 """
 import os
 import sys
@@ -13,7 +14,7 @@ import bpy
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "blender"))
 
-from citygen.geo import Builder, register  # noqa: E402
+from citygen.geo import objet_rapide, register  # noqa: E402
 from citygen.layout import charger_theme, make_layout  # noqa: E402
 
 
@@ -31,10 +32,10 @@ def main():
     register(theme["palette"])
     col = bpy.data.collections.new("Quartier")
     bpy.context.scene.collection.children.link(col)
-    b = Builder("Quartier")
-    for p in plan["prims"]:
-        b.prim(p)
-    obj = b.build(col)
+    # Les vitres sont un objet à part : translucides côté app, et masquées pendant la
+    # mesure de visibilité (un rayon doit traverser une vitre).
+    obj = objet_rapide("Quartier", [p for p in plan["prims"] if p["mat"] != "verre"], col)
+    verre = objet_rapide("Vitres", [p for p in plan["prims"] if p["mat"] == "verre"], col)
     obj.data.calc_loop_triangles()
 
     blend = os.path.join(ROOT, "blender", "scenes", ville + ".blend")
@@ -43,6 +44,7 @@ def main():
     os.makedirs(os.path.dirname(glb), exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=blend)
     obj.select_set(True)
+    verre.select_set(True)
     bpy.ops.export_scene.gltf(filepath=glb, export_format="GLB", use_selection=True,
                               export_apply=True, export_yup=True)
     return {"ville": ville, "primitives": len(plan["prims"]),

@@ -1,0 +1,41 @@
+{
+  "id": "delhi",
+  "nom": "Delhi — Chandni Chowk",
+  "graine": 110006,
+  "ilots": 4,
+  "rue": 8,
+  "trottoir": 2.0,
+  "square": [1, 2],
+  "style": {
+    "square": "delhi",
+    "toit": "plat",
+    "balcons": "jharokha",
+    "etages": [2, 4],
+    "profondeur": 6,
+    "largeur_lot": [5, 8],
+    "murs": ["chaux", "terracotta", "sable", "turquoise", "rose_jaipur", "gres"],
+    "bandeaux": ["chaux", "sable"],
+    "auvents": ["v_rouge", "v_orange", "v_rose", "v_turquoise", "v_violet"],
+    "accents": ["v_turquoise", "v_rose", "v_orange", "chaux"],
+    "toit_extras": ["citerne", "citerne", "linge", "linge", "dome", "cabanon"],
+    "gens_sur_toits": 0.6,
+    "jardinieres_fenetre": 0.08,
+    "auvent": 0.8,
+    "toile_jaune": 0.15,
+    "etals": 0.5,
+    "arbres": 0.10,
+    "vehicules": ["rickshaw", "rickshaw", "rickshaw", "voiture", "bus"],
+    "bus": ["v_rouge", "v_vert"],
+    "trafic": 4,
+    "foule": 9
+  },
+  "palette": {
+    "chaux": "#F2E6D8",
+    "terracotta": "#D98C6A",
+    "sable": "#E8D5B5",
+    "turquoise": "#7FC8C0",
+    "rose_jaipur": "#E39AB0",
+    "asphalte": "#8A8078",
+    "trottoir": "#D6C4A8"
+  }
+}

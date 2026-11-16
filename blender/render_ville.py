@@ -26,7 +26,7 @@ def argument(nom, defaut):
 
 
 ville = argument("--ville", "paris")
-cible_id = argument("--canard", "canard-08")
+cible_id = argument("--canard", "")
 scene = bpy.context.scene
 placements = json.load(open(os.path.join(ROOT, "assets", "scenes", ville, "placements.json"), encoding="utf8"))
 
@@ -42,6 +42,7 @@ for p in placements["objets"]:
     o = bpy.data.objects.new(p["id"], modeles[p["type"]].data)
     o.location = (x, -z, y)
     o.rotation_euler = (0, 0, p["rotation"])
+    o.scale = (placements["echelle"],) * 3
     col.objects.link(o)
     if p["type"] == "Canard":
         canards.append(o)
@@ -88,13 +89,16 @@ def rendre(nom, cible, echelle, w, h, loin):
     scene.render.resolution_percentage = 100
     scene.render.filepath = os.path.join(ROOT, "docs", "previews", f"{ville}_{nom}.png")
     bpy.ops.render.render(write_still=True)
-    return {"px_par_objet": round(0.5 / echelle * w, 1)}
+    return {"px_par_objet": round(placements["gabarit"] / echelle * w, 1)}
 
 
+if not cible_id:  # par défaut : un canard derrière une vitre
+    cible_id = next((p["id"] for p in placements["objets"] if p["type"] == "Canard" and p["lieu"] == "vitre"),
+                    canards[0].name)
 cible = next(o for o in canards if o.name == cible_id).location
 result = {
     "ensemble": rendre("ensemble", (0, 0, 8), 178, 1600, 1250, True),
     "moyen": rendre("moyen", cible, 55, 1600, 1100, True),
-    "pres": rendre("pres", cible, 10, 1600, 1100, False),
+    "pres": rendre("pres", cible, 8, 1600, 1100, False),
 }
 print("RESULTAT", json.dumps(result))

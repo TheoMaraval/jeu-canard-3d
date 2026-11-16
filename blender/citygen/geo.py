@@ -4,6 +4,7 @@ import bpy
 from mathutils import Euler, Matrix, Vector
 
 PALETTE = {}  # nom de matériau -> (hex sRGB, rugosité)
+ALPHA = {"verre": 0.38}  # matériaux translucides
 
 
 def register(couleurs):
@@ -30,7 +31,14 @@ def material(name):
     bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
     bsdf.inputs["Roughness"].default_value = rough
     bsdf.inputs["Metallic"].default_value = 0.0
-    mat.diffuse_color = (*rgb, 1.0)
+    alpha = ALPHA.get(name, 1.0)
+    if alpha < 1.0:  # vitres : l'exporteur glTF écrit alphaMode BLEND
+        bsdf.inputs["Alpha"].default_value = alpha
+        try:
+            mat.surface_render_method = "BLENDED"
+        except AttributeError:
+            mat.blend_method = "BLEND"
+    mat.diffuse_color = (*rgb, alpha)
     return mat
 
 
@@ -86,9 +94,10 @@ class Builder:
         if p["t"] == "box":
             self.box(p["mat"], p["size"], p["pos"], (0, 0, p.get("rot", 0.0)), p.get("haut"))
         elif p["t"] == "cyl":
-            self.cone(p["mat"], p["r1"], p["r2"], p["h"], xf(p["pos"]), p.get("seg", 10))
+            self.cone(p["mat"], p["r1"], p["r2"], p["h"], xf(p["pos"]), p.get("seg", 8))
         elif p["t"] == "sph":
-            self.sphere(p["mat"], p["r"], xf(p["pos"], p.get("scale", (1, 1, 1))), u=10, v=6)
+            # 8 x 5 : arêtes sous 50 degrés, donc pas de trait d'encre sur les rondeurs
+            self.sphere(p["mat"], p["r"], xf(p["pos"], p.get("scale", (1, 1, 1))), u=8, v=5)
         else:
             raise ValueError(f"primitive inconnue : {p['t']}")
 
@@ -103,3 +112,20 @@ class Builder:
         obj.location.x = x
         collection.objects.link(obj)
         return obj
+
+
+def objet_rapide(nom, prims, collection):
+    """Maillage d'une liste de primitives sans bmesh (voir maillage.py) : coût linéaire."""
+    from .maillage import assembler
+
+    m = assembler(prims)
+    mesh = bpy.data.meshes.new(nom)
+    mesh.from_pydata(m["sommets"], [], m["faces"])
+    mesh.polygons.foreach_set("material_index", m["mats"])
+    mesh.polygons.foreach_set("use_smooth", m["lisses"])
+    for n in m["noms"]:
+        mesh.materials.append(material(n))
+    mesh.update()
+    obj = bpy.data.objects.new(nom, mesh)
+    collection.objects.link(obj)
+    return obj

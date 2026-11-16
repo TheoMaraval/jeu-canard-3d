@@ -118,6 +118,77 @@ relancer deux scripts ; l'écran de choix de ville reste hors périmètre v1.
 Rotation de caméra, indices, temps limité, classement, plusieurs scènes, sons, curation
 manuelle des cachettes, export Godot.
 
+## 9. Révision 2 : style dessiné, vitres, quatre quartiers, difficulté
+
+Retour de l'utilisateur après la première version jouable : décor trop « faux », envie
+d'un graphisme de scène fourmillante dessinée, de quartiers reconnaissables, de canards
+derrière des vitres, et jeu trop facile. Les sections 3 à 5 restent valables sauf mention
+contraire ci-dessous.
+
+### Style dessiné
+
+On s'inspire du genre (grande scène dessinée, dense, pleine de petits personnages), sans
+reprendre de personnage ni de dessin existant.
+
+- **Traits d'encre** : arêtes vives du décor (`EdgesGeometry`, seuil 50°) et coque noire
+  retournée autour de tout (silhouettes des rondeurs). Épaisseur constante à l'écran,
+  plus discrète en vue d'ensemble.
+- **Aplats** : matériaux Lambert, forte lumière d'ambiance, ombre portée à 40 %.
+  Fond couleur papier.
+- **Foule** : plusieurs centaines de passants (trois primitives chacun), bustes aux
+  fenêtres, gens sur les toits et les balcons.
+- **Détails** : stores et auvents rayés, étals, jardinières fleuries, volets, linge qui
+  sèche, passages piétons, circulation.
+- Pour que les rondeurs n'aient pas de traits parasites : cylindres à 8 segments et
+  sphères 8 × 5 au minimum (arêtes sous 50°).
+
+### Vitres
+
+- Le mur des façades visibles est une **peau de 0,6 m** devant le noyau de l'immeuble :
+  bandeaux horizontaux et trumeaux verticaux. Les trous sont de vraies niches, fermées
+  par une vitre translucide (objet `Vitres`, matériau `verre`).
+- Rez-de-chaussée : vitrine avec marchandises ; étages : fenêtres à croisée.
+- Nouveau lieu de cachette `vitre`, pour canards **et** leurres. La vitre teinte le jaune
+  de la même façon pour les deux.
+- La mesure de visibilité retire les vitres : un rayon les traverse.
+
+### Quatre quartiers
+
+Une ville = `themes/<id>.json` fusionné avec `themes/_commun.json`. L'architecture passe
+par `style` ; seul le contenu de la place centrale est une fonction par ville.
+
+| Ville | Bâti | Toits | Façades | Place | Rue |
+|---|---|---|---|---|---|
+| Paris, Grands Boulevards | 4 à 7 étages, pierre claire | mansardes en zinc, cheminées | balcons filants, volets | square, fontaine, kiosque, terrasse | camionnettes jaunes |
+| New York, Greenwich Village | brique et brownstone, tours au fond | plats, châteaux d'eau, clims | escaliers de secours | parc, arche, chariots | taxis jaunes, bus |
+| Lille, Vieux-Lille | maisons étroites, brique et ocre | pignons à gradins, tuile et ardoise | volets, jardinières | grand-place pavée, colonne, beffroi, braderie | étals |
+| Delhi, Chandni Chowk | bas, chaux et couleurs vives | terrasses : citernes, linge, dômes | jharokhas | bazar, porte en grès, vaches, banyan | rickshaws, étals |
+
+Les éléments hauts (tours, beffroi, porte) sont placés au nord et à l'ouest : ils ne
+masquent rien pour la caméra.
+
+### Difficulté (toutes valeurs à régler au playtest)
+
+| Levier | Avant | Maintenant |
+|---|---|---|
+| Taille des objets jaunes | 0,50 m | 0,35 m (`echelle_objets` 0,7) |
+| Seuil de révélation | 56 px/m | 80 px/m (toujours 28 px par canard) |
+| Leurres | 170 | 270 : 1 objet jaune sur 10 est un canard |
+| Visibilité des canards | 40 à 90 % | 30 à 80 % |
+| Jaune dans le décor | interdit | **gros leurres** : taxis, camionnettes, rickshaws, certains stores, à la teinte exacte des canards |
+| Leurres à silhouette de canard | aucun | arrosoir (corps + bec jaune), botte, ballon |
+| Bruit visuel | décor beige et vide | foule, couleurs vives, orange et ocre proches du jaune |
+
+**Changement de règle assumé** : « le décor n'est jamais jaune » devient « dans le décor,
+le jaune n'existe que sur de gros objets, à la teinte des canards ». Le jaune ne suffit
+plus à repérer un candidat : il faut chercher du *petit* jaune. Un test vérifie que seul
+le matériau `jaune` est jaune dans chaque palette.
+
+### Menu des villes
+
+Un menu déroulant dans l'interface liste `scenes.json`. La sauvegarde reste par ville.
+La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
+
 ## Journal des révisions
 
 - 2026-11-16 : première version.
@@ -138,3 +209,17 @@ manuelle des cachettes, export Godot.
   - pas d'inertie sur le déplacement en v1 ;
   - un tap sous le seuil de révélation ne trouve rien (anti-tapotage) ;
   - mesuré sur desktop : 48 draw calls. Fluidité iPad non mesurée.
+- 2026-11-16 : révision 2 (section 9) après retour de l'utilisateur : style dessiné,
+  vitres, quatre quartiers, difficulté relevée. Règle « décor jamais jaune » assouplie
+  aux gros objets. Version de scène 2.
+- 2026-11-16 : révision 2 réalisée. Écarts et mesures :
+  - matériaux toon à trois paliers plutôt que Lambert (recommandation des skills
+    `cartoon-style` / `stylized-style`) ; passants à proportions cartoon (4 têtes) ;
+  - le décor n'est plus maillé par bmesh mais par `citygen/maillage.py` (8 s au lieu de
+    plus de 7 min) ;
+  - « un canard par case » tient toujours, mais une case sans cachette à moitié visible
+    élargit sa plage par paliers (jamais sous 15 %) et le signale : 2 cases sur 120 ;
+  - toits en pente de Lille : souche de cheminée à rebord sur le faîtage, seule cachette
+    possible ;
+  - budget : ~90 draw calls et ~460 000 triangles par image à Paris, sous la cible ;
+    Delhi (192 000 triangles de décor) est à surveiller sur iPad ; GLB de 5,8 à 8 Mo.

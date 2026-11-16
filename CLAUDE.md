@@ -4,30 +4,50 @@ Version 3D de jeuFind (`../jeuFind`, prototype 2D de référence pour la boucle 
 
 ## But du joueur
 
-Trouver les **30 canards en plastique jaunes** cachés dans un quartier urbain dense et
-stylisé. Un canard trouvé passe en vert, +1 au compteur. Fin de partie à 30/30
+Trouver les **30 canards en plastique jaunes** cachés dans un quartier dessiné, dense et
+plein de monde, façon grande scène fourmillante. Quatre quartiers : Paris, New York,
+Lille, Delhi. Un canard trouvé passe en vert, +1 au compteur. Fin de partie à 30/30
 (temps, nombre de taps, précision). Pas de temps limité, pas de vies.
 
 ## Règles qui définissent le jeu
 
-- **Camouflage** : canards et leurres (taxi, parasol, plot, borne, boîte aux lettres,
-  jardinière, casque) partagent le même matériau jaune et le même gabarit. En vue
-  d'ensemble, impossible de les distinguer. Seuls le bec orange, l'œil noir et la
-  silhouette trahissent le canard, et seulement en zoomant.
+- **Camouflage** : canards et petits leurres (plot, borne, parasol, taxi miniature, boîte
+  aux lettres, jardinière, casque, arrosoir, botte, ballon) partagent le même matériau
+  jaune et le même gabarit. En vue d'ensemble, impossible de les distinguer. Seuls le bec
+  orange, l'œil noir et la silhouette trahissent le canard, et seulement en zoomant.
   Si un canard se distingue à zoom moyen, le jeu est cassé.
+- **Le jaune ne suffit pas** : le décor contient de gros objets jaunes (taxis,
+  camionnettes, rickshaws, stores) à la teinte exacte des canards. Aucune autre couleur
+  du décor n'est jaune (un test le vérifie pour chaque ville).
+- **Révélation** : le bec et l'œil ne sont affichés que lorsque le canard fait au moins
+  28 px à l'écran. En dessous, c'est une masse jaune (`Canard_Loin`).
+- **Un tap ne trouve un canard que si la vue est révélée.** Sinon il suffirait de tapoter
+  la vue d'ensemble. Tolérance : `max(rayon du canard à l'écran, 22 px)`.
 - **Pas de pénalité** pour un tap raté (leurre ou vide → rien).
-- **Un canard par position**, et les 30 couvrent toute la carte.
-- **Difficulté** : proportion de leurres (~15 % du décor, à régler au playtest) et zoom
-  auquel les détails du canard deviennent lisibles.
-- **Progression** sauvegardée localement, par scène.
+- **Un canard par case** d'une grille 6 × 5 : les 30 couvrent toute la carte.
+- **Cachettes** : sol, balcon, toit, et **derrière une vitre** (fenêtre ou vitrine).
+  Canard visible à 30–80 %, bec et un œil toujours tournés vers la caméra.
+- **Progression** sauvegardée localement, par ville et par version de scène.
 - **Plateformes** : iPad / tablette (pan, pinch, tap) et navigateur desktop.
+
+## Réglages de difficulté (`blender/themes/_commun.json`, surchargeables par ville)
+
+| Clé | Valeur | Effet |
+|---|---|---|
+| `echelle_objets` | 0,7 | canards et leurres de 0,35 m ; plus petit = plus de zoom nécessaire |
+| `leurres` | 270 | 1 objet jaune sur 10 est un canard |
+| `visibilite_canard` | 0,3–0,8 | part du canard visible depuis la caméra |
+| `style.toile_jaune` | 0,12 | part des stores et parasols jaunes |
+| `style.vehicules` | liste | plus de `taxi` / `camionnette` / `rickshaw` = plus de gros jaune |
+| `style.foule` | 7 à 11 | passants par trottoir ; plus de monde = plus de bruit et de cachettes |
+
+Tout est une valeur de départ : rien n'a été réglé par un vrai playtest.
 
 ## Gabarit des assets
 
-- La partie **jaune** de chaque asset tient dans un cube de **0,50 m** (`GABARIT`).
-- Un seul matériau jaune partagé : `MAT_Jaune` (#FFD21E, rugosité 0,45).
-- `blender/build_assets.py` construit le canard et 7 leurres, vérifie le gabarit et
-  échoue s'il est dépassé. Les valeurs sont un point de départ, pas un réglage mesuré.
+- La partie **jaune** de chaque modèle tient dans un cube de **0,50 m** (`GABARIT` dans
+  `build_assets.py`, qui échoue sinon) ; l'échelle de jeu est appliquée au placement.
+- Un seul matériau jaune partagé : `MAT_Jaune` (#FFD21E), identique au `jaune` du décor.
 
 ## Architecture
 
@@ -37,27 +57,37 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
 
 ## Arborescence
 
-- `blender/themes/<ville>.json` : tous les réglages d'une ville (taille, îlots, palette,
-  nombre de canards et de leurres, plages de visibilité, graine).
-- `blender/citygen/` : `layout.py` (plan du quartier) et `placement.py` (choix des
-  canards et leurres) en **Python pur, sans bpy** ; `geo.py` (primitives → maillage, bpy).
-- `blender/tests/` : tests `unittest` des modules purs.
+- `blender/themes/_commun.json` + `<ville>.json` : réglages partagés et propres à chaque
+  ville (palette, style architectural, difficulté, graine).
+- `blender/citygen/`, en **Python pur, sans bpy**, testé hors de Blender :
+  `layout.py` (plan du quartier → primitives + cachettes), `placement.py` (choix des
+  canards et leurres), `maillage.py` (primitives → sommets et faces).
+  `geo.py` est le seul module qui touche à bpy.
+- `blender/tests/` : 34 tests `unittest`.
 - `blender/build_assets.py`, `build_quartier.py`, `place_objets.py`, `render_ville.py` :
-  les quatre étapes du pipeline. `blender/*.blend` et `blender/scenes/` sont générés.
-- `assets/props.glb` : canard (`Canard`, `Canard_Loin`) et 7 leurres, communs aux villes.
-- `assets/scenes/<ville>/quartier.glb` + `placements.json` ; `assets/scenes.json` : index.
+  les quatre étapes ; `tout_generer.sh` les enchaîne. `blender/*.blend` et
+  `blender/scenes/` sont générés.
+- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres, communs aux villes.
+- `assets/scenes/<ville>/quartier.glb` (objets `Quartier` et `Vitres`) + `placements.json` ;
+  `assets/scenes.json` : index lu par l'app.
 - `app/` : application Vite + Three.js. `src/partie.js`, `sauvegarde.js`, `picking.js`,
-  `vue.js` sont purs et testés (`tests/logique.test.js`) ; `scene.js`, `entrees.js`,
-  `hud.js`, `main.js` portent Three.js et le DOM. `assets/` est servi à la racine.
-- `.claude/skills/` : 9 skills de `arjun988/blender-skills` (MIT).
-- `docs/superpowers/specs/` et `plans/` ; `docs/previews/` : rendus de contrôle.
+  `vue.js` sont purs et testés (`tests/logique.test.js`, 22 tests) ; `scene.js` (rendu
+  « dessin »), `entrees.js`, `hud.js`, `main.js` portent Three.js et le DOM.
+- `.claude/skills/` : 14 skills de `arjun988/blender-skills` (MIT). Style et personnages :
+  `cartoon-style`, `stylized-style` (référence NPR), `lowpoly-style`, `character-artist`,
+  `isometric-style`.
+- `docs/superpowers/specs/` et `plans/` ; `docs/previews/` : rendus Blender de contrôle
+  (sans traits d'encre : le style final ne se voit que dans l'app).
 
 ## Lancer
 
 Blender 5.3 n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`.
 
 ```bash
-python -m unittest discover -s blender/tests -t blender                                        # 22 tests
+python -m unittest discover -s blender/tests -t blender                                        # 34 tests
+bash blender/tout_generer.sh                 # tout : tests, props, les 4 villes, aperçus
+bash blender/tout_generer.sh lille           # une seule ville
+# ou étape par étape :
 blender --background --python blender/build_assets.py                                           # props
 blender --background --python blender/build_quartier.py -- --ville paris                        # décor
 blender --background blender/scenes/paris.blend --python blender/place_objets.py -- --ville paris   # placements
@@ -69,19 +99,27 @@ Après une modification du plan ou du thème : relancer décor, placements, aper
 ```bash
 cd app && npm install
 npm run dev     # http://localhost:5173 ; l'adresse « Network » affichée sert pour l'iPad (même Wi-Fi)
-npm test        # 21 tests
+npm test        # 22 tests
 npm run build
 ```
 
 Ville au choix : `http://localhost:5173/?ville=<id>` (par défaut la première de `scenes.json`).
 Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.partie()`.
 
-## Ajouter une ville
+## Ajouter ou modifier une ville
 
-Copier `blender/themes/paris.json` sous un nouvel `id`, changer palette, dimensions et
-graine, puis lancer `build_quartier`, `place_objets` et `render_ville` avec `--ville <id>`.
-Le décor ne doit contenir aucune couleur proche du jaune (un test le vérifie pour Paris).
-Un style de bâti vraiment différent (gratte-ciel, maisons) demande d'étendre `layout.py`.
+- Une ville = `blender/themes/<id>.json`, fusionné avec `_commun.json` (palette et style
+  hérités, la ville ne redéfinit que ce qui change).
+- L'architecture se règle dans `style` : `toit` (`mansarde` | `plat` | `pignon`),
+  `balcons` (`filants` | `secours` | `jharokha` | `aucun`), `gradins`, `toit_extras`
+  (`cheminee`, `chateau_eau`, `clim`, `citerne`, `cabanon`, `dome`, `linge`), `etages`,
+  `largeur_lot`, `tours`, `etals`, `vehicules`, `murs`, `bandeaux`, `volets`…
+- La place centrale est la seule partie codée par ville : `square_<nom>` dans `layout.py`.
+- Un élément nouveau (autre type de toit, autre véhicule) s'ajoute dans `layout.py` et
+  devient un mot-clé utilisable par toutes les villes.
+- Garder les éléments hauts au nord et à l'ouest (`fond=True`) : ailleurs ils masquent
+  tout ce qui est derrière eux pour la caméra.
+- Puis : `bash blender/tout_generer.sh <id>` et regarder `docs/previews/<id>_*.png`.
 
 ## Repères et caméra
 
@@ -90,30 +128,30 @@ Un style de bâti vraiment différent (gratte-ciel, maisons) demande d'étendre 
   façades sud et est, les toits et les trottoirs sud/est sont visibles : une cachette
   ailleurs a une visibilité nulle et est écartée automatiquement.
 
-## Règles ajoutées par la version 3D
+## Rendu « dessin » (app/src/scene.js)
 
-- **Révélation** : le bec et l'œil ne sont affichés qu'à partir de 56 px par mètre
-  (canard de 28 px). En dessous, le canard est une masse jaune (`Canard_Loin`).
-- **Un tap ne trouve un canard que si la vue est révélée.** Sinon il suffirait de tapoter
-  la vue d'ensemble. Tolérance : `max(rayon du canard à l'écran, 22 px)`.
-- **Orientation** : chaque canard montre son bec et au moins un œil à la caméra.
-- **Visibilité** : canard visible à 40–90 %, leurre à 40–100 %.
+- Matériaux toon à trois paliers, forte lumière d'ambiance, ombre portée à 40 %, fond papier.
+- Traits d'encre : arêtes vives du décor (`EdgesGeometry`, 50°) + coque noire retournée
+  autour de tout, d'épaisseur constante à l'écran.
+- Vitres : matériau `verre` translucide, rendu après les objets opaques.
+- Pour éviter des traits parasites sur les rondeurs : cylindres ≥ 8 segments, sphères 8 × 5.
 
 ## État
 
-- Fait : pipeline Blender pour Paris et application jouable (plans dans
-  `docs/superpowers/plans/`). 30 canards (10 balcon, 8 sol, 12 toit), 170 leurres.
-- Vérifié dans le navigateur de bureau : chargement, zoom, révélation, tap, compteur,
-  sauvegarde, canard vert après rechargement. 48 draw calls.
-- **Pas encore vérifié** : iPad réel (fluidité, pincement, tolérance du tap) et une partie
-  complète jusqu'à l'écran de fin. Tous les réglages sont des valeurs de départ.
-- Le serveur MCP `blender` (`localhost:9876`) n'est pas démarré : tout tourne en
-  `--background`. Le MCP ne sert que pour travailler dans Blender ouvert.
-- Limites connues : immeubles encore uniformes (pas de lucarnes ni de mobilier de toit) ;
-  leurres « sol uniquement » (taxi, borne, boîte aux lettres) sous-représentés (25 sur
-  170) ; juste sous le seuil de révélation, la silhouette à deux boules du canard peut
-  déjà le trahir (à juger au playtest : baisser le seuil ou simplifier `Canard_Loin`) ;
-  pas d'écran de choix de ville.
+- Fait : quatre villes générées et jouables (Paris, New York, Lille, Delhi), style
+  dessiné, vitres, passants cartoon, menu des villes.
+- Par ville : 30 canards (dont 6 à 11 derrière une vitre) et 270 leurres ; canards
+  visibles à 54–58 % en moyenne. Deux cases ont une plage de visibilité élargie
+  (New York E2, Lille C2), signalées dans `placements.json` (`assoupli`).
+- Vérifié dans le navigateur de bureau : les quatre villes se chargent sans erreur, zoom,
+  révélation, canard derrière une vitre, menu. Environ 90 draw calls et 460 000 triangles
+  par image (Paris) ; Delhi est la plus lourde (192 000 triangles de décor, GLB de 8 Mo).
+- **Pas encore vérifié** : iPad réel (fluidité avec ces volumes, pincement, tolérance du
+  tap) et une partie complète jusqu'à l'écran de fin. La difficulté n'a pas été jouée.
+- Le serveur MCP `blender` n'est pas utilisé : tout tourne en `--background`.
+- Limites connues : les aperçus Blender n'ont pas les traits d'encre ; les leurres
+  « sol uniquement » restent rares ; si l'iPad peine, premiers leviers : retirer la coque
+  du décor (garder celle des objets), baisser `style.foule`.
 
 ## Pièges connus
 
@@ -126,6 +164,14 @@ Un style de bâti vraiment différent (gratte-ciel, maisons) demande d'étendre 
   masque partiellement avant de toucher aux plages du thème.
 - Git Bash : les heredocs contenant des apostrophes ou des `\U` cassent. Écrire le script
   dans un fichier puis le lancer.
+- **Ne jamais supprimer `assets/scenes.json`** pendant une régénération : l'app affiche
+  « Impossible de lancer le jeu ». `place_objets.py` met à jour la ligne de sa ville.
+- `bmesh` ralentit à mesure que le maillage grossit (plus de 7 min pour Paris). Le décor
+  passe par `maillage.py` + `from_pydata` (8 s). `Builder` (bmesh) ne sert qu'aux props.
+- Vite renvoie `index.html` (code 200) pour un fichier absent : un JSON « illisible »
+  veut dire fichier manquant.
+- Des noms de skills cités de mémoire par un autre assistant (`toon-shading`,
+  `stylized-character`, `npr-shader`…) n'existent pas dans le dépôt : lister le dépôt.
 - En mode `--background`, la scène par défaut (cube, caméra) se retrouve dans le `.blend`
   sauvegardé si on ne repart pas d'une scène vide.
 

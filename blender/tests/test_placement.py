@@ -7,7 +7,7 @@ from citygen.placement import PlacementImpossible, cellule, choisir, valider
 THEME = charger_theme("paris")
 
 
-def slots_synthetiques(pas=2.0, graine=1):
+def slots_synthetiques(pas=1.5, graine=1):
     """Grille régulière de slots couvrant la carte, visibilités variées."""
     rng = random.Random(graine)
     demi = THEME["taille"] / 2
@@ -16,7 +16,7 @@ def slots_synthetiques(pas=2.0, graine=1):
     while x < demi:
         y = -demi + 1
         while y < demi:
-            out.append({"lieu": rng.choice(["sol", "sol", "balcon", "toit"]),
+            out.append({"lieu": rng.choice(["sol", "sol", "balcon", "toit", "vitre"]),
                         "pos": [x, y, 0.0], "rot": 0.0, "vis": rng.uniform(0.0, 1.0)})
             y += pas
         x += pas
@@ -36,15 +36,15 @@ class TestPlacement(unittest.TestCase):
 
     def test_comptes(self):
         self.assertEqual(len(self.canards), 30)
-        self.assertEqual(len(self.leurres), 170)
-        self.assertEqual(len({o["id"] for o in self.objets}), 200)
+        self.assertEqual(len(self.leurres), THEME["leurres"])
+        self.assertEqual(len({o["id"] for o in self.objets}), 30 + THEME["leurres"])
 
     def test_un_canard_par_case(self):
         self.assertEqual(len({o["zone"] for o in self.canards}), 30)
 
     def test_canards_dans_des_lieux_varies(self):
         for lieu in THEME["leurres_par_lieu"]:
-            self.assertGreaterEqual(sum(1 for o in self.canards if o["lieu"] == lieu), 8, lieu)
+            self.assertGreaterEqual(sum(1 for o in self.canards if o["lieu"] == lieu), 5, lieu)
 
     def test_plages_de_visibilite(self):
         lo, hi = THEME["visibilite_canard"]
@@ -91,6 +91,25 @@ class TestPlacement(unittest.TestCase):
         for o in canards:
             self.assertNotIn(tuple(o["pos"]), interdits)
             self.assertEqual(o["rot"], 1.25)
+
+    def test_case_difficile_plage_elargie_et_signalee(self):
+        slots = slots_synthetiques()
+        for s in slots:
+            if cellule(s["pos"], THEME) == "C3":
+                s["vis"] = 1.0  # rien d'à moitié caché dans cette case
+        canards = [o for o in choisir(slots, THEME) if o["type"] == "Canard"]
+        c3 = next(o for o in canards if o["zone"] == "C3")
+        self.assertEqual(c3["visibilite"], 1.0)
+        self.assertTrue(c3["assoupli"])
+        self.assertEqual(sum(1 for o in canards if o.get("assoupli")), 1)
+
+    def test_jamais_de_canard_invisible(self):
+        slots = slots_synthetiques()
+        for s in slots:
+            if cellule(s["pos"], THEME) == "C3":
+                s["vis"] = 0.1
+        with self.assertRaises(PlacementImpossible):
+            choisir(slots, THEME)
 
     def test_case_sans_candidat(self):
         slots = [s for s in slots_synthetiques() if cellule(s["pos"], THEME) != "C3"]

@@ -1,0 +1,36 @@
+{
+  "id": "lille",
+  "nom": "Lille — Vieux-Lille",
+  "graine": 59000,
+  "rue": 9,
+  "style": {
+    "square": "lille",
+    "toit": "pignon",
+    "part_toit_plat": 0.3,
+    "toits": ["tuile", "tuile", "ardoise"],
+    "gradins": true,
+    "balcons": "aucun",
+    "etages": [3, 4],
+    "largeur_lot": [5, 7],
+    "murs": ["brique", "brique_claire", "ocre", "creme", "rose_flamand"],
+    "bandeaux": ["creme", "pierre"],
+    "volets": ["volet_vert", "volet_bleu", "blanc"],
+    "auvents": ["v_rouge", "v_vert", "v_marine", "v_orange"],
+    "toit_extras": ["cheminee", "cheminee", "linge"],
+    "jardinieres_fenetre": 0.22,
+    "etals": 0.35,
+    "arbres": 0.15,
+    "vehicules": ["voiture", "voiture", "voiture", "camionnette"],
+    "trafic": 2,
+    "foule": 10
+  },
+  "palette": {
+    "brique_claire": "#C8553A",
+    "ocre": "#E0A85A",
+    "creme": "#F3E9D2",
+    "rose_flamand": "#E7A08A",
+    "volet_vert": "#3F8F6A",
+    "volet_bleu": "#4F86C6",
+    "asphalte": "#807C78"
+  }
+}

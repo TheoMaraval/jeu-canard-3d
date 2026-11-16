@@ -37,31 +37,31 @@ def argument(nom, defaut):
     return argv[argv.index(nom) + 1] if nom in argv else defaut
 
 
-def mesurer(scene, dg, slot):
+def mesurer(scene, dg, slot, k):
     """Recale le slot sur la surface et renvoie sa visibilité, ou None s'il est inutilisable."""
     p = Vector(slot["pos"])
     touche, point, *_ = scene.ray_cast(dg, p + Vector((0, 0, 0.6)), Vector((0, 0, -1)), distance=1.2)
     if not touche or abs(point.z - p.z) > 0.3:
         return None
     p.z = point.z
-    centre = p + Vector((0, 0, 0.22))
+    centre = p + Vector((0, 0, 0.22 * k))
     for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)):
-        if scene.ray_cast(dg, centre, Vector(d), distance=DEGAGEMENT)[0]:
+        if scene.ray_cast(dg, centre, Vector(d), distance=DEGAGEMENT * k)[0]:
             return None
-    slot["rot_canard"] = orientation_canard(scene, dg, p, slot["rot"])
-    libres = sum(1 for e in ECHANTILLONS if not scene.ray_cast(dg, p + e, VERS_CAMERA, distance=400)[0])
+    slot["rot_canard"] = orientation_canard(scene, dg, p, slot["rot"], k)
+    libres = sum(1 for e in ECHANTILLONS if not scene.ray_cast(dg, p + e * k, VERS_CAMERA, distance=400)[0])
     slot["pos"] = [round(p.x, 3), round(p.y, 3), round(p.z, 3)]
     return libres / len(ECHANTILLONS)
 
 
-def orientation_canard(scene, dg, p, graine):
+def orientation_canard(scene, dg, p, graine, k):
     """Rotation qui montre le bec et au moins un œil à la caméra, ou None.
 
     Sans cela un canard vu de dos serait indiscernable d'une boule jaune, même de près.
     """
     def visible(local, rot):
         c, s = math.cos(rot), math.sin(rot)
-        monde = p + Vector((local[0] * c - local[1] * s, local[0] * s + local[1] * c, local[2]))
+        monde = p + k * Vector((local[0] * c - local[1] * s, local[0] * s + local[1] * c, local[2]))
         return not scene.ray_cast(dg, monde, VERS_CAMERA, distance=400)[0]
 
     depart = int(graine * 1000) % len(ECARTS)  # varie l'angle essayé en premier
@@ -75,18 +75,24 @@ def orientation_canard(scene, dg, p, graine):
 def gltf(o):
     x, y, z = o["pos"]
     return {"id": o["id"], "type": o["type"], "position": [x, round(z, 3), round(-y, 3)],
-            "rotation": o["rot"], "visibilite": o["visibilite"], "lieu": o["lieu"], "zone": o["zone"]}
+            "rotation": o["rot"], "visibilite": o["visibilite"], "lieu": o["lieu"], "zone": o["zone"],
+            **({"assoupli": o["assoupli"]} if o.get("assoupli") else {})}
 
 
 def main():
     ville = argument("--ville", "paris")
     theme = charger_theme(ville)
+    k = theme["echelle_objets"]
     scene = bpy.context.scene
+    vitres = bpy.data.objects.get("Vitres")
+    if vitres:  # un rayon doit traverser les vitres : on les retire de la scène mesurée
+        bpy.data.objects.remove(vitres, do_unlink=True)
     dg = bpy.context.evaluated_depsgraph_get()
+    dg.update()
 
     slots = []
     for s in make_layout(theme)["slots"]:
-        vis = mesurer(scene, dg, s)
+        vis = mesurer(scene, dg, s, k)
         if vis is not None:
             s["vis"] = vis
             slots.append(s)
@@ -110,6 +116,7 @@ def main():
             "ville": ville, "version": theme["version"], "graine": theme["graine"],
             "repere": "glTF : Y vers le haut, mètres, carte centrée sur l'origine",
             "taille": theme["taille"],
+            "echelle": k, "gabarit": round(0.5 * k, 3),
             "camera": {"azimut": AZIMUT, "elevation": ELEVATION,
                        "vers_camera": [round(VERS_CAMERA.x, 5), round(VERS_CAMERA.z, 5), round(-VERS_CAMERA.y, 5)]},
             "objets": [gltf(o) for o in objets],
@@ -118,9 +125,11 @@ def main():
     index = os.path.join(ROOT, "assets", "scenes.json")
     scenes = json.load(open(index, encoding="utf8")) if os.path.exists(index) else []
     scenes = [s for s in scenes if s["id"] != ville]
-    scenes.append({"id": ville, "nom": theme["nom"], "version": theme["version"]})
+    scenes.append({"id": ville, "nom": theme["nom"], "version": theme["version"],
+                   "ordre": ["paris", "new_york", "lille", "delhi"].index(ville) if ville in
+                   ["paris", "new_york", "lille", "delhi"] else 99})
     with open(index, "w", encoding="utf8") as f:
-        json.dump(sorted(scenes, key=lambda s: s["id"]), f, ensure_ascii=False, indent=1)
+        json.dump(sorted(scenes, key=lambda s: (s.get("ordre", 99), s["id"])), f, ensure_ascii=False, indent=1)
 
     canards = [o for o in objets if o["type"] == CANARD]
     lo, hi = theme["visibilite_canard"]
@@ -136,6 +145,7 @@ def main():
         "leurres_par_lieu": par([o for o in objets if o["type"] != CANARD], "lieu"),
         "leurres_par_type": par([o for o in objets if o["type"] != CANARD], "type"),
         "slots_ou_la_tete_se_voit": sum(1 for s in slots if s["rot_canard"] is not None),
+        "canards_plage_elargie": {o["zone"]: o["visibilite"] for o in canards if o.get("assoupli")},
         "visibilite_moyenne_canards": round(sum(o["visibilite"] for o in canards) / len(canards), 2),
         "leurres_dans_plage_canard": sum(1 for o in objets if o["type"] != CANARD and lo <= o["visibilite"] <= hi),
     }

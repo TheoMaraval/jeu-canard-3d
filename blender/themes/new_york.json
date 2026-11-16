@@ -1,0 +1,36 @@
+{
+  "id": "new_york",
+  "nom": "New York — Greenwich Village",
+  "graine": 10014,
+  "rue": 14,
+  "style": {
+    "square": "new_york",
+    "toit": "plat",
+    "balcons": "secours",
+    "etages": [4, 6],
+    "etages_tour": [9, 13],
+    "tours": 0.45,
+    "hauteur_etage": 3.2,
+    "largeur_lot": [7, 10],
+    "murs": ["brique1", "brique2", "brique3", "brownstone", "calcaire"],
+    "bandeaux": ["calcaire", "linteau"],
+    "auvents": ["v_rouge", "v_vert", "v_marine"],
+    "toit_extras": ["chateau_eau", "chateau_eau", "clim", "cabanon", "cheminee"],
+    "jardinieres_fenetre": 0.06,
+    "toile_jaune": 0.10,
+    "arbres": 0.22,
+    "vehicules": ["voiture", "voiture", "voiture", "taxi", "taxi", "taxi", "bus"],
+    "bus": ["v_bleu", "blanc"],
+    "trafic": 5,
+    "foule": 9
+  },
+  "palette": {
+    "brique1": "#B5533C",
+    "brique2": "#9C4A35",
+    "brique3": "#C46A4A",
+    "brownstone": "#8A5A44",
+    "calcaire": "#E3D6BC",
+    "linteau": "#F0E8D6",
+    "asphalte": "#5F636E"
+  }
+}

@@ -4,10 +4,13 @@
 //        (u vers la droite de l'écran, v vers le haut).
 // ppm  : pixels par mètre. C'est le zoom.
 
-export const GABARIT_M = 0.5;
-export const PPM_REVELATION = 28 / GABARIT_M; // bec et œil affichés quand le canard fait 28 px
+// `gabarit` : taille d'un canard en mètres, lue dans placements.json (elle dépend de la ville).
+export const PX_REVELATION = 28; // bec et œil affichés quand le canard fait au moins 28 px
+export const PX_MAX = 120; // taille du canard au zoom maximal
 
-export const estRevele = (vue) => vue.ppm >= PPM_REVELATION;
+export const ppmRevelation = (gabarit) => PX_REVELATION / gabarit;
+
+export const estRevele = (vue, gabarit) => vue.ppm >= ppmRevelation(gabarit);
 
 /** Zoom le plus large : toute la carte tient à l'écran. */
 export const ppmMini = (ecran, lim) =>
@@ -63,7 +66,8 @@ export function axesCamera(versCamera) {
 }
 
 /** Bornes de la vue pour une carte carrée de côté `taille` et des toits jusqu'à `hauteurMax`. */
-export function limitesCarte(taille, hauteurMax, axes, ppmMax = 120 / GABARIT_M) {
+export function limitesCarte(taille, hauteurMax, axes, gabarit) {
+  const ppmMax = PX_MAX / gabarit;
   const d = taille / 2;
   const us = [];
   const vs = [];
