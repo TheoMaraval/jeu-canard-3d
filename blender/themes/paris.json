@@ -1,0 +1,70 @@
+{
+  "id": "paris",
+  "nom": "Paris",
+  "version": 1,
+  "graine": 20261116,
+
+  "taille": 120,
+  "ilots": 3,
+  "rue": 12,
+  "trottoir": 2.5,
+  "square": [1, 1],
+
+  "immeuble": {
+    "profondeur": 8,
+    "etages": [4, 7],
+    "hauteur_etage": 3.0,
+    "rdc": 4.0,
+    "murs": ["mur1", "mur2", "mur3", "mur4"],
+    "auvents": ["auvent1", "auvent2", "auvent3"],
+    "voitures": ["voiture1", "voiture2", "voiture3", "voiture4", "voiture5"]
+  },
+
+  "palette": {
+    "asphalte": "#3A3D42",
+    "trottoir": "#B9B6AE",
+    "marquage": "#E9E9E4",
+    "mur1": "#E8DCC4",
+    "mur2": "#DCCFB4",
+    "mur3": "#EFE6D2",
+    "mur4": "#D5C4A6",
+    "pierre": "#C9C4B8",
+    "zinc": "#6E7B8B",
+    "cheminee": "#A9573A",
+    "fenetre": "#3B4756",
+    "vitrine": "#2E3238",
+    "fer": "#24262B",
+    "auvent1": "#A8322D",
+    "auvent2": "#2F5D46",
+    "auvent3": "#27406B",
+    "herbe": "#6FA35A",
+    "feuillage": "#4F8A45",
+    "feuillage2": "#3F7A4A",
+    "tronc": "#6B4A32",
+    "bois": "#8A6A46",
+    "eau": "#5AA7C8",
+    "vertfonce": "#254D3A",
+    "lampe": "#F4F1E0",
+    "voiture1": "#B33A3A",
+    "voiture2": "#3A5FA8",
+    "voiture3": "#E6E6E6",
+    "voiture4": "#6D7178",
+    "voiture5": "#2F6F5E",
+    "parasol1": "#C0392B",
+    "parasol2": "#F0EDE5"
+  },
+
+  "canards": 30,
+  "grille": [6, 5],
+  "leurres": 170,
+  "visibilite_canard": [0.4, 0.9],
+  "visibilite_leurre": [0.4, 1.0],
+  "distance_min": 1.5,
+  "distance_min_canards": 6.0,
+  "leurres_par_lieu": {
+    "sol": ["Leurre_Plot", "Leurre_BorneIncendie", "Leurre_Parasol", "Leurre_Taxi",
+            "Leurre_BoiteAuxLettres", "Leurre_Jardiniere", "Leurre_CasqueChantier"],
+    "balcon": ["Leurre_Jardiniere", "Leurre_Parasol", "Leurre_CasqueChantier", "Leurre_Plot"],
+    "toit": ["Leurre_Parasol", "Leurre_CasqueChantier", "Leurre_Plot", "Leurre_Jardiniere"]
+  }
+}

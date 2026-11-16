@@ -2,7 +2,7 @@
 
 Lancement :
     blender --background --python blender/build_assets.py
-ou coller dans Blender (MCP execute_blender_code) : ROOT sert alors de repli.
+ou coller dans Blender (MCP execute_blender_code), Blender lancé depuis la racine du projet.
 
 Règle de camouflage : la masse JAUNE de chaque asset tient dans un cube de
 GABARIT mètres de côté et utilise le même matériau MAT_Jaune. Le script le
@@ -10,14 +10,16 @@ vérifie et échoue sinon.
 """
 import math
 import os
+import sys
 
-import bmesh
 import bpy
-from mathutils import Euler, Matrix, Vector
 
-ROOT = r"C:\Users\TMARAVAL\code\jeu-canard-3D"
-if "__file__" in globals():
-    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Sans __file__ (code collé via MCP), lancer Blender depuis la racine du projet.
+ROOT = (os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if "__file__" in globals() else os.getcwd())
+sys.path.insert(0, os.path.join(ROOT, "blender"))
+
+from citygen.geo import Builder, register, xf  # noqa: E402
 
 GABARIT = 0.50  # m — côté du cube englobant la partie jaune
 TOL = 0.005
@@ -33,97 +35,26 @@ COULEURS = {  # nom -> (sRGB hex, rugosité)
     "MAT_Vert": ("#3E8E41", 0.70),
 }
 J, O, N, G, B, T, V = COULEURS  # raccourcis, dans l'ordre du dict
-
-
-def srgb_to_linear(c):
-    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-
-
-def material(name):
-    mat = bpy.data.materials.get(name) or bpy.data.materials.new(name)
-    hexa, rough = COULEURS[name]
-    rgb = [srgb_to_linear(int(hexa[i:i + 2], 16) / 255) for i in (1, 3, 5)]
-    if mat.node_tree is None:  # Blender < 5 : arbre absent tant que use_nodes est faux
-        mat.use_nodes = True
-    tree = mat.node_tree
-    tree.nodes.clear()  # Blender 5 : l'arbre existe mais peut être vide
-    bsdf = tree.nodes.new("ShaderNodeBsdfPrincipled")
-    out = tree.nodes.new("ShaderNodeOutputMaterial")
-    tree.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
-    bsdf.inputs["Roughness"].default_value = rough
-    bsdf.inputs["Metallic"].default_value = 0.0
-    mat.diffuse_color = (*rgb, 1.0)
-    return mat
-
-
-def xf(loc=(0, 0, 0), scale=(1, 1, 1), rot=(0, 0, 0)):
-    return Matrix.LocRotScale(Vector(loc), Euler(rot), Vector(scale))
-
-
-class Builder:
-    """Assemble des primitives dans un seul maillage, un slot par matériau."""
-
-    def __init__(self, name):
-        self.name = name
-        self.bm = bmesh.new()
-        self.slots = []
-
-    def _finish(self, verts, mat, matrix, smooth):
-        bmesh.ops.transform(self.bm, matrix=matrix, verts=verts)
-        if mat not in self.slots:
-            self.slots.append(mat)
-        idx = self.slots.index(mat)
-        for f in {f for v in verts for f in v.link_faces}:
-            f.material_index = idx
-            f.smooth = smooth
-
-    def sphere(self, mat, r, matrix, half=False, u=16, v=8):
-        verts = bmesh.ops.create_uvsphere(self.bm, u_segments=u, v_segments=v, radius=r)["verts"]
-        if half:  # ne garde que l'hémisphère haut
-            low = [x for x in verts if x.co.z < -1e-6]
-            bmesh.ops.delete(self.bm, geom=low, context="VERTS")
-            verts = [x for x in verts if x.is_valid]
-        self._finish(verts, mat, matrix, True)
-
-    def cone(self, mat, r1, r2, depth, matrix, seg=16):
-        verts = bmesh.ops.create_cone(
-            self.bm, cap_ends=True, cap_tris=False, segments=seg,
-            radius1=r1, radius2=r2, depth=depth)["verts"]
-        self._finish(verts, mat, matrix, False)
-
-    def cyl(self, mat, r, depth, matrix, seg=16):
-        self.cone(mat, r, r, depth, matrix, seg)
-
-    def box(self, mat, size, matrix_loc, rot=(0, 0, 0)):
-        verts = bmesh.ops.create_cube(self.bm, size=1.0)["verts"]
-        self._finish(verts, mat, xf(matrix_loc, size, rot), False)
-
-    def build(self, collection, x):
-        bmesh.ops.recalc_face_normals(self.bm, faces=self.bm.faces)
-        mesh = bpy.data.meshes.new(self.name)
-        self.bm.to_mesh(mesh)
-        self.bm.free()
-        for m in self.slots:
-            mesh.materials.append(material(m))
-        obj = bpy.data.objects.new(self.name, mesh)
-        obj.location.x = x
-        collection.objects.link(obj)
-        return obj
-
+register(COULEURS)
 
 H = math.pi / 2  # quart de tour
 
 
-def canard():
-    b = Builder("Canard")
+def canard(detail=True):
+    """detail=False : niveau « loin », sans bec ni yeux (camouflage à zoom moyen)."""
+    b = Builder("Canard" if detail else "Canard_Loin")
     b.sphere(J, 1, xf((0, 0, 0.13), (0.22, 0.16, 0.13)))            # corps
     b.sphere(J, 0.11, xf((0.12, 0, 0.33)))                           # tête
     b.cone(J, 0.07, 0.0, 0.12, xf((-0.19, 0, 0.21), rot=(0, -math.radians(60), 0)))  # queue
-    b.cone(O, 0.05, 0.02, 0.10, xf((0.25, 0, 0.31), (0.5, 1, 1), (0, H, 0)))         # bec
-    for y in (0.07, -0.07):
-        b.sphere(N, 0.022, xf((0.19, y, 0.37)), u=8, v=6)            # yeux
+    if detail:
+        b.cone(O, 0.05, 0.02, 0.10, xf((0.25, 0, 0.31), (0.5, 1, 1), (0, H, 0)))     # bec
+        for y in (0.07, -0.07):
+            b.sphere(N, 0.022, xf((0.19, y, 0.37)), u=8, v=6)        # yeux
     return b
+
+
+def canard_loin():
+    return canard(detail=False)
 
 
 def plot():
@@ -189,7 +120,7 @@ def casque():
     return b
 
 
-ASSETS = [canard, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
+ASSETS = [canard, canard_loin, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
 
 
 def taille_jaune(obj):

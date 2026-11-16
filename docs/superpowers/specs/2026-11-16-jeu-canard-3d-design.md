@@ -1,6 +1,6 @@
 # jeu-canard-3D — conception
 
-Date : 2026-11-16. Statut : **en attente de relecture**.
+Date : 2026-11-16. Statut : **approuvée**.
 
 ## 1. Objectif
 
@@ -66,6 +66,22 @@ d'emplacements, sinon le lieu trahirait le canard.
 
 Les scripts Blender ne communiquent avec l'app que par les trois fichiers de `assets/`.
 
+### Plusieurs villes
+
+Une ville = un **thème** + une **graine**. Rien de propre à Paris n'est codé en dur.
+
+- `blender/themes/<ville>.json` : dimensions, taille des îlots, hauteurs et palette des
+  immeubles, forme des toits, mobilier, mélange de leurres, graine.
+- `build_quartier.py` et `place_objets.py` prennent `--ville <id>` et écrivent dans
+  `assets/scenes/<id>/` (`quartier.glb`, `placements.json`).
+- `assets/scenes.json` liste les villes disponibles (id, nom, version). L'app charge la
+  ville demandée (`?ville=<id>`, sinon la première) ; la sauvegarde est indexée par
+  `id` + `version`.
+- `props.glb` (canard et leurres) est commun à toutes les villes.
+
+v1 livre une seule ville (`paris`). Ajouter une ville = écrire un fichier de thème et
+relancer deux scripts ; l'écran de choix de ville reste hors périmètre v1.
+
 ## 5. Budget de performance (cible iPad, à mesurer)
 
 - 60 images/s, < 150 draw calls, < 500 000 triangles, GLB total < 10 Mo.
@@ -94,3 +110,5 @@ manuelle des cachettes, export Godot.
 ## Journal des révisions
 
 - 2026-11-16 : première version.
+- 2026-11-16 : approuvée par l'utilisateur. Ajout de « Plusieurs villes » (thème + graine,
+  `assets/scenes/<id>/`) : la structure multi-villes entre dans la v1, l'écran de choix non.
