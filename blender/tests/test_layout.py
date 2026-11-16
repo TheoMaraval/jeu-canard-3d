@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from citygen.layout import charger_theme, make_layout, villes
+from citygen.layout import KIT, charger_theme, make_layout, villes
 from citygen.placement import cellule
 
 VILLES = villes()
@@ -63,8 +63,25 @@ class TestLayout(unittest.TestCase):
 
     def test_des_passants(self):
         for v, theme, plan in self.pour_chaque_ville():
-            peaux = set(theme["style"]["peaux"])
-            self.assertGreaterEqual(sum(1 for p in plan["prims"] if p["t"] == "sph" and p["mat"] in peaux), 250)
+            persos = [i for i in plan["insts"] if i["type"].startswith("Perso_")]
+            self.assertGreaterEqual(len(persos), 250, v)
+            self.assertGreaterEqual(len({i["type"] for i in persos}), 6, v)  # poses variées
+            self.assertTrue(any(i["type"] == "Perso_Buste" for i in persos))  # des gens aux fenêtres
+
+    def test_instances_du_kit(self):
+        for v, theme, plan in self.pour_chaque_ville():
+            demi = theme["taille"] / 2
+            for i in plan["insts"]:
+                self.assertIn(i["type"], KIT)
+                self.assertLess(abs(i["pos"][0]), demi, i)
+                self.assertLess(abs(i["pos"][1]), demi, i)
+                for role, couleur in i["c"].items():
+                    self.assertIn(couleur, theme["palette"], f"{v} : {i['type']}.{role}")
+
+    def test_gros_leurres_jaunes(self):
+        for v, theme, plan in self.pour_chaque_ville():
+            jaunes = [i for i in plan["insts"] if "jaune" in i["c"].values()]
+            self.assertGreaterEqual(len(jaunes), 8, v)
 
     def test_assez_de_slots_partout(self):
         for v, theme, plan in self.pour_chaque_ville():
@@ -89,10 +106,14 @@ class TestLayout(unittest.TestCase):
 
     def test_chaque_ville_a_son_architecture(self):
         mats = {v: {p["mat"] for p in PLANS[v]["prims"]} for v in VILLES}
+        types = {v: {i["type"] for i in PLANS[v]["insts"]} for v in VILLES}
         self.assertIn("zinc", mats["paris"])            # toits mansardés
         self.assertIn("bois", mats["new_york"])         # châteaux d'eau
+        self.assertIn("Taxi", types["new_york"])
         self.assertIn("tuile", mats["lille"])           # toits à pignon
+        self.assertIn("Etal", types["lille"])           # braderie
         self.assertIn("citerne", mats["delhi"])         # citernes sur les toits-terrasses
+        self.assertLessEqual({"Rickshaw", "Vache"}, types["delhi"])
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ filtre='Traceback|Error|  File|RESULTAT|DIAGNOSTIC|Impossible|gabarit'
 
 python -m unittest discover -s blender/tests -t blender 2>&1 | tail -1
 "$B" --background --python blender/build_assets.py 2>&1 | grep -E "$filtre" | cut -c1-200
+"$B" --background --python blender/build_kit.py 2>&1 | grep -E "$filtre|assert" | cut -c1-200
 villes=("$@")
 [ ${#villes[@]} -eq 0 ] && villes=(paris new_york lille delhi)
 for v in "${villes[@]}"; do

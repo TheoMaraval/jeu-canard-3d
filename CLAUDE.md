@@ -60,36 +60,53 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
 - `blender/themes/_commun.json` + `<ville>.json` : réglages partagés et propres à chaque
   ville (palette, style architectural, difficulté, graine).
 - `blender/citygen/`, en **Python pur, sans bpy**, testé hors de Blender :
-  `layout.py` (plan du quartier → primitives + cachettes), `placement.py` (choix des
-  canards et leurres), `maillage.py` (primitives → sommets et faces).
-  `geo.py` est le seul module qui touche à bpy.
-- `blender/tests/` : 34 tests `unittest`.
-- `blender/build_assets.py`, `build_quartier.py`, `place_objets.py`, `render_ville.py` :
-  les quatre étapes ; `tout_generer.sh` les enchaîne. `blender/*.blend` et
-  `blender/scenes/` sont générés.
-- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres, communs aux villes.
-- `assets/scenes/<ville>/quartier.glb` (objets `Quartier` et `Vitres`) + `placements.json` ;
-  `assets/scenes.json` : index lu par l'app.
+  `layout.py` (plan du quartier → primitives du bâti, instances du kit, cachettes),
+  `placement.py` (choix des canards et leurres), `maillage.py` (primitives → sommets et
+  faces). `geo.py` est le seul module qui touche à bpy.
+- `blender/tests/` : 36 tests `unittest`.
+- Étapes du pipeline, enchaînées par `tout_generer.sh` :
+  `build_assets.py` (canard et leurres) → `build_kit.py` (personnages, véhicules, arbres,
+  mobilier) → `build_quartier.py` → `place_objets.py` → `render_ville.py`.
+  `blender/*.blend` et `blender/scenes/` sont générés.
+- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres. `assets/kit.glb` : 28 modèles
+  instanciés. Les deux sont communs aux villes.
+- `assets/scenes/<ville>/` : `quartier.glb` (objets `Quartier` et `Vitres` : le bâti),
+  `decor.json` (instances du kit : type, position, rotation, échelle, teintes),
+  `placements.json` (canards et leurres). `assets/scenes.json` : index lu par l'app.
 - `app/` : application Vite + Three.js. `src/partie.js`, `sauvegarde.js`, `picking.js`,
   `vue.js` sont purs et testés (`tests/logique.test.js`, 22 tests) ; `scene.js` (rendu
   « dessin »), `entrees.js`, `hud.js`, `main.js` portent Three.js et le DOM.
-- `.claude/skills/` : 14 skills de `arjun988/blender-skills` (MIT). Style et personnages :
-  `cartoon-style`, `stylized-style` (référence NPR), `lowpoly-style`, `character-artist`,
-  `isometric-style`.
+- `.claude/skills/` : 19 skills de `arjun988/blender-skills` (MIT). Ce sont des **fiches
+  de conseils**, pas des modèles ni des scripts : le dépôt ne contient aucun asset.
 - `docs/superpowers/specs/` et `plans/` ; `docs/previews/` : rendus Blender de contrôle
-  (sans traits d'encre : le style final ne se voit que dans l'app).
+  (sans traits d'encre ni teintes d'instance : le style final ne se voit que dans l'app).
+
+## Le kit de modèles (`blender/build_kit.py`)
+
+- Modèles tournés vers +x, posés à z = 0, construits avec `Builder` : `lathe` (révolution),
+  `tube` (membres), `rbox` (boîte chanfreinée), `ico`, `sphere`.
+- Matériaux `T_<rôle>` : teinte propre à chaque instance (4 rôles au plus par modèle) ;
+  `K_<nom>` : couleur fixe.
+- Personnages : 7 poses (debout, marche, salue, robe, marinière, assis, buste) × 5 coiffes
+  × teintes de haut, bas, peau et cheveux ; un sur huit est un enfant (échelle 0,68).
+- `layout.py` choisit les instances (`self.inst(type, x, y, z, rot, k, rôle=couleur)`) ;
+  l'ensemble `KIT` y liste les noms attendus et `build_kit.py` échoue s'il en manque un.
+- Ajouter un modèle : une fonction dans `build_kit.py`, son nom dans `KIT`, un appel à
+  `self.inst` dans `layout.py`. L'app n'a rien à savoir : elle instancie ce que liste
+  `decor.json`.
 
 ## Lancer
 
 Blender 5.3 n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`.
 
 ```bash
-python -m unittest discover -s blender/tests -t blender                                        # 34 tests
+python -m unittest discover -s blender/tests -t blender                                        # 36 tests
 bash blender/tout_generer.sh                 # tout : tests, props, les 4 villes, aperçus
 bash blender/tout_generer.sh lille           # une seule ville
 # ou étape par étape :
 blender --background --python blender/build_assets.py                                           # props
-blender --background --python blender/build_quartier.py -- --ville paris                        # décor
+blender --background --python blender/build_kit.py                                              # kit de modèles
+blender --background --python blender/build_quartier.py -- --ville paris                        # bâti + decor.json
 blender --background blender/scenes/paris.blend --python blender/place_objets.py -- --ville paris   # placements
 blender --background blender/scenes/paris.blend --python blender/render_ville.py -- --ville paris   # aperçus
 ```
@@ -131,27 +148,37 @@ Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.part
 ## Rendu « dessin » (app/src/scene.js)
 
 - Matériaux toon à trois paliers, forte lumière d'ambiance, ombre portée à 40 %, fond papier.
-- Traits d'encre : arêtes vives du décor (`EdgesGeometry`, 50°) + coque noire retournée
-  autour de tout, d'épaisseur constante à l'écran.
+- Bâti : traits d'encre sur les arêtes vives (`EdgesGeometry`, 50°), pas de coque.
+- Modèles instanciés (kit, canards, leurres) : un seul maillage par modèle, teintes
+  d'instance par rôle (attributs `role` et `tint1..4`), et une coque noire retournée
+  d'épaisseur constante à l'écran, masquée sous 12 px/m.
 - Vitres : matériau `verre` translucide, rendu après les objets opaques.
-- Pour éviter des traits parasites sur les rondeurs : cylindres ≥ 8 segments, sphères 8 × 5.
+- Sur le bâti, pour éviter des traits parasites : cylindres ≥ 8 segments, sphères 8 × 5.
 
 ## État
 
-- Fait : quatre villes générées et jouables (Paris, New York, Lille, Delhi), style
-  dessiné, vitres, passants cartoon, menu des villes.
-- Par ville : 30 canards (dont 6 à 11 derrière une vitre) et 270 leurres ; canards
-  visibles à 54–58 % en moyenne. Deux cases ont une plage de visibilité élargie
-  (New York E2, Lille C2), signalées dans `placements.json` (`assoupli`).
-- Vérifié dans le navigateur de bureau : les quatre villes se chargent sans erreur, zoom,
-  révélation, canard derrière une vitre, menu. Environ 90 draw calls et 460 000 triangles
-  par image (Paris) ; Delhi est la plus lourde (192 000 triangles de décor, GLB de 8 Mo).
+- Fait : quatre villes jouables (Paris, New York, Lille, Delhi), style dessiné, vitres,
+  kit de modèles (personnages chibi avec visage, véhicules détaillés, arbres, mobilier),
+  menu des villes.
+- Par ville : 30 canards (dont 6 à 9 **vérifiés derrière une vitre**) et 270 leurres ;
+  canards visibles à 51–56 % en moyenne. Quatre cases en plage de visibilité élargie
+  (New York A2 et E2, Lille E3 et E5), signalées par `assoupli` dans `placements.json`.
+- « Derrière une vitre » est garanti par construction : `place_objets.py` rejette une
+  cachette `vitre` si un seul des rayons qui en sortent (bec et yeux compris) atteint la
+  caméra sans traverser l'objet `Vitres`.
+- Vérifié dans le navigateur de bureau : les quatre villes se chargent sans erreur ;
+  canard en vitrine teinté par la vitre ; teintes et coiffes des passants ; menu.
+- Triangles par ville (bâti / instances du kit) : Paris 80 000 / 246 000, New York
+  58 000 / 239 000, Lille 73 000 / 293 000, Delhi 68 000 / 356 000, plus ~90 000 pour
+  canards et leurres. Les coques doublent les instances au-delà de 12 px/m : Delhi peut
+  approcher le million de triangles par image, **au-dessus de la cible de 500 000**.
 - **Pas encore vérifié** : iPad réel (fluidité avec ces volumes, pincement, tolérance du
   tap) et une partie complète jusqu'à l'écran de fin. La difficulté n'a pas été jouée.
+- Si l'iPad peine, dans l'ordre : relever `SEUIL_CONTOURS_PPM` (scene.js), baisser
+  `style.foule`, alléger les personnages (360 triangles chacun) dans `build_kit.py`.
 - Le serveur MCP `blender` n'est pas utilisé : tout tourne en `--background`.
-- Limites connues : les aperçus Blender n'ont pas les traits d'encre ; les leurres
-  « sol uniquement » restent rares ; si l'iPad peine, premiers leviers : retirer la coque
-  du décor (garder celle des objets), baisser `style.foule`.
+- Limites connues : canards et leurres jaunes gardent leur modélisation d'origine, plus
+  simple que le kit ; leurres « sol uniquement » rares ; aperçus Blender non représentatifs.
 
 ## Pièges connus
 
@@ -172,6 +199,8 @@ Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.part
   veut dire fichier manquant.
 - Des noms de skills cités de mémoire par un autre assistant (`toon-shading`,
   `stylized-character`, `npr-shader`…) n'existent pas dans le dépôt : lister le dépôt.
+- Volet Navigateur de Claude masqué : la page a une taille nulle (canvas 0 × 0, zoom
+  non fini). Fixer une taille avec `resize_window` avant de tester, la remettre ensuite.
 - En mode `--background`, la scène par défaut (cube, caméra) se retrouve dans le `.blend`
   sauvegardé si on ne repart pas d'une scène vide.
 

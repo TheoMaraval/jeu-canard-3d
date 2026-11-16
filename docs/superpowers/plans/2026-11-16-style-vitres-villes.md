@@ -51,6 +51,18 @@ Spec : section 9 de `docs/superpowers/specs/2026-11-16-jeu-canard-3d-design.md`.
 - [x] Contrôle à l'image des quatre villes dans le navigateur.
 - [ ] Playtest sur iPad : fluidité et difficulté. **À faire par l'utilisateur.**
 
+### Tâche 7 : kit de modèles et vitres vérifiées (révision 3)
+- [x] Recherche dans le dépôt de skills : fiches seulement ; cinq de plus installées
+      (`chibi-style`, `vehicle-artist`, `vegetation-artist`, `blender-modeler`, `materials`).
+- [x] `geo.py` : `lathe`, `tube`, `rbox`, `ico`. `build_kit.py` : 28 modèles.
+- [x] `layout.py` : `inst()`, `KIT`, passants, véhicules, arbres et mobilier en instances ;
+      tests (`test_instances_du_kit`, `test_gros_leurres_jaunes`).
+- [x] `build_quartier.py` : instances dans le `.blend` (elles masquent) et `decor.json`.
+- [x] `place_objets.py` : `rayon()` traverse et compte les vitres ; cachette `vitre`
+      rejetée si elle dépasse devant la vitre.
+- [x] `scene.js` : instanciation unifiée avec teintes par rôle.
+- [x] Contrôle à l'image : canard en vitrine à Paris, passants et étals à Delhi.
+
 ## Commandes
 
 ```bash

@@ -223,3 +223,19 @@ La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
     possible ;
   - budget : ~90 draw calls et ~460 000 triangles par image à Paris, sous la cible ;
     Delhi (192 000 triangles de décor) est à surveiller sur iPad ; GLB de 5,8 à 8 Mo.
+- 2026-11-16 : révision 3, après le retour « personnages et objets trop basiques » et la
+  question « les canards sont-ils bien derrière les vitres ? ».
+  - Constat : le dépôt de skills ne contient que des fiches de conseils. Le côté basique
+    venait de l'empilement de cylindres et de boîtes dans le maillage du décor.
+  - Passants, véhicules, arbres et mobilier ne sont plus des primitives fusionnées mais
+    des **instances d'un kit modélisé** (`build_kit.py`, `assets/kit.glb`), décrites par
+    `decor.json`. Proportions chibi (4 têtes), visage, mains, chaussures, coiffes ;
+    véhicules avec roues, vitres, phares, pare-chocs.
+  - Côté app, tous les modèles instanciés passent par un seul chemin : un maillage par
+    modèle, teintes par rôle et par instance. La coque du bâti est supprimée.
+  - Vitres : niches approfondies à 0,8 m, objets posés à 0,38–0,56 m derrière la façade.
+    La mesure de visibilité ne retire plus les vitres : les rayons les traversent et les
+    comptent, et une cachette `vitre` est rejetée si une partie visible (bec compris) ne
+    passe pas par une vitre.
+  - Budget de triangles dépassé à fort zoom (voir CLAUDE.md, État) : assumé pour la
+    qualité, à mesurer sur iPad.

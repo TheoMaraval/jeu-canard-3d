@@ -1,7 +1,8 @@
 """Plan d'un quartier, en Python pur (pas de bpy) : testable hors de Blender.
 
 make_layout(theme) renvoie :
-  prims : primitives à mailler (contrat dans le plan du pipeline)
+  prims : primitives à mailler (bâti, sol, détails de façade et de toit)
+  insts : instances de modèles du kit {type, pos, rot, k, c} (passants, véhicules, arbres, mobilier)
   slots : cachettes candidates {lieu, pos, rot}, lieu = sol | balcon | toit | vitre
   lots  : emprises des immeubles [x0, y0, x1, y1]
   blocs : emprises des îlots, trottoir compris
@@ -25,8 +26,20 @@ LATERAL = (math.sqrt(0.5), math.sqrt(0.5))  # perpendiculaire à LOIN, à l'hori
 PENTE = math.tan(math.radians(ELEVATION))   # un rayon vers la caméra monte de PENTE m par mètre
 H_TROTTOIR = 0.15
 MARGE_SLOT = 0.3
-EP = 0.6          # profondeur des niches derrière les vitres
+EP = 0.8          # profondeur des niches derrière les vitres
 VISIBLES = "SE"   # façades tournées vers la caméra
+# Modèles du kit (blender/build_kit.py) que la ville instancie au lieu de les mailler.
+KIT = {"Perso_Debout", "Perso_Marche", "Perso_Salue", "Perso_Robe", "Perso_Raye", "Perso_Assis",
+       "Perso_Buste", "Coiffe_Court", "Coiffe_Long", "Coiffe_Chignon", "Coiffe_Chapeau",
+       "Coiffe_Casquette", "Voiture", "Taxi", "Camionnette", "Bus", "Rickshaw", "Arbre_A",
+       "Arbre_B", "Arbre_C", "Banc", "Lampadaire", "Poubelle", "Table_Cafe", "Chaise", "Parasol",
+       "Etal", "Vache"}
+DZ_TETE = {"Perso_Assis": -0.12, "Perso_Buste": -0.56}  # tête plus basse que debout
+VEHICULES = {  # type du thème -> (modèle, longueur, largeur, hauteur)
+    "voiture": ("Voiture", 4.2, 1.8, 1.45), "taxi": ("Taxi", 4.2, 1.8, 1.55),
+    "camionnette": ("Camionnette", 5.0, 2.0, 2.2), "bus": ("Bus", 9.0, 2.5, 2.95),
+    "rickshaw": ("Rickshaw", 2.6, 1.4, 1.75),
+}
 DOSSIER_THEMES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes")
 
 FACADES = {  # côté -> (coin d'origine, direction le long du mur, normale sortante)
@@ -60,7 +73,7 @@ class Plan:
         self.t, self.s = theme, theme["style"]
         self.rng = random.Random(theme["graine"])
         self.demi = theme["taille"] / 2
-        self.prims, self.slots = [], []
+        self.prims, self.slots, self.insts = [], [], []
         self.lots, self.blocs, self.herbes, self.emprises = [], [], [], []
 
     def choix(self, cle):
@@ -86,6 +99,15 @@ class Plan:
 
     def sph(self, mat, r, pos, scale=(1, 1, 1)):
         self.prims.append({"t": "sph", "mat": mat, "r": r, "pos": list(pos), "scale": list(scale)})
+
+    def inst(self, typ, x, y, z, rot=0.0, k=1.0, **couleurs):
+        """Instance d'un modèle du kit ; couleurs : rôle de teinte -> nom de la palette."""
+        self.insts.append({"type": typ, "pos": [round(x, 3), round(y, 3), round(z, 3)],
+                           "rot": round(rot, 3), "k": round(k, 3), "c": couleurs})
+
+    def emprise(self, x, y, rx, ry=None):
+        ry = rx if ry is None else ry
+        self.emprises.append((x - rx, y - ry, x + rx, y + ry))
 
     # ---- sol et slots -----------------------------------------------------
     @staticmethod
@@ -123,39 +145,32 @@ class Plan:
             self.slot_sol(*self._derriere(x, y, r, h))
 
     # ---- passants ---------------------------------------------------------
-    def passant(self, x, y, z, emprise=True):
-        """Personnage cartoon : environ 4 têtes de haut, grosse tête, bras, cheveux ou chapeau."""
+    def _personne(self, modele, x, y, z, rot, k=1.0):
+        """Un personnage du kit, ses couleurs et sa coiffe."""
         rng = self.rng
-        self.cyl(self.choix("pantalons"), 0.13, 0.55, (x, y, z))
-        haut = self.choix("vetements")
-        if rng.random() < 0.12:  # maillot rayé
-            haut, a = "blanc", self.choix("rayures")
-            for i in range(3):
-                self.cyl(a if i % 2 == 0 else "blanc", 0.19, 0.2, (x, y, z + 0.55 + i * 0.2))
-        else:
-            self.cyl(haut, 0.2, 0.6, (x, y, z + 0.55), r2=0.17)
-        angle = rng.uniform(0, math.pi)
-        for cote in (-1, 1):  # bras ; un sur dix fait signe
-            leve = rng.random() < 0.1
-            self.box(haut, (0.09, 0.09, 0.5),
-                     (x + cote * 0.25 * math.cos(angle), y + cote * 0.25 * math.sin(angle),
-                      z + (1.45 if leve else 0.87)), rot=angle)
-        self.sph(self.choix("peaux"), 0.2, (x, y, z + 1.34))
-        if rng.random() < 0.2:  # chapeau
-            self.cyl(self.choix("vetements"), 0.24, 0.05, (x, y, z + 1.44))
-            self.cyl(self.choix("vetements"), 0.16, 0.14, (x, y, z + 1.49))
-        else:
-            self.cyl(self.choix("cheveux"), 0.205, 0.13, (x, y, z + 1.41), r2=0.14)
+        self.inst(modele, x, y, z, rot, k,
+                  haut=self.choix("rayures") if modele == "Perso_Raye" else self.choix("vetements"),
+                  bas=self.choix("pantalons"), peau=self.choix("peaux"))
+        coiffe = rng.choices([None, "Coiffe_Court", "Coiffe_Long", "Coiffe_Chignon", "Coiffe_Chapeau",
+                              "Coiffe_Casquette"], [1, 4, 3, 1.5, 1.5, 1.5])[0]
+        if coiffe:
+            self.inst(coiffe, x, y, z + DZ_TETE.get(modele, 0.0) * k, rot, k,
+                      cheveux=self.choix("cheveux"), chapeau=self.choix("vetements"))
+
+    def passant(self, x, y, z, emprise=True):
+        rng = self.rng
+        modele = rng.choices(["Perso_Debout", "Perso_Marche", "Perso_Salue", "Perso_Robe", "Perso_Raye"],
+                             [4, 4, 1, 3, 1.5])[0]
+        k = 0.68 if rng.random() < 0.12 else rng.uniform(0.94, 1.06)  # un enfant sur huit
+        self._personne(modele, x, y, z, rng.uniform(0, 2 * math.pi), k)
         if emprise:
-            self.emprises.append((x - 0.25, y - 0.25, x + 0.25, y + 0.25))
+            self.emprise(x, y, 0.25)
             if rng.random() < 0.35:
                 self.slot_derriere(x, y, 0.2, 1.6, n=1)
 
-    def buste(self, x, y, z):
-        """Quelqu'un à sa fenêtre ou attablé."""
-        self.cyl(self.choix("vetements"), 0.18, 0.45, (x, y, z), r2=0.16)
-        self.sph(self.choix("peaux"), 0.19, (x, y, z + 0.62))
-        self.cyl(self.choix("cheveux"), 0.195, 0.12, (x, y, z + 0.69), r2=0.13)
+    def buste(self, x, y, z, rot):
+        """Quelqu'un accoudé à sa fenêtre, tourné vers `rot`."""
+        self._personne("Perso_Buste", x, y, z, rot)
 
     def foule(self, n, tirage):
         for _ in range(n):
@@ -165,14 +180,14 @@ class Plan:
 
     # ---- mobilier ---------------------------------------------------------
     def arbre(self, x, y, z, k=1.0):
-        self.cyl("tronc", 0.13 * k, 2.4 * k, (x, y, z), emprise=True)
-        f = self.rng.choice(["feuillage", "feuillage2"])
-        r = self.rng.uniform(1.0, 1.35) * k
-        self.sph(f, r, (x, y, z + 3.2 * k), (1, 1, 0.9))
-        self.sph(f, r * 0.65, (x + self.rng.uniform(-0.5, 0.5) * k, y + self.rng.uniform(-0.5, 0.5) * k, z + 4.1 * k))
-        self.slot_derriere(x, y, 0.13 * k, 2.4 * k, n=2)
+        rng = self.rng
+        modele = rng.choices(["Arbre_A", "Arbre_B", "Arbre_C"], [3, 2, 1])[0]
+        self.inst(modele, x, y, z, rng.uniform(0, 2 * math.pi), k * rng.uniform(0.9, 1.12),
+                  feuille=rng.choice(["feuillage", "feuillage2"]))
+        self.emprise(x, y, 0.2 * k)
+        self.slot_derriere(x, y, 0.15 * k, 2.4 * k, n=2)
         for _ in range(2):  # sous le feuillage, vu de la caméra
-            d, lat = self.rng.uniform(3.3, 5.6) * k, self.rng.uniform(-1.3, 1.3)
+            d, lat = rng.uniform(3.3, 5.6) * k, rng.uniform(-1.3, 1.3)
             self.slot_sol(x + LOIN[0] * d + LATERAL[0] * lat, y + LOIN[1] * d + LATERAL[1] * lat)
 
     def haie(self, x, y, longueur, le_long_de_x, mat="feuillage2", ep=0.5, h=0.6):
@@ -189,17 +204,21 @@ class Plan:
             s += self.rng.uniform(0.9, 1.5)
 
     def lampadaire(self, x, y, z):
-        self.cyl("fer", 0.06, 4.6, (x, y, z), seg=6, emprise=True)
-        self.sph("lampe", 0.22, (x, y, z + 4.7))
+        self.inst("Lampadaire", x, y, z)
+        self.emprise(x, y, 0.15)
 
     def banc(self, x, y, z, rot=0.0):
-        self.box("bois", (1.5, 0.45, 0.45), (x, y, z + 0.225), rot, emprise=True)
-        self.box("bois", (1.5, 0.08, 0.45), (x - math.sin(rot) * 0.2, y + math.cos(rot) * 0.2, z + 0.65), rot)
+        self.inst("Banc", x, y, z, rot)
+        if rot % math.pi < 1e-6:
+            self.emprise(x, y, 0.75, 0.3)
+        else:
+            self.emprise(x, y, 0.75)
         self.slot_derriere(x, y, 0.75, 0.9)
 
     def poubelle(self, x, y, z):
-        self.cyl("vertfonce", 0.25, 0.85, (x, y, z), emprise=True)
-        self.slot_derriere(x, y, 0.25, 0.85)
+        self.inst("Poubelle", x, y, z)
+        self.emprise(x, y, 0.28)
+        self.slot_derriere(x, y, 0.28, 0.86)
 
     def rayures(self, mats, taille, centre, le_long_de_x, pas=0.6):
         """Toile rayée : bandes alternées de deux couleurs (store, auvent d'étal)."""
@@ -219,23 +238,15 @@ class Plan:
         return [a, "blanc"] if self.rng.random() < 0.6 else [a]
 
     def etal(self, x, y, z, le_long_de_x):
-        """Étal de marché : table, auvent, marchandises, cachettes sur et derrière la table."""
-        rng = self.rng
-        tx, ty = (2.0, 0.8) if le_long_de_x else (0.8, 2.0)
-        self.box("bois", (tx, ty, 0.8), (x, y, z + 0.4), emprise=True)
-        for d in (-0.95, 0.95):
-            px, py = (x + d, y) if le_long_de_x else (x, y + d)
-            self.cyl("fer", 0.04, 2.1, (px, py, z), seg=6)
-        self.rayures(self.toile(), (2.3, 1.3, 0.1) if le_long_de_x else (1.3, 2.3, 0.1), (x, y, z + 2.15), le_long_de_x)
-        for i in range(4):
-            d = -0.75 + i * 0.5
-            px, py = (x + d, y) if le_long_de_x else (x, y + d)
-            if rng.random() < 0.3:
-                self.slot("sol", px, py, z + 0.8)
-            elif rng.random() < 0.5:
-                self.sph(self.choix("fleurs"), 0.13, (px, py, z + 0.9))
-            else:
-                self.box(self.choix("couleurs"), (0.3, 0.3, 0.25), (px, py, z + 0.925))
+        """Étal de marché du kit ; le bout libre de sa table reçoit parfois un objet."""
+        self.inst("Etal", x, y, z, 0.0 if le_long_de_x else math.pi / 2, toile=self.toile()[0])
+        if le_long_de_x:
+            self.emprise(x, y, 1.0, 0.45)
+        else:
+            self.emprise(x, y, 0.45, 1.0)
+        if self.rng.random() < 0.6:
+            px, py = (x + 0.7, y) if le_long_de_x else (x, y + 0.7)
+            self.slot("sol", px, py, z + 0.82)
         self.slot_derriere(x, y, 1.0, 0.8, n=2)
 
     def fontaine(self, cx, cy, z):
@@ -260,39 +271,25 @@ class Plan:
 
     # ---- véhicules --------------------------------------------------------
     def vehicule(self, x, y, le_long_de_x, typ=None):
-        """Pose un véhicule et renvoie sa longueur. Taxis, camionnettes et rickshaws sont jaunes."""
+        """Pose un véhicule du kit et renvoie sa longueur. Taxis, camionnettes et capotes de
+        rickshaw sont jaunes : ce sont les gros leurres du décor."""
         typ = typ or self.choix("vehicules")
-        long, larg, h = {"camionnette": (5.0, 2.0, 2.2), "bus": (9.0, 2.5, 2.9),
-                         "rickshaw": (2.6, 1.4, 1.7)}.get(typ, (4.2, 1.8, 1.4))
-        sx, sy = (long, larg) if le_long_de_x else (larg, long)
-        self.box("fer", (sx * 0.85, sy * 1.04, 0.4), (x, y, 0.25))  # roues
-        if typ == "camionnette":
-            self.box("jaune", (sx, sy, 1.8), (x, y, 1.2), emprise=True)
-            self.box("interieur", (sx * 0.98, sy * 0.98, 0.5), (x, y, 1.75))
-            self.box("jaune", (sx, sy, 0.15), (x, y, 2.1))
-        elif typ == "bus":
-            self.box(self.choix("bus"), (sx, sy, 2.5), (x, y, 1.55), emprise=True)
-            self.box("interieur", (sx * 1.01, sy * 1.01, 0.8), (x, y, 2.0))
-        elif typ == "rickshaw":
-            self.box("vertfonce", (sx, sy, 0.7), (x, y, 0.65), emprise=True)
-            self.box("interieur", (sx * 0.8, sy * 0.9, 0.6), (x, y, 1.3))
-            self.box("jaune", (sx * 0.95, sy, 0.15), (x, y, 1.67))
+        modele, long, larg, h = VEHICULES[typ]
+        rot = (0.0 if le_long_de_x else math.pi / 2) + (math.pi if self.rng.random() < 0.5 else 0.0)
+        couleurs = {"voiture": {"caisse": self.choix("voitures")}, "taxi": {"caisse": "jaune"},
+                    "camionnette": {"caisse": "jaune"}, "bus": {"caisse": self.choix("bus")},
+                    "rickshaw": {"caisse": "vertfonce", "toit": "jaune"}}[typ]
+        self.inst(modele, x, y, 0.0, rot, **couleurs)
+        if le_long_de_x:
+            self.emprise(x, y, long / 2, larg / 2)
         else:
-            mat = "jaune" if typ == "taxi" else self.choix("voitures")
-            kx, ky = (0.55, 0.88) if le_long_de_x else (0.88, 0.55)
-            self.box(mat, (sx, sy, 0.65), (x, y, 0.60), emprise=True)
-            self.box(mat, (sx * kx, sy * ky, 0.5), (x, y, 1.17), haut=(0.8, 0.8))
-            if typ == "taxi":
-                self.box("blanc", (0.5, 0.3, 0.15) if le_long_de_x else (0.3, 0.5, 0.15), (x, y, 1.5))
+            self.emprise(x, y, larg / 2, long / 2)
         self.slot_derriere(x, y, larg / 2 + 0.1, h)
         return long
 
     def vache(self, x, y, z):
-        self.box("blanc", (1.6, 0.6, 0.7), (x, y, z + 0.95), emprise=True)
-        for dx in (-0.6, 0.6):
-            for dy in (-0.2, 0.2):
-                self.box("blanc", (0.14, 0.14, 0.6), (x + dx, y + dy, z + 0.3))
-        self.box("blanc", (0.45, 0.35, 0.4), (x + 0.95, y, z + 1.25))
+        self.inst("Vache", x, y, z, self.rng.uniform(0, 2 * math.pi))
+        self.emprise(x, y, 0.85)
         self.slot_derriere(x, y, 0.8, 1.3, n=2)
 
     # ---- façades ----------------------------------------------------------
@@ -346,7 +343,7 @@ class Plan:
         sx = 0.9
         while sx < long - 0.9:
             if porte is None or abs(sx - porte) > 0.85:
-                x, y = self._pt(f, sx, -rng.uniform(0.24, 0.36))
+                x, y = self._pt(f, sx, -rng.uniform(0.38, 0.56))
                 if rng.random() < 0.45:  # marchandise en vitrine
                     h = rng.uniform(0.25, 0.6)
                     self.box(self.choix("couleurs"), (0.3, 0.3, h), (x, y, z0 + 0.4 + h / 2))
@@ -379,12 +376,12 @@ class Plan:
                 if volets:
                     self._el(f, volets, c - wf / 2 - 0.3, c - wf / 2, 0.06, 0.11, zs, zs + hf)
                     self._el(f, volets, c + wf / 2, c + wf / 2 + 0.3, 0.06, 0.11, zs, zs + hf)
-                x, y = self._pt(f, c + rng.uniform(-0.25, 0.25), -rng.uniform(0.24, 0.36))
+                x, y = self._pt(f, c + rng.uniform(-0.25, 0.25), -rng.uniform(0.38, 0.56))
                 tirage = rng.random()
                 if tirage < 0.30:
                     self.slot("vitre", x, y, zs)
                 elif tirage < 0.40:
-                    self.buste(x, y, zs)
+                    self.buste(x, y, zs, math.atan2(f[2][1], f[2][0]))
                 elif tirage < 0.40 + s["jardinieres_fenetre"]:
                     self._el(f, "terre", c - 0.45, c + 0.45, 0.0, 0.22, zs - 0.22, zs)
                     fleur = self.choix("fleurs")
@@ -661,19 +658,22 @@ class Plan:
         self.foule(gens, lambda: (rng.uniform(bx + 1, bx + bloc - 1), rng.uniform(by + 1, by + bloc - 1)))
 
     def _terrasse(self, x, y, z, n=6):
+        """Terrasse de café : tables, chaises, clients attablés, parasols."""
         rng = self.rng
+        chaise = self.choix("auvents")
         for i in range(n):
             tx, ty = x + (i % 3) * 3.0, y + (i // 3) * 3.2
-            self.cyl("fer", 0.05, 0.72, (tx, ty, z), seg=6, emprise=True)
-            self.cyl("blanc", 0.45, 0.04, (tx, ty, z + 0.72), seg=10)
+            self.inst("Table_Cafe", tx, ty, z)
+            self.emprise(tx, ty, 0.45)
             for dx in (-0.7, 0.7):
-                self.box("bois", (0.4, 0.4, 0.45), (tx + dx, ty, z + 0.225), emprise=True)
-                if rng.random() < 0.5:
-                    self.buste(tx + dx, ty, z + 0.45)
+                rot = 0.0 if dx < 0 else math.pi  # face à la table
+                self.inst("Chaise", tx + dx, ty, z, rot, toile=chaise)
+                self.emprise(tx + dx, ty, 0.25)
+                if rng.random() < 0.55:
+                    self._personne("Perso_Assis", tx + dx, ty, z, rot)
             if i % 2 == 0:
-                self.cyl("fer", 0.03, 2.3, (tx + 0.1, ty + 0.9, z), seg=6, emprise=True)
-                toile = self.toile()
-                self.cyl(toile[0], 1.2, 0.4, (tx + 0.1, ty + 0.9, z + 2.2), r2=0.0)
+                self.inst("Parasol", tx + 0.1, ty + 0.9, z, toile=self.toile()[0])
+                self.emprise(tx + 0.1, ty + 0.9, 0.2)
             self.slot_derriere(tx, ty, 0.5, 0.75, n=2)
 
     def square_paris(self, bx, by, bloc):
@@ -701,8 +701,7 @@ class Plan:
         for dx, dy in ((-8, -8), (8, -9), (9, 4)):  # chariots à hot-dogs
             x, y = cx + dx, cy + dy
             self.box("metal", (1.6, 0.9, 1.0), (x, y, z + 0.5), emprise=True)
-            self.cyl("fer", 0.03, 2.3, (x + 0.6, y, z), seg=6)
-            self.cyl(self.toile()[0], 1.2, 0.4, (x + 0.6, y, z + 2.2), r2=0.0)
+            self.inst("Parasol", x + 0.6, y + 0.3, z, toile=self.toile()[0])
             self.slot_derriere(x, y, 0.8, 1.0)
         self.haie(cx - 9, cy + 3, 5.0, False)
         self.haie(cx + 3, cy - 10, 5.0, True)
@@ -781,7 +780,7 @@ class Plan:
                     square(bx, by, bloc)
                 else:
                     self.ilot_bati(bx, by, bloc, fond=(i == 0 or j == n - 1))
-        return {"prims": self.prims, "slots": self.slots, "lots": self.lots,
+        return {"prims": self.prims, "insts": self.insts, "slots": self.slots, "lots": self.lots,
                 "blocs": [list(b) for b in self.blocs]}
 
 

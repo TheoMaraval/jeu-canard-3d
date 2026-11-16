@@ -129,3 +129,81 @@ def objet_rapide(nom, prims, collection):
     obj = bpy.data.objects.new(nom, mesh)
     collection.objects.link(obj)
     return obj
+
+
+# ---- formes modelées pour le kit (personnages, véhicules, mobilier) ------------
+def _coller(self, tmp, mat, smooth, matrix=None):
+    """Ajoute un bmesh temporaire au maillage en cours, avec son matériau."""
+    if matrix is not None:
+        bmesh.ops.transform(tmp, matrix=matrix, verts=tmp.verts)
+    me = bpy.data.meshes.new("_tmp")
+    tmp.to_mesh(me)
+    tmp.free()
+    n0 = len(self.bm.faces)
+    self.bm.from_mesh(me)
+    bpy.data.meshes.remove(me)
+    self.bm.faces.ensure_lookup_table()
+    if mat not in self.slots:
+        self.slots.append(mat)
+    idx = self.slots.index(mat)
+    for f in self.bm.faces[n0:]:
+        f.material_index = idx
+        f.smooth = smooth
+
+
+def _rbox(self, mat, size, loc, rot=(0, 0, 0), bevel=0.05, smooth=True):
+    """Boîte aux arêtes chanfreinées : lue comme arrondie une fois lissée."""
+    tmp = bmesh.new()
+    bmesh.ops.create_cube(tmp, size=1.0)
+    for v in tmp.verts:
+        v.co.x *= size[0]
+        v.co.y *= size[1]
+        v.co.z *= size[2]
+    bmesh.ops.bevel(tmp, geom=list(tmp.edges), offset=min(bevel, min(size) * 0.45),
+                    segments=1, affect="EDGES", profile=0.5)
+    self._coller(tmp, mat, smooth, xf(loc, rot=rot))
+
+
+def _ico(self, mat, r, loc, scale=(1, 1, 1), sub=1):
+    tmp = bmesh.new()
+    bmesh.ops.create_icosphere(tmp, subdivisions=sub, radius=r)
+    self._coller(tmp, mat, True, xf(loc, scale))
+
+
+def _lathe(self, mat, profil, matrix=None, seg=8, smooth=True):
+    """Surface de révolution autour de Z. profil : [(rayon, z), ...] de bas en haut."""
+    import math
+    tmp = bmesh.new()
+    anneaux = []
+    for r, z in profil:
+        if r < 1e-6:
+            anneaux.append([tmp.verts.new((0, 0, z))])
+        else:
+            anneaux.append([tmp.verts.new((r * math.cos(2 * math.pi * i / seg), r * math.sin(2 * math.pi * i / seg), z))
+                            for i in range(seg)])
+    for a, b in zip(anneaux, anneaux[1:]):
+        for i in range(seg):
+            j = (i + 1) % seg
+            if len(a) == 1 and len(b) == 1:
+                continue
+            if len(a) == 1:
+                tmp.faces.new((a[0], b[j], b[i]))
+            elif len(b) == 1:
+                tmp.faces.new((a[i], a[j], b[0]))
+            else:
+                tmp.faces.new((a[i], a[j], b[j], b[i]))
+    if len(anneaux[0]) > 1:
+        tmp.faces.new(list(reversed(anneaux[0])))
+    if len(anneaux[-1]) > 1:
+        tmp.faces.new(anneaux[-1])
+    self._coller(tmp, mat, smooth, matrix)
+
+
+def _tube(self, mat, p0, p1, r0, r1, seg=6):
+    """Membre : cylindre effilé de p0 à p1, bouts arrondis."""
+    d = Vector(p1) - Vector(p0)
+    m = Matrix.Translation(Vector(p0)) @ Vector((0, 0, 1)).rotation_difference(d).to_matrix().to_4x4()
+    self.lathe(mat, [(0, -r0 * 0.5), (r0, 0), (r1, d.length), (0, d.length + r1 * 0.5)], m, seg)
+
+
+Builder._coller, Builder.rbox, Builder.ico, Builder.lathe, Builder.tube = _coller, _rbox, _ico, _lathe, _tube

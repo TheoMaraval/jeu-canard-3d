@@ -4,7 +4,8 @@
 
 Écrit assets/scenes/<ville>/placements.json et met à jour assets/scenes.json.
 La visibilité d'une cachette est la part de 27 points du volume d'un canard d'où un
-rayon atteint la caméra de jeu sans toucher le décor.
+rayon atteint la caméra de jeu sans toucher le décor ni les passants, véhicules et
+mobilier du kit. Les vitres ne bloquent pas : on compte celles que le rayon traverse.
 """
 import json
 import math
@@ -37,8 +38,27 @@ def argument(nom, defaut):
     return argv[argv.index(nom) + 1] if nom in argv else defaut
 
 
+def rayon(scene, dg, origine, direction, portee=400.0):
+    """Lance un rayon qui traverse les vitres. Renvoie (bloqué, nombre de vitres traversées)."""
+    o, vitres = Vector(origine), 0
+    while portee > 0:
+        touche, point, _n, _i, objet, _m = scene.ray_cast(dg, o, direction, distance=portee)
+        if not touche:
+            return False, vitres
+        if objet.name != "Vitres":
+            return True, vitres
+        vitres += 1
+        portee -= (point - o).length + 0.002
+        o = point + direction * 0.002
+    return False, vitres
+
+
 def mesurer(scene, dg, slot, k):
-    """Recale le slot sur la surface et renvoie sa visibilité, ou None s'il est inutilisable."""
+    """Recale le slot sur la surface et renvoie sa visibilité, ou None s'il est inutilisable.
+
+    Un slot « vitre » n'est gardé que si tout ce qu'on en voit est vu à travers une vitre :
+    c'est ce qui garantit qu'un canard « derrière une vitre » l'est vraiment.
+    """
     p = Vector(slot["pos"])
     touche, point, *_ = scene.ray_cast(dg, p + Vector((0, 0, 0.6)), Vector((0, 0, -1)), distance=1.2)
     if not touche or abs(point.z - p.z) > 0.3:
@@ -46,23 +66,27 @@ def mesurer(scene, dg, slot, k):
     p.z = point.z
     centre = p + Vector((0, 0, 0.22 * k))
     for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)):
-        if scene.ray_cast(dg, centre, Vector(d), distance=DEGAGEMENT * k)[0]:
+        if rayon(scene, dg, centre, Vector(d), DEGAGEMENT * k)[0]:
             return None
-    slot["rot_canard"] = orientation_canard(scene, dg, p, slot["rot"], k)
-    libres = sum(1 for e in ECHANTILLONS if not scene.ray_cast(dg, p + e * k, VERS_CAMERA, distance=400)[0])
+    vus = [v for bloque, v in (rayon(scene, dg, p + e * k, VERS_CAMERA) for e in ECHANTILLONS) if not bloque]
+    if slot["lieu"] == "vitre" and any(v == 0 for v in vus):
+        return None  # une partie dépasserait devant la vitre
+    slot["rot_canard"] = orientation_canard(scene, dg, p, slot["rot"], k, slot["lieu"] == "vitre")
     slot["pos"] = [round(p.x, 3), round(p.y, 3), round(p.z, 3)]
-    return libres / len(ECHANTILLONS)
+    return len(vus) / len(ECHANTILLONS)
 
 
-def orientation_canard(scene, dg, p, graine, k):
+def orientation_canard(scene, dg, p, graine, k, sous_vitre):
     """Rotation qui montre le bec et au moins un œil à la caméra, ou None.
 
     Sans cela un canard vu de dos serait indiscernable d'une boule jaune, même de près.
+    Derrière une vitre, le bec doit lui aussi rester derrière.
     """
     def visible(local, rot):
         c, s = math.cos(rot), math.sin(rot)
         monde = p + k * Vector((local[0] * c - local[1] * s, local[0] * s + local[1] * c, local[2]))
-        return not scene.ray_cast(dg, monde, VERS_CAMERA, distance=400)[0]
+        bloque, vitres = rayon(scene, dg, monde, VERS_CAMERA)
+        return not bloque and (vitres > 0 or not sous_vitre)
 
     depart = int(graine * 1000) % len(ECARTS)  # varie l'angle essayé en premier
     for ecart in ECARTS[depart:] + ECARTS[:depart]:
@@ -84,11 +108,7 @@ def main():
     theme = charger_theme(ville)
     k = theme["echelle_objets"]
     scene = bpy.context.scene
-    vitres = bpy.data.objects.get("Vitres")
-    if vitres:  # un rayon doit traverser les vitres : on les retire de la scène mesurée
-        bpy.data.objects.remove(vitres, do_unlink=True)
     dg = bpy.context.evaluated_depsgraph_get()
-    dg.update()
 
     slots = []
     for s in make_layout(theme)["slots"]:
