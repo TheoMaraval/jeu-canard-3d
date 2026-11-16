@@ -1,6 +1,8 @@
 """Choix des 30 canards et des leurres parmi les cachettes candidates. Python pur.
 
 Entrée : slots {lieu, pos, rot, vis} où vis (0–1) est la part visible depuis la caméra.
+Clé optionnelle "rot_canard" : orientation qui montre le bec et un œil à la caméra, ou
+None si aucune ne convient (le slot ne peut alors pas recevoir de canard).
 Sortie : objets {id, type, pos, rot, visibilite, lieu, zone} en repère Blender ;
 la conversion glTF est faite par place_objets.py.
 """
@@ -51,11 +53,13 @@ def choisir(slots, theme):
         prefere = lieux[i % len(lieux)]
         candidats = sorted(par_zone[z], key=lambda s: s["lieu"] != prefere)  # tri stable
         choix = next((s for s in candidats if lo <= s["vis"] <= hi
+                      and s.get("rot_canard", s["rot"]) is not None
                       and all(_dist(s["pos"], c["pos"]) >= dcan for c in canards)), None)
         if choix is None:
             raise PlacementImpossible(
                 f"case {z} : aucune cachette de visibilité {lo}–{hi} à plus de {dcan} m des autres canards")
-        canards.append(_objet(f"canard-{len(canards) + 1:02d}", CANARD, choix, z))
+        canards.append(_objet(f"canard-{len(canards) + 1:02d}", CANARD,
+                              dict(choix, rot=choix.get("rot_canard", choix["rot"])), z))
     if len(canards) != theme["canards"]:
         raise PlacementImpossible(f"la grille {cols}x{rangs} ne donne pas {theme['canards']} canards")
 

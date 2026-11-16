@@ -24,6 +24,11 @@ EL, AZ = math.radians(ELEVATION), math.radians(AZIMUT)
 VERS_CAMERA = Vector((math.cos(EL) * math.sin(AZ), -math.cos(EL) * math.cos(AZ), math.sin(EL)))
 ECHANTILLONS = [Vector((dx, dy, dz)) for dx in (-0.15, 0.0, 0.15)
                 for dy in (-0.12, 0.0, 0.12) for dz in (0.06, 0.22, 0.38)]
+# Points du modèle Canard (repère local, +x = avant) qui doivent rester visibles
+BEC = (0.29, 0.0, 0.31)
+YEUX = ((0.20, 0.075, 0.37), (0.20, -0.075, 0.37))
+FACE_CAMERA = -math.radians(AZIMUT)  # rotation Z qui tourne le bec vers la caméra
+ECARTS = [math.radians(a) for a in (0, 25, -25, 50, -50, 70, -70)]
 DEGAGEMENT = 0.22  # m libres autour du centre, sinon l'objet traverserait un mur
 
 
@@ -43,9 +48,28 @@ def mesurer(scene, dg, slot):
     for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)):
         if scene.ray_cast(dg, centre, Vector(d), distance=DEGAGEMENT)[0]:
             return None
+    slot["rot_canard"] = orientation_canard(scene, dg, p, slot["rot"])
     libres = sum(1 for e in ECHANTILLONS if not scene.ray_cast(dg, p + e, VERS_CAMERA, distance=400)[0])
     slot["pos"] = [round(p.x, 3), round(p.y, 3), round(p.z, 3)]
     return libres / len(ECHANTILLONS)
+
+
+def orientation_canard(scene, dg, p, graine):
+    """Rotation qui montre le bec et au moins un œil à la caméra, ou None.
+
+    Sans cela un canard vu de dos serait indiscernable d'une boule jaune, même de près.
+    """
+    def visible(local, rot):
+        c, s = math.cos(rot), math.sin(rot)
+        monde = p + Vector((local[0] * c - local[1] * s, local[0] * s + local[1] * c, local[2]))
+        return not scene.ray_cast(dg, monde, VERS_CAMERA, distance=400)[0]
+
+    depart = int(graine * 1000) % len(ECARTS)  # varie l'angle essayé en premier
+    for ecart in ECARTS[depart:] + ECARTS[:depart]:
+        rot = FACE_CAMERA + ecart
+        if visible(BEC, rot) and (visible(YEUX[0], rot) or visible(YEUX[1], rot)):
+            return round(rot % (2 * math.pi), 3)
+    return None
 
 
 def gltf(o):
@@ -111,6 +135,7 @@ def main():
         "canards_par_lieu": par(canards, "lieu"),
         "leurres_par_lieu": par([o for o in objets if o["type"] != CANARD], "lieu"),
         "leurres_par_type": par([o for o in objets if o["type"] != CANARD], "type"),
+        "slots_ou_la_tete_se_voit": sum(1 for s in slots if s["rot_canard"] is not None),
         "visibilite_moyenne_canards": round(sum(o["visibilite"] for o in canards) / len(canards), 2),
         "leurres_dans_plage_canard": sum(1 for o in objets if o["type"] != CANARD and lo <= o["visibilite"] <= hi),
     }

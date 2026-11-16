@@ -57,7 +57,7 @@ scene.collection.objects.link(cam)
 scene.camera = cam
 
 sun_data = bpy.data.lights.new("ApercuSoleil", "SUN")
-sun_data.energy = 3.5
+sun_data.energy = 2.5
 sun_data.angle = math.radians(2)
 sun = bpy.data.objects.new("ApercuSoleil", sun_data)
 sun.rotation_euler = (math.radians(48), 0, math.radians(-15))  # lumière venant du sud-ouest
@@ -65,7 +65,14 @@ scene.collection.objects.link(sun)
 
 world = bpy.data.worlds.new("ApercuMonde")
 scene.world = world
-world.color = (0.55, 0.62, 0.72)
+if world.node_tree is None:
+    world.use_nodes = True
+world.node_tree.nodes.clear()  # Blender 5 : arbre vide par défaut, donc pas de lumière d'ambiance
+_fond = world.node_tree.nodes.new("ShaderNodeBackground")
+_sortie = world.node_tree.nodes.new("ShaderNodeOutputWorld")
+world.node_tree.links.new(_fond.outputs["Background"], _sortie.inputs["Surface"])
+_fond.inputs["Color"].default_value = (0.55, 0.62, 0.72, 1)
+_fond.inputs["Strength"].default_value = 1.0
 
 scene.render.engine = "BLENDER_EEVEE"
 scene.view_settings.view_transform = "Standard"

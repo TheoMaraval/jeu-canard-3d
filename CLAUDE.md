@@ -37,35 +37,70 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
 
 ## Arborescence
 
-- `blender/` : scripts `bpy` (source de vérité) et `.blend` générés.
-- `assets/` : exports `.glb` et données de placement consommés par l'app.
+- `blender/themes/<ville>.json` : tous les réglages d'une ville (taille, îlots, palette,
+  nombre de canards et de leurres, plages de visibilité, graine).
+- `blender/citygen/` : `layout.py` (plan du quartier) et `placement.py` (choix des
+  canards et leurres) en **Python pur, sans bpy** ; `geo.py` (primitives → maillage, bpy).
+- `blender/tests/` : tests `unittest` des modules purs.
+- `blender/build_assets.py`, `build_quartier.py`, `place_objets.py`, `render_ville.py` :
+  les quatre étapes du pipeline. `blender/*.blend` et `blender/scenes/` sont générés.
+- `assets/props.glb` : canard (`Canard`, `Canard_Loin`) et 7 leurres, communs aux villes.
+- `assets/scenes/<ville>/quartier.glb` + `placements.json` ; `assets/scenes.json` : index.
 - `app/` : application web (vide pour l'instant).
-- `.claude/skills/` : 9 skills de `arjun988/blender-skills` (MIT) — blender-director,
-  environment-artist, procedural-modeling, set-dressing, prop-artist, lighting,
-  rendering, asset-optimization, export-pipeline.
-- `docs/superpowers/specs/` : specs de conception.
+- `.claude/skills/` : 9 skills de `arjun988/blender-skills` (MIT).
+- `docs/superpowers/specs/` et `plans/` ; `docs/previews/` : rendus de contrôle.
 
 ## Lancer
 
+Blender 5.3 n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`.
+
 ```bash
-blender --background --python blender/build_assets.py                      # blender/props.blend + assets/props.glb
-blender --background blender/props.blend --python blender/render_preview.py # docs/previews/*.png
+python -m unittest discover -s blender/tests -t blender                                        # 22 tests
+blender --background --python blender/build_assets.py                                           # props
+blender --background --python blender/build_quartier.py -- --ville paris                        # décor
+blender --background blender/scenes/paris.blend --python blender/place_objets.py -- --ville paris   # placements
+blender --background blender/scenes/paris.blend --python blender/render_ville.py -- --ville paris   # aperçus
 ```
 
-Blender 5.3 : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe` (pas dans le PATH).
+Après une modification du plan ou du thème : relancer décor, placements, aperçus, dans cet ordre.
+
+## Ajouter une ville
+
+Copier `blender/themes/paris.json` sous un nouvel `id`, changer palette, dimensions et
+graine, puis lancer `build_quartier`, `place_objets` et `render_ville` avec `--ville <id>`.
+Le décor ne doit contenir aucune couleur proche du jaune (un test le vérifie pour Paris).
+Un style de bâti vraiment différent (gratte-ciel, maisons) demande d'étendre `layout.py`.
+
+## Repères et caméra
+
+- Blender : Z vers le haut, carte centrée sur l'origine. glTF / app : `(x, z, -y)`.
+- Caméra de jeu fixe : azimut 45°, élévation 35,264°, côté `+x, -y` (Blender). Seules les
+  façades sud et est, les toits et les trottoirs sud/est sont visibles : une cachette
+  ailleurs a une visibilité nulle et est écartée automatiquement.
 
 ## État
 
-- Fait : arborescence, skills, canard + 7 leurres générés, exportés et contrôlés à l'image
-  (`docs/previews/`).
-- Le serveur MCP `blender` (`localhost:9876`) n'est pas démarré : les scripts tournent en
-  mode `--background`, ce qui suffit. Le MCP ne sert que pour travailler dans Blender ouvert.
-- À faire : relecture de la spec, plan d'implémentation, puis quartier, placements et app.
+- Fait : pipeline Blender complet pour Paris (plan dans
+  `docs/superpowers/plans/2026-11-16-pipeline-blender.md`). 30 canards (10 balcon, 8 sol,
+  12 toit) et 170 leurres placés ; aperçus contrôlés à l'image.
+- Le serveur MCP `blender` (`localhost:9876`) n'est pas démarré : tout tourne en
+  `--background`. Le MCP ne sert que pour travailler dans Blender ouvert.
+- À faire : l'application Three.js (plan séparé), puis playtest sur iPad.
+- Limites connues : immeubles encore uniformes (pas de lucarnes ni de mobilier de toit) ;
+  les leurres « sol uniquement » (taxi, borne, boîte aux lettres) sont sous-représentés
+  (25 sur 170) ; rien n'a encore été joué, tous les réglages sont des valeurs de départ.
 
 ## Pièges connus
 
 - Blender 5 : un matériau créé par script a un arbre de nœuds vide. Créer explicitement
   le Principled BSDF et la sortie (voir `material()` dans `build_assets.py`).
+- Blender 5 : même chose pour le monde. Sans nœud Background, pas de lumière d'ambiance
+  et les ombres sont noires.
+- Visibilité des cachettes : sans obstacle bas (garde-corps, acrotère, haie), elle vaut
+  0 ou 1 et presque aucune cachette n'est « à moitié cachée ». Ajouter du décor qui
+  masque partiellement avant de toucher aux plages du thème.
+- Git Bash : les heredocs contenant des apostrophes ou des `\U` cassent. Écrire le script
+  dans un fichier puis le lancer.
 - En mode `--background`, la scène par défaut (cube, caméra) se retrouve dans le `.blend`
   sauvegardé si on ne repart pas d'une scène vide.
 

@@ -22,7 +22,7 @@
     7.15,
     51.855
    ],
-   "rotation": 0.296,
+   "rotation": 0.087,
    "visibilite": 0.889,
    "lieu": "balcon",
    "zone": "A1"
@@ -35,7 +35,7 @@
     27.55,
     35.077
    ],
-   "rotation": 5.206,
+   "rotation": 0.436,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "A2"
@@ -48,7 +48,7 @@
     24.55,
     10.132
    ],
-   "rotation": 5.067,
+   "rotation": 5.498,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "A3"
@@ -61,7 +61,7 @@
     10.15,
     -28.12
    ],
-   "rotation": 0.803,
+   "rotation": 0.436,
    "visibilite": 0.778,
    "lieu": "balcon",
    "zone": "A4"
@@ -74,7 +74,7 @@
     21.55,
     -40.956
    ],
-   "rotation": 0.507,
+   "rotation": 4.625,
    "visibilite": 0.778,
    "lieu": "toit",
    "zone": "A5"
@@ -87,7 +87,7 @@
     21.55,
     50.109
    ],
-   "rotation": 1.862,
+   "rotation": 5.498,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "B1"
@@ -100,7 +100,7 @@
     7.15,
     35.7
    ],
-   "rotation": 4.429,
+   "rotation": 4.276,
    "visibilite": 0.667,
    "lieu": "balcon",
    "zone": "B2"
@@ -113,7 +113,7 @@
     0.15,
     -3.594
    ],
-   "rotation": 2.511,
+   "rotation": 0.436,
    "visibilite": 0.704,
    "lieu": "sol",
    "zone": "B3"
@@ -126,7 +126,7 @@
     27.55,
     -32.021
    ],
-   "rotation": 0.786,
+   "rotation": 5.061,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "B4"
@@ -139,7 +139,7 @@
     16.15,
     -42.5
    ],
-   "rotation": 2.543,
+   "rotation": 5.061,
    "visibilite": 0.667,
    "lieu": "balcon",
    "zone": "B5"
@@ -152,7 +152,7 @@
     0.15,
     52.188
    ],
-   "rotation": 3.435,
+   "rotation": 0.436,
    "visibilite": 0.667,
    "lieu": "sol",
    "zone": "C1"
@@ -165,7 +165,7 @@
     27.55,
     32.725
    ],
-   "rotation": 3.776,
+   "rotation": 4.625,
    "visibilite": 0.667,
    "lieu": "toit",
    "zone": "C2"
@@ -178,7 +178,7 @@
     0.21,
     7.678
    ],
-   "rotation": 3.506,
+   "rotation": 5.498,
    "visibilite": 0.889,
    "lieu": "sol",
    "zone": "C3"
@@ -191,7 +191,7 @@
     0.0,
     -14.017
    ],
-   "rotation": 1.441,
+   "rotation": 5.934,
    "visibilite": 0.481,
    "lieu": "sol",
    "zone": "C4"
@@ -204,7 +204,7 @@
     21.55,
     -41.791
    ],
-   "rotation": 3.718,
+   "rotation": 5.934,
    "visibilite": 0.667,
    "lieu": "toit",
    "zone": "C5"
@@ -217,7 +217,7 @@
     16.15,
     49.4
    ],
-   "rotation": 3.308,
+   "rotation": 4.625,
    "visibilite": 0.778,
    "lieu": "balcon",
    "zone": "D1"
@@ -230,7 +230,7 @@
     19.15,
     30.5
    ],
-   "rotation": 1.519,
+   "rotation": 5.498,
    "visibilite": 0.889,
    "lieu": "balcon",
    "zone": "D2"
@@ -243,7 +243,7 @@
     0.21,
     -0.252
    ],
-   "rotation": 3.756,
+   "rotation": 0.436,
    "visibilite": 0.519,
    "lieu": "sol",
    "zone": "D3"
@@ -256,7 +256,7 @@
     10.15,
     -27.98
    ],
-   "rotation": 0.277,
+   "rotation": 0.436,
    "visibilite": 0.556,
    "lieu": "balcon",
    "zone": "D4"
@@ -269,7 +269,7 @@
     0.15,
     -42.515
    ],
-   "rotation": 6.009,
+   "rotation": 4.625,
    "visibilite": 0.741,
    "lieu": "sol",
    "zone": "D5"
@@ -282,7 +282,7 @@
     24.55,
     50.159
    ],
-   "rotation": 5.973,
+   "rotation": 0.087,
    "visibilite": 0.778,
    "lieu": "toit",
    "zone": "E1"
@@ -295,7 +295,7 @@
     16.15,
     12.006
    ],
-   "rotation": 2.239,
+   "rotation": 5.934,
    "visibilite": 0.556,
    "lieu": "balcon",
    "zone": "E2"
@@ -308,7 +308,7 @@
     10.15,
     11.786
    ],
-   "rotation": 1.614,
+   "rotation": 4.625,
    "visibilite": 0.889,
    "lieu": "balcon",
    "zone": "E3"
@@ -321,7 +321,7 @@
     18.55,
     -29.87
    ],
-   "rotation": 2.462,
+   "rotation": 0.436,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "E4"
@@ -334,7 +334,7 @@
     21.55,
     -38.36
    ],
-   "rotation": 0.498,
+   "rotation": 5.061,
    "visibilite": 0.667,
    "lieu": "toit",
    "zone": "E5"
@@ -347,7 +347,7 @@
     0.15,
     44.962
    ],
-   "rotation": 1.328,
+   "rotation": 0.436,
    "visibilite": 0.889,
    "lieu": "sol",
    "zone": "F1"
@@ -360,7 +360,7 @@
     21.55,
     32.724
    ],
-   "rotation": 2.718,
+   "rotation": 5.061,
    "visibilite": 0.889,
    "lieu": "toit",
    "zone": "F2"
@@ -373,7 +373,7 @@
     7.15,
     12.0
    ],
-   "rotation": 0.58,
+   "rotation": 5.934,
    "visibilite": 0.556,
    "lieu": "balcon",
    "zone": "F3"
@@ -386,7 +386,7 @@
     0.15,
     -27.763
    ],
-   "rotation": 3.39,
+   "rotation": 0.087,
    "visibilite": 0.556,
    "lieu": "sol",
    "zone": "F4"
@@ -399,7 +399,7 @@
     27.55,
     -41.615
    ],
-   "rotation": 5.242,
+   "rotation": 5.934,
    "visibilite": 0.667,
    "lieu": "toit",
    "zone": "F5"

@@ -82,6 +82,16 @@ class TestPlacement(unittest.TestCase):
         with self.assertRaises(AssertionError):
             valider(self.objets + [dict(self.canards[0], id="canard-99")], THEME)
 
+    def test_canard_seulement_si_la_tete_se_voit(self):
+        slots = slots_synthetiques()
+        for i, s in enumerate(slots):
+            s["rot_canard"] = None if i % 2 else 1.25
+        canards = [o for o in choisir(slots, THEME) if o["type"] == "Canard"]
+        interdits = {tuple(s["pos"]) for s in slots if s["rot_canard"] is None}
+        for o in canards:
+            self.assertNotIn(tuple(o["pos"]), interdits)
+            self.assertEqual(o["rot"], 1.25)
+
     def test_case_sans_candidat(self):
         slots = [s for s in slots_synthetiques() if cellule(s["pos"], THEME) != "C3"]
         with self.assertRaises(PlacementImpossible) as ctx:

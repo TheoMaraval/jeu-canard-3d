@@ -20,12 +20,13 @@ fixe comment on les réalise en 3D.
 | Réglage | Valeur de départ | Pourquoi |
 |---|---|---|
 | Gabarit jaune | cube de 0,50 m | Assez gros pour être tapé au doigt, assez petit pour se perdre dans le décor |
-| Quartier | 160 × 160 m, style parisien | La boîte aux lettres jaune y est naturelle ; ~5 min de balayage |
+| Quartier | 120 × 120 m, 8 îlots bâtis + 1 square, style parisien | La boîte aux lettres jaune y est naturelle ; ~15 objets jaunes par écran à zoom moyen |
 | Canards | 30, un par case d'une grille 6 × 5 | Garantit la répartition sur toute la carte |
 | Objets jaunes | 200 (30 canards + 170 leurres) | 15 % des points jaunes sont des canards : 1 candidat sur 7 paie |
 | Seuil de révélation | canard ≥ 28 px à l'écran | En dessous, bec et œil ne sont pas affichés |
-| Zoom mini / maxi | quartier entier / canard ≈ 120 px | Au seuil de révélation, l'écran ne montre qu'~1/25 de la carte : ratisser est long |
-| Visibilité des cachettes | 40 % à 90 % du canard visible | Jamais invisible, rarement offert |
+| Zoom mini / maxi | quartier entier / canard ≈ 120 px | Au seuil de révélation, l'écran ne montre qu'~1/60 de la carte : ratisser est long |
+| Visibilité des cachettes | canard : 40 à 90 % visible ; leurre : 40 à 100 % | Jamais invisible, rarement offert |
+| Orientation du canard | bec et au moins un œil visibles de la caméra | Un canard vu de dos serait indiscernable même de près |
 | Tap | tolérance de 22 px autour du canard | Confort tactile ; aucun retour sur un tap raté |
 
 Les 15 % du cahier des charges sont interprétés comme la part de canards parmi les objets
@@ -42,19 +43,28 @@ niveau. Un canard trouvé devient vert aux deux niveaux, avec un petit rebond.
 Les canards ne sont pas posés au hasard sur le trottoir. Le générateur propose des
 emplacements typés (balcon, toit, auvent, terrasse, derrière un kiosque, fontaine, benne)
 et ne garde que ceux dont la visibilité depuis la caméra fixe est dans la plage voulue,
-mesurée par lancer de rayons dans Blender. Les leurres occupent les mêmes types
-d'emplacements, sinon le lieu trahirait le canard.
+mesurée par lancer de rayons dans Blender (27 points du volume du canard). Les leurres
+occupent les mêmes types d'emplacements, sinon le lieu trahirait le canard. Les canards
+sont répartis à tour de rôle entre sol, balcon et toit.
+
+Ce qui cache à moitié : garde-corps des balcons, acrotères des toits, cheminées, troncs
+et feuillages, voitures, bancs, haies du square, claustras de terrasse, kiosque.
 
 ## 4. Composants
 
 1. **`blender/build_assets.py`** (fait) — canard + 7 leurres, vérifie gabarit et matériau
    jaune unique. Sortie : `assets/props.glb`. À compléter : niveau « loin » du canard.
 2. **`blender/build_quartier.py`** — génère le quartier à partir d'une graine : îlots,
-   immeubles haussmanniens simplifiés, rues, mobilier, végétation. Décor fusionné par
-   matériau, occlusion ambiante cuite en couleurs de sommets. Sortie : `assets/quartier.glb`.
-3. **`blender/place_objets.py`** — choisit les 30 cachettes et les 170 positions de
-   leurres, contrôle visibilité et répartition. Sortie : `assets/placements.json`
-   (`{id, type, position, rotation, visibilite, zone}`).
+   immeubles haussmanniens simplifiés, rues, mobilier, végétation. Un seul maillage,
+   un matériau uni par couleur de palette (31 pour Paris), sans texture.
+   Sortie : `assets/scenes/<ville>/quartier.glb`.
+3. **`blender/place_objets.py`** — mesure la visibilité de chaque cachette, choisit les
+   30 canards et les 170 leurres, contrôle les règles. Sortie :
+   `assets/scenes/<ville>/placements.json` (`{id, type, position, rotation, visibilite,
+   lieu, zone}`, repère glTF) et `assets/scenes.json`.
+
+La logique (plan du quartier, choix des placements) vit dans `blender/citygen/` en Python
+pur, testée hors de Blender (`blender/tests/`).
 4. **`app/`** — modules indépendants :
    - `scene` : charge les GLB, crée les instances (`InstancedMesh`) à partir des placements ;
    - `camera` : pan, pinch, molette, bornes de zoom, inertie ;
@@ -85,7 +95,8 @@ relancer deux scripts ; l'écran de choix de ville reste hors périmètre v1.
 ## 5. Budget de performance (cible iPad, à mesurer)
 
 - 60 images/s, < 150 draw calls, < 500 000 triangles, GLB total < 10 Mo.
-- Pas d'ombres temps réel ; une lumière directionnelle + occlusion cuite.
+- Scène statique : une lumière directionnelle dont l'ombre est calculée **une seule fois**
+  au chargement, plus une lumière d'ambiance. Pas d'occlusion cuite en v1.
 - Rendu à la demande (uniquement quand la caméra ou l'état change) pour la batterie.
 
 ## 6. Erreurs
@@ -112,3 +123,12 @@ manuelle des cachettes, export Godot.
 - 2026-11-16 : première version.
 - 2026-11-16 : approuvée par l'utilisateur. Ajout de « Plusieurs villes » (thème + graine,
   `assets/scenes/<id>/`) : la structure multi-villes entre dans la v1, l'écran de choix non.
+- 2026-11-16 : après génération du premier quartier. Écarts journalisés :
+  - carte de 120 m au lieu de 160 m (densité d'objets jaunes par écran) ;
+  - pas d'occlusion ambiante cuite : matériaux unis par couleur, ombre calculée une fois
+    côté app (plus simple, un seul maillage) ;
+  - ajout de la règle d'orientation du canard (bec et œil vers la caméra), constatée
+    nécessaire sur le premier gros plan ;
+  - leurres acceptés jusqu'à 100 % de visibilité (un plot en plein trottoir est naturel) ;
+    92 leurres sur 170 sont dans la même plage de visibilité que les canards.
+  - Mesuré pour Paris : 53 282 triangles, 31 matériaux, `quartier.glb` 2,2 Mo.
