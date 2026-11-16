@@ -6,15 +6,76 @@
     "square": "paris",
     "toit": "mansarde",
     "balcons": "filants",
-    "etages": [4, 7],
-    "largeur_lot": [8, 12],
-    "murs": ["mur1", "mur2", "mur3", "mur4", "mur5"],
+    "etages": [
+      4,
+      7
+    ],
+    "largeur_lot": [
+      8,
+      12
+    ],
+    "murs": [
+      "mur1",
+      "mur2",
+      "mur3",
+      "mur4",
+      "mur5"
+    ],
     "bandeaux": null,
-    "volets": ["volet1", "volet2", "volet3"],
-    "auvents": ["v_rouge", "v_vert", "v_marine", "v_orange"],
-    "toit_extras": ["cheminee", "cheminee", "cheminee", "linge"],
-    "vehicules": ["voiture", "voiture", "voiture", "voiture", "camionnette"],
-    "foule": 7
+    "volets": [
+      "volet1",
+      "volet2",
+      "volet3"
+    ],
+    "auvents": [
+      "v_rouge",
+      "v_vert",
+      "v_marine",
+      "v_orange"
+    ],
+    "toit_extras": [
+      "cheminee",
+      "cheminee",
+      "cheminee",
+      "linge",
+      "chat",
+      "pigeons",
+      "transat",
+      "jardin"
+    ],
+    "vehicules": [
+      "voiture",
+      "voiture",
+      "voiture",
+      "voiture",
+      "camionnette"
+    ],
+    "foule": 7,
+    "saynetes_rue": [
+      "chiens",
+      "queue",
+      "peintre",
+      "demenagement",
+      "musicien",
+      "artiste",
+      "ordures",
+      "velos",
+      "panne"
+    ],
+    "saynetes_place": [
+      "mariage",
+      "musicien",
+      "artiste",
+      "pigeons",
+      "ballons",
+      "fanfare"
+    ],
+    "feuillages": [
+      "feuillage",
+      "feuillage2",
+      "f_tendre",
+      "f_rose"
+    ]
   },
   "palette": {
     "mur1": "#F3E3C3",

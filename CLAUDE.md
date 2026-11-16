@@ -11,9 +11,11 @@ Lille, Delhi. Un canard trouvé passe en vert, +1 au compteur. Fin de partie à 
 
 ## Règles qui définissent le jeu
 
-- **Camouflage** : canards et petits leurres (plot, borne, parasol, taxi miniature, boîte
-  aux lettres, jardinière, casque, arrosoir, botte, ballon) partagent le même matériau
-  jaune et le même gabarit. En vue d'ensemble, impossible de les distinguer. Seuls le bec
+- **Camouflage** : canards et petits leurres (22 modèles : plot, borne, parasol, taxi et bus
+  miniatures, boîte aux lettres, jardinière, casque, arrosoir, botte, ballon, banane,
+  citron, fromage, sous-marin, seau, éponge, smiley, tournesol, valise, parapluie,
+  panneau) partagent le même matériau jaune et le même gabarit. Certains leurres ont
+  exprès un œil noir (smiley) ou de l'orange (tournesol) : seul le canard a les deux. En vue d'ensemble, impossible de les distinguer. Seuls le bec
   orange, l'œil noir et la silhouette trahissent le canard, et seulement en zoomant.
   Si un canard se distingue à zoom moyen, le jeu est cassé.
 - **Le jaune ne suffit pas** : le décor contient de gros objets jaunes (taxis,
@@ -63,12 +65,12 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
   `layout.py` (plan du quartier → primitives du bâti, instances du kit, cachettes),
   `placement.py` (choix des canards et leurres), `maillage.py` (primitives → sommets et
   faces). `geo.py` est le seul module qui touche à bpy.
-- `blender/tests/` : 36 tests `unittest`.
+- `blender/tests/` : 38 tests `unittest`.
 - Étapes du pipeline, enchaînées par `tout_generer.sh` :
   `build_assets.py` (canard et leurres) → `build_kit.py` (personnages, véhicules, arbres,
   mobilier) → `build_quartier.py` → `place_objets.py` → `render_ville.py`.
   `blender/*.blend` et `blender/scenes/` sont générés.
-- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres. `assets/kit.glb` : 28 modèles
+- `assets/props.glb` : `Canard`, `Canard_Loin` et 10 leurres. `assets/kit.glb` : 87 modèles
   instanciés. Les deux sont communs aux villes.
 - `assets/scenes/<ville>/` : `quartier.glb` (objets `Quartier` et `Vitres` : le bâti),
   `decor.json` (instances du kit : type, position, rotation, échelle, teintes),
@@ -81,26 +83,50 @@ Validée le 16/11/2026 : 3D temps réel, Blender → `.glb` → Three.js, camér
 - `docs/superpowers/specs/` et `plans/` ; `docs/previews/` : rendus Blender de contrôle
   (sans traits d'encre ni teintes d'instance : le style final ne se voit que dans l'app).
 
-## Le kit de modèles (`blender/build_kit.py`)
+## Le kit de modèles (`blender/build_kit.py` + `blender/kit_loufoque.py`)
 
-- Modèles tournés vers +x, posés à z = 0, construits avec `Builder` : `lathe` (révolution),
-  `tube` (membres), `rbox` (boîte chanfreinée), `ico`, `sphere`.
+- 87 modèles tournés vers +x, posés à z = 0, construits avec `Builder` : `lathe`
+  (révolution), `tube` (membres), `rbox` (boîte chanfreinée), `ico`, `sphere`, `box`.
 - Matériaux `T_<rôle>` : teinte propre à chaque instance (4 rôles au plus par modèle) ;
   `K_<nom>` : couleur fixe.
-- Personnages : 7 poses (debout, marche, salue, robe, marinière, assis, buste) × 5 coiffes
-  × teintes de haut, bas, peau et cheveux ; un sur huit est un enfant (échelle 0,68).
+- `build_kit.py` : personnages (7 poses), coiffes, véhicules, arbres, mobilier de rue.
+- `kit_loufoque.py` : animaux (chien, chat, pigeon, poule, singe, éléphant), tags en
+  pixels (`Tag_*`, dont « COIN COIN » et un canard), désordre (cartons, sacs, poubelle
+  renversée, flaque, fissure, planches de fenêtre condamnée, lampadaire tordu),
+  accessoires de saynètes (échelle, piano suspendu, fumée, borne-geyser, fruits au sol,
+  tambour, barrières, trou, brouette, confettis, chevalet, ballons, vélo, transat),
+  végétation (palmier, arbre à branches, buisson, massif, pots, lierre), coiffes folles
+  (toque, couronne, haut-de-forme, plot, sombrero, heaume, hélice, oreilles de lapin).
+- Les modèles muraux (tags, lierre, planches, fissure) sont dans le plan XZ, face vers
+  -y ; `facade()` les plaque avec `mural()`.
 - `layout.py` choisit les instances (`self.inst(type, x, y, z, rot, k, rôle=couleur)`) ;
   l'ensemble `KIT` y liste les noms attendus et `build_kit.py` échoue s'il en manque un.
-- Ajouter un modèle : une fonction dans `build_kit.py`, son nom dans `KIT`, un appel à
-  `self.inst` dans `layout.py`. L'app n'a rien à savoir : elle instancie ce que liste
-  `decor.json`.
+- Ajouter un modèle : une fonction dans le kit, son nom dans `KIT`, un appel à
+  `self.inst` ou `self.poser` dans `layout.py`. L'app n'a rien à savoir : elle instancie
+  ce que liste `decor.json`.
+
+## Saynètes et désordre (`layout.py`, réglés par `style` dans les thèmes)
+
+- Une saynète est une méthode `s_<nom>(P, le_long, vers_la_rue, z, distance_au_mur)` :
+  `P(a, b)` donne un point à `a` mètres le long du trottoir et `b` vers la chaussée.
+  Existantes : chiens, fanfare, queue, peintre, demenagement, panne, geyser,
+  etal_renverse, musicien, chantier, mariage, ballons, ordures, artiste, pigeons, velos,
+  elephant, geant.
+- `style.saynetes_rue` / `saynetes_place` : listes par ville (répéter un nom l'y rend
+  plus fréquent) ; `saynete_rue` : probabilité par emplacement ; `nb_saynetes_place`.
+- Autres curseurs : `tags`, `rideaux` (boutiques fermées taguées), `planches`, `lierre`,
+  `fissures`, `pots`, `coiffes_folles`, `betes` et `nb_betes`, `feuillages`,
+  `arbres_modeles`, et de nouveaux `toit_extras` (transat, jardin, pigeons, chat, singe, vache).
+- Chaque saynète ajoute des cachettes derrière elle : les canards se cachent dans le bazar.
+- Ajouter une saynète : écrire `s_<nom>` avec `figurant()` (personnage, s'il y a la
+  place) et `poser()` (objet), puis citer son nom dans un thème.
 
 ## Lancer
 
 Blender 5.3 n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`.
 
 ```bash
-python -m unittest discover -s blender/tests -t blender                                        # 36 tests
+python -m unittest discover -s blender/tests -t blender                                        # 38 tests
 bash blender/tout_generer.sh                 # tout : tests, props, les 4 villes, aperçus
 bash blender/tout_generer.sh lille           # une seule ville
 # ou étape par étape :
@@ -158,27 +184,28 @@ Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.part
 ## État
 
 - Fait : quatre villes jouables (Paris, New York, Lille, Delhi), style dessiné, vitres,
-  kit de modèles (personnages chibi avec visage, véhicules détaillés, arbres, mobilier),
-  menu des villes.
-- Par ville : 30 canards (dont 6 à 9 **vérifiés derrière une vitre**) et 270 leurres ;
-  canards visibles à 51–56 % en moyenne. Quatre cases en plage de visibilité élargie
-  (New York A2 et E2, Lille E3 et E5), signalées par `assoupli` dans `placements.json`.
-- « Derrière une vitre » est garanti par construction : `place_objets.py` rejette une
-  cachette `vitre` si un seul des rayons qui en sortent (bec et yeux compris) atteint la
-  caméra sans traverser l'objet `Vitres`.
+  kit de 87 modèles, saynètes loufoques, animaux, tags, désordre, végétation variée,
+  22 leurres jaunes, menu des villes.
+- Par ville : 30 canards (6 à 12 vérifiés derrière une vitre) et 270 leurres ; canards
+  visibles à 55–57 % en moyenne. Une case en plage de visibilité élargie (New York C2).
 - Vérifié dans le navigateur de bureau : les quatre villes se chargent sans erreur ;
-  canard en vitrine teinté par la vitre ; teintes et coiffes des passants ; menu.
-- Triangles par ville (bâti / instances du kit) : Paris 80 000 / 246 000, New York
-  58 000 / 239 000, Lille 73 000 / 293 000, Delhi 68 000 / 356 000, plus ~90 000 pour
-  canards et leurres. Les coques doublent les instances au-delà de 12 px/m : Delhi peut
-  approcher le million de triangles par image, **au-dessus de la cible de 500 000**.
+  éléphant, mariage et palmier à Delhi ; géant, fanfare et braderie à Lille ; geyser,
+  pianos suspendus et fenêtres condamnées à New York.
+- Triangles par ville (bâti / instances du kit) : Paris 80 000 / 344 000, New York
+  55 000 / 335 000, Lille 72 000 / 365 000, Delhi 62 000 / 477 000, plus ~90 000 pour
+  canards et leurres. **Au-dessus de la cible de 500 000 par image.** Deux garde-fous
+  dans `scene.js` : les contours ne sont dessinés qu'à partir de 12 px/m, et les modèles
+  de plus de 80 instances sont découpés par zones de 40 m, ce qui limite le rendu à ce
+  qui est à l'écran quand on zoome.
 - **Pas encore vérifié** : iPad réel (fluidité avec ces volumes, pincement, tolérance du
   tap) et une partie complète jusqu'à l'écran de fin. La difficulté n'a pas été jouée.
-- Si l'iPad peine, dans l'ordre : relever `SEUIL_CONTOURS_PPM` (scene.js), baisser
-  `style.foule`, alléger les personnages (360 triangles chacun) dans `build_kit.py`.
+  Aucune mesure d'images par seconde n'a été faite, sur aucun appareil.
+- Si l'iPad peine, dans l'ordre : baisser `style.foule` et `saynete_rue`, relever
+  `SEUIL_CONTOURS_PPM`, alléger les personnages (360 triangles) dans `build_kit.py`.
 - Le serveur MCP `blender` n'est pas utilisé : tout tourne en `--background`.
-- Limites connues : canards et leurres jaunes gardent leur modélisation d'origine, plus
-  simple que le kit ; leurres « sol uniquement » rares ; aperçus Blender non représentatifs.
+- Limites connues : les aperçus Blender ne montrent ni traits d'encre ni teintes ; les
+  tags ne vont que sur les bandeaux entre étages et les rideaux de fer ; les saynètes de
+  rue sont étroites (trottoir de 2 à 2,5 m) ; les animaux ne font que poser.
 
 ## Pièges connus
 

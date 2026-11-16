@@ -239,3 +239,17 @@ La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
     passe pas par une vitre.
   - Budget de triangles dépassé à fort zoom (voir CLAUDE.md, État) : assumé pour la
     qualité, à mesurer sur iPad.
+- 2026-11-16 : révision 4, « du piment » : la ville était trop lisse.
+  - Saynètes loufoques dans les rues et sur les places (18 pour l'instant), choisies par
+    ville : géant de procession à Lille, éléphant à Delhi, geyser et pianos suspendus à
+    New York, peintre et déménagement à Paris.
+  - Animaux, tags (pixels épais plaqués sur les bandeaux et les rideaux de fer),
+    boutiques fermées, fenêtres condamnées, fissures, ordures, flaques.
+  - Végétation : palmier, arbre à branches, buissons, massifs, pots, lierre ; teintes de
+    feuillage par ville (cerisiers roses à Paris, automne à New York).
+  - Leurres jaunes : de 10 à 22 modèles. Nouveaux pièges assumés : le smiley a des yeux
+    noirs, le tournesol a un cœur orange, le tag « canard » peut être jaune. Seul le vrai
+    canard réunit bec orange et œil noir sur un corps jaune.
+  - Version de scène 3 (les sauvegardes précédentes sont ignorées).
+  - Côté app : découpage par zones des modèles très répétés. Budget de triangles encore
+    dépassé (voir CLAUDE.md), non mesuré sur iPad.

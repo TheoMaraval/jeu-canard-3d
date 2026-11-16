@@ -7,22 +7,93 @@
     "square": "lille",
     "toit": "pignon",
     "part_toit_plat": 0.3,
-    "toits": ["tuile", "tuile", "ardoise"],
+    "toits": [
+      "tuile",
+      "tuile",
+      "ardoise"
+    ],
     "gradins": true,
     "balcons": "aucun",
-    "etages": [3, 4],
-    "largeur_lot": [5, 7],
-    "murs": ["brique", "brique_claire", "ocre", "creme", "rose_flamand"],
-    "bandeaux": ["creme", "pierre"],
-    "volets": ["volet_vert", "volet_bleu", "blanc"],
-    "auvents": ["v_rouge", "v_vert", "v_marine", "v_orange"],
-    "toit_extras": ["cheminee", "cheminee", "linge"],
+    "etages": [
+      3,
+      4
+    ],
+    "largeur_lot": [
+      5,
+      7
+    ],
+    "murs": [
+      "brique",
+      "brique_claire",
+      "ocre",
+      "creme",
+      "rose_flamand"
+    ],
+    "bandeaux": [
+      "creme",
+      "pierre"
+    ],
+    "volets": [
+      "volet_vert",
+      "volet_bleu",
+      "blanc"
+    ],
+    "auvents": [
+      "v_rouge",
+      "v_vert",
+      "v_marine",
+      "v_orange"
+    ],
+    "toit_extras": [
+      "cheminee",
+      "cheminee",
+      "linge",
+      "chat",
+      "pigeons",
+      "jardin"
+    ],
     "jardinieres_fenetre": 0.22,
     "etals": 0.35,
     "arbres": 0.15,
-    "vehicules": ["voiture", "voiture", "voiture", "camionnette"],
+    "vehicules": [
+      "voiture",
+      "voiture",
+      "voiture",
+      "camionnette"
+    ],
     "trafic": 2,
-    "foule": 10
+    "foule": 10,
+    "saynetes_rue": [
+      "queue",
+      "fanfare",
+      "etal_renverse",
+      "ordures",
+      "chiens",
+      "peintre",
+      "velos",
+      "musicien"
+    ],
+    "saynetes_place": [
+      "geant",
+      "fanfare",
+      "mariage",
+      "etal_renverse",
+      "ballons",
+      "pigeons"
+    ],
+    "nb_saynetes_place": 5,
+    "betes": [
+      "Chien",
+      "Chat",
+      "Pigeon",
+      "Pigeon",
+      "Poule"
+    ],
+    "feuillages": [
+      "feuillage",
+      "feuillage2",
+      "f_olive"
+    ]
   },
   "palette": {
     "brique_claire": "#C8553A",

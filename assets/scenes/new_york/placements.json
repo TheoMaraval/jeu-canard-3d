@@ -1,6 +1,6 @@
 {
  "ville": "new_york",
- "version": 2,
+ "version": 3,
  "graine": 10014,
  "repere": "glTF : Y vers le haut, mètres, carte centrée sur l'origine",
  "taille": 120,
@@ -20,12 +20,12 @@
    "id": "canard-01",
    "type": "Canard",
    "position": [
-    -48.004,
-    13.75,
-    51.109
+    -46.197,
+    7.35,
+    51.074
    ],
    "rotation": 0.087,
-   "visibilite": 0.333,
+   "visibilite": 0.444,
    "lieu": "balcon",
    "zone": "A1"
   },
@@ -33,26 +33,25 @@
    "id": "canard-02",
    "type": "Canard",
    "position": [
-    -46.464,
-    0.15,
-    12.059
+    -44.233,
+    45.85,
+    30.704
    ],
-   "rotation": 0.436,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A2",
-   "assoupli": 3
+   "rotation": 5.061,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "A2"
   },
   {
    "id": "canard-03",
    "type": "Canard",
    "position": [
-    -49.8,
-    45.85,
-    -3.199
+    -41.484,
+    23.45,
+    6.198
    ],
-   "rotation": 0.087,
-   "visibilite": 0.556,
+   "rotation": 5.061,
+   "visibilite": 0.667,
    "lieu": "toit",
    "zone": "A3"
   },
@@ -60,12 +59,12 @@
    "id": "canard-04",
    "type": "Canard",
    "position": [
-    -44.938,
-    0.55,
-    -29.896
+    -44.418,
+    5.05,
+    -29.918
    ],
-   "rotation": 5.061,
-   "visibilite": 0.444,
+   "rotation": 4.625,
+   "visibilite": 0.667,
    "lieu": "vitre",
    "zone": "A4"
   },
@@ -73,12 +72,12 @@
    "id": "canard-05",
    "type": "Canard",
    "position": [
-    -43.134,
-    33.05,
-    -38.4
+    -41.507,
+    23.45,
+    -36.667
    ],
-   "rotation": 4.625,
-   "visibilite": 0.333,
+   "rotation": 5.061,
+   "visibilite": 0.667,
    "lieu": "toit",
    "zone": "A5"
   },
@@ -86,12 +85,12 @@
    "id": "canard-06",
    "type": "Canard",
    "position": [
-    -27.538,
+    -28.883,
     0.15,
-    38.006
+    43.632
    ],
-   "rotation": 4.625,
-   "visibilite": 0.37,
+   "rotation": 5.061,
+   "visibilite": 0.667,
    "lieu": "sol",
    "zone": "B1"
   },
@@ -99,12 +98,12 @@
    "id": "canard-07",
    "type": "Canard",
    "position": [
-    -30.19,
-    20.25,
-    32.656
+    -30.153,
+    45.85,
+    33.416
    ],
-   "rotation": 4.625,
-   "visibilite": 0.444,
+   "rotation": 4.276,
+   "visibilite": 0.333,
    "lieu": "toit",
    "zone": "B2"
   },
@@ -112,12 +111,12 @@
    "id": "canard-08",
    "type": "Canard",
    "position": [
-    -29.931,
-    0.55,
-    4.573
+    -29.952,
+    14.65,
+    -6.429
    ],
-   "rotation": 5.498,
-   "visibilite": 0.778,
+   "rotation": 0.436,
+   "visibilite": 0.333,
    "lieu": "vitre",
    "zone": "B3"
   },
@@ -125,12 +124,12 @@
    "id": "canard-09",
    "type": "Canard",
    "position": [
-    -29.028,
-    10.55,
-    -32.048
+    -37.883,
+    16.95,
+    -29.023
    ],
-   "rotation": 4.625,
-   "visibilite": 0.667,
+   "rotation": 5.498,
+   "visibilite": 0.778,
    "lieu": "balcon",
    "zone": "B4"
   },
@@ -138,12 +137,12 @@
    "id": "canard-10",
    "type": "Canard",
    "position": [
-    -27.891,
+    -27.449,
     0.15,
-    -46.829
+    -42.504
    ],
    "rotation": 4.276,
-   "visibilite": 0.556,
+   "visibilite": 0.333,
    "lieu": "sol",
    "zone": "B5"
   },
@@ -151,11 +150,11 @@
    "id": "canard-11",
    "type": "Canard",
    "position": [
-    -5.329,
-    23.45,
-    36.841
+    -8.009,
+    20.25,
+    41.878
    ],
-   "rotation": 0.087,
+   "rotation": 0.436,
    "visibilite": 0.333,
    "lieu": "toit",
    "zone": "C1"
@@ -164,25 +163,26 @@
    "id": "canard-12",
    "type": "Canard",
    "position": [
-    -0.111,
-    23.45,
-    31.424
+    -4.579,
+    17.05,
+    34.99
    ],
-   "rotation": 5.061,
-   "visibilite": 0.667,
+   "rotation": 0.087,
+   "visibilite": 1.0,
    "lieu": "toit",
-   "zone": "C2"
+   "zone": "C2",
+   "assoupli": 3
   },
   {
    "id": "canard-13",
    "type": "Canard",
    "position": [
-    -9.638,
-    0.21,
-    -4.573
+    -13.376,
+    0.0,
+    10.315
    ],
    "rotation": 4.625,
-   "visibilite": 0.333,
+   "visibilite": 0.37,
    "lieu": "sol",
    "zone": "C3"
   },
@@ -190,12 +190,12 @@
    "id": "canard-14",
    "type": "Canard",
    "position": [
-    -3.937,
+    -5.337,
     0.15,
-    -28.898
+    -27.603
    ],
-   "rotation": 0.087,
-   "visibilite": 0.778,
+   "rotation": 5.934,
+   "visibilite": 0.667,
    "lieu": "sol",
    "zone": "C4"
   },
@@ -203,11 +203,11 @@
    "id": "canard-15",
    "type": "Canard",
    "position": [
-    -3.141,
-    23.45,
-    -41.64
+    -4.007,
+    36.25,
+    -43.149
    ],
-   "rotation": 4.276,
+   "rotation": 0.087,
    "visibilite": 0.333,
    "lieu": "toit",
    "zone": "C5"
@@ -216,12 +216,12 @@
    "id": "canard-16",
    "type": "Canard",
    "position": [
-    10.085,
-    5.05,
-    46.641
+    10.106,
+    8.25,
+    41.196
    ],
-   "rotation": 0.436,
-   "visibilite": 0.333,
+   "rotation": 5.498,
+   "visibilite": 0.778,
    "lieu": "vitre",
    "zone": "D1"
   },
@@ -229,11 +229,11 @@
    "id": "canard-17",
    "type": "Canard",
    "position": [
-    11.009,
-    13.75,
-    31.42
+    10.979,
+    7.35,
+    32.343
    ],
-   "rotation": 5.061,
+   "rotation": 5.498,
    "visibilite": 0.667,
    "lieu": "balcon",
    "zone": "D2"
@@ -242,12 +242,12 @@
    "id": "canard-18",
    "type": "Canard",
    "position": [
-    0.583,
+    4.901,
     0.21,
-    -3.274
+    -6.77
    ],
-   "rotation": 0.087,
-   "visibilite": 0.556,
+   "rotation": 4.276,
+   "visibilite": 0.667,
    "lieu": "sol",
    "zone": "D3"
   },
@@ -255,12 +255,12 @@
    "id": "canard-19",
    "type": "Canard",
    "position": [
-    4.185,
-    20.25,
-    -30.163
+    9.023,
+    23.45,
+    -30.235
    ],
    "rotation": 0.087,
-   "visibilite": 0.333,
+   "visibilite": 0.667,
    "lieu": "toit",
    "zone": "D4"
   },
@@ -268,12 +268,12 @@
    "id": "canard-20",
    "type": "Canard",
    "position": [
-    10.014,
-    8.25,
-    -36.121
+    10.06,
+    21.05,
+    -43.962
    ],
-   "rotation": 0.436,
-   "visibilite": 0.333,
+   "rotation": 5.934,
+   "visibilite": 0.778,
    "lieu": "vitre",
    "zone": "D5"
   },
@@ -281,12 +281,12 @@
    "id": "canard-21",
    "type": "Canard",
    "position": [
-    33.796,
-    20.15,
-    51.114
+    31.859,
+    13.75,
+    51.097
    ],
    "rotation": 0.087,
-   "visibilite": 0.333,
+   "visibilite": 0.444,
    "lieu": "balcon",
    "zone": "E1"
   },
@@ -294,26 +294,25 @@
    "id": "canard-22",
    "type": "Canard",
    "position": [
-    34.455,
+    34.643,
     0.15,
-    12.376
+    12.374
    ],
    "rotation": 5.934,
-   "visibilite": 1.0,
+   "visibilite": 0.667,
    "lieu": "sol",
-   "zone": "E2",
-   "assoupli": 3
+   "zone": "E2"
   },
   {
    "id": "canard-23",
    "type": "Canard",
    "position": [
-    34.261,
-    20.25,
-    9.776
+    36.35,
+    17.05,
+    9.837
    ],
    "rotation": 0.436,
-   "visibilite": 0.556,
+   "visibilite": 0.333,
    "lieu": "toit",
    "zone": "E3"
   },
@@ -321,11 +320,11 @@
    "id": "canard-24",
    "type": "Canard",
    "position": [
-    36.54,
-    11.45,
-    -30.043
+    34.855,
+    5.05,
+    -29.998
    ],
-   "rotation": 4.276,
+   "rotation": 5.061,
    "visibilite": 0.333,
    "lieu": "vitre",
    "zone": "E4"
@@ -334,12 +333,12 @@
    "id": "canard-25",
    "type": "Canard",
    "position": [
-    35.3,
-    36.25,
-    -38.177
+    31.214,
+    23.45,
+    -41.579
    ],
-   "rotation": 0.087,
-   "visibilite": 0.444,
+   "rotation": 4.625,
+   "visibilite": 0.333,
    "lieu": "toit",
    "zone": "E5"
   },
@@ -347,12 +346,12 @@
    "id": "canard-26",
    "type": "Canard",
    "position": [
-    51.206,
+    41.429,
     0.15,
-    48.666
+    51.167
    ],
-   "rotation": 4.625,
-   "visibilite": 0.444,
+   "rotation": 5.934,
+   "visibilite": 0.556,
    "lieu": "sol",
    "zone": "F1"
   },
@@ -360,11 +359,11 @@
    "id": "canard-27",
    "type": "Canard",
    "position": [
-    49.904,
+    49.881,
     23.45,
-    33.606
+    34.188
    ],
-   "rotation": 4.276,
+   "rotation": 4.625,
    "visibilite": 0.333,
    "lieu": "toit",
    "zone": "F2"
@@ -373,12 +372,12 @@
    "id": "canard-28",
    "type": "Canard",
    "position": [
-    49.966,
-    17.85,
-    -9.247
+    42.869,
+    8.25,
+    10.031
    ],
    "rotation": 5.498,
-   "visibilite": 0.667,
+   "visibilite": 0.556,
    "lieu": "vitre",
    "zone": "F3"
   },
@@ -386,12 +385,12 @@
    "id": "canard-29",
    "type": "Canard",
    "position": [
-    43.554,
-    7.35,
-    -28.944
+    41.44,
+    10.55,
+    -29.002
    ],
-   "rotation": 0.087,
-   "visibilite": 0.556,
+   "rotation": 5.934,
+   "visibilite": 0.481,
    "lieu": "balcon",
    "zone": "F4"
   },
@@ -399,12 +398,12 @@
    "id": "canard-30",
    "type": "Canard",
    "position": [
-    51.241,
+    51.094,
     0.15,
-    -45.1
+    -36.439
    ],
-   "rotation": 4.276,
-   "visibilite": 0.481,
+   "rotation": 5.061,
+   "visibilite": 0.778,
    "lieu": "sol",
    "zone": "F5"
   },
@@ -412,3511 +411,3511 @@
    "id": "leurre-001",
    "type": "Leurre_Arrosoir",
    "position": [
-    31.122,
-    20.25,
-    31.856
+    -33.93,
+    8.25,
+    49.947
    ],
-   "rotation": 5.613,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "E2"
+   "rotation": 4.047,
+   "visibilite": 0.333,
+   "lieu": "vitre",
+   "zone": "B1"
   },
   {
    "id": "leurre-002",
    "type": "Leurre_Ballon",
    "position": [
-    11.717,
+    37.942,
     0.15,
-    -46.052
+    51.48
    ],
-   "rotation": 1.379,
+   "rotation": 5.769,
    "visibilite": 1.0,
    "lieu": "sol",
-   "zone": "D5"
+   "zone": "E1"
   },
   {
    "id": "leurre-003",
    "type": "Leurre_Botte",
    "position": [
-    -37.099,
-    21.05,
-    49.95
+    -0.792,
+    10.55,
+    50.906
    ],
-   "rotation": 2.488,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "B1"
+   "rotation": 0.347,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "C1"
   },
   {
    "id": "leurre-004",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -30.158,
+    -4.89,
     17.05,
-    -46.201
+    31.2
    ],
-   "rotation": 2.88,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-005",
-   "type": "Leurre_Botte",
-   "position": [
-    -46.524,
-    7.35,
-    -29.198
-   ],
-   "rotation": 1.753,
+   "rotation": 2.369,
    "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-006",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -11.227,
-    0.15,
-    -28.246
-   ],
-   "rotation": 5.392,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-007",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    51.153,
-    0.15,
-    -0.264
-   ],
-   "rotation": 0.612,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-008",
-   "type": "Leurre_Parasol",
-   "position": [
-    -8.909,
-    23.45,
-    32.323
-   ],
-   "rotation": 0.959,
-   "visibilite": 0.889,
    "lieu": "toit",
    "zone": "C2"
   },
   {
-   "id": "leurre-009",
-   "type": "Leurre_Plot",
-   "position": [
-    -6.093,
-    23.45,
-    -39.718
-   ],
-   "rotation": 1.462,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C5"
-  },
-  {
-   "id": "leurre-010",
-   "type": "Leurre_Taxi",
-   "position": [
-    -0.232,
-    0.55,
-    50.079
-   ],
-   "rotation": 1.347,
-   "visibilite": 0.444,
-   "lieu": "vitre",
-   "zone": "C1"
-  },
-  {
-   "id": "leurre-011",
-   "type": "Leurre_Botte",
-   "position": [
-    -43.416,
-    17.85,
-    10.035
-   ],
-   "rotation": 2.675,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-012",
+   "id": "leurre-005",
    "type": "Leurre_CasqueChantier",
    "position": [
-    50.942,
-    13.75,
-    -43.648
+    33.592,
+    36.25,
+    -44.3
    ],
-   "rotation": 1.971,
-   "visibilite": 0.556,
-   "lieu": "balcon",
-   "zone": "F5"
-  },
-  {
-   "id": "leurre-013",
-   "type": "Leurre_BorneIncendie",
-   "position": [
-    0.258,
-    0.21,
-    6.517
-   ],
-   "rotation": 0.838,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-014",
-   "type": "Leurre_Taxi",
-   "position": [
-    0.624,
-    0.15,
-    -27.693
-   ],
-   "rotation": 3.571,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-015",
-   "type": "Leurre_Plot",
-   "position": [
-    2.708,
-    16.95,
-    51.028
-   ],
-   "rotation": 1.211,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-016",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    36.916,
-    0.55,
-    50.047
-   ],
-   "rotation": 5.758,
-   "visibilite": 1.0,
-   "lieu": "vitre",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-017",
-   "type": "Leurre_Parasol",
-   "position": [
-    51.033,
-    7.35,
-    38.771
-   ],
-   "rotation": 1.232,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-018",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.124,
-    0.21,
-    -4.39
-   ],
-   "rotation": 4.27,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C3"
-  },
-  {
-   "id": "leurre-019",
-   "type": "Leurre_Parasol",
-   "position": [
-    38.991,
-    42.65,
-    -44.151
-   ],
-   "rotation": 6.261,
+   "rotation": 1.797,
    "visibilite": 1.0,
    "lieu": "toit",
    "zone": "E5"
   },
   {
-   "id": "leurre-020",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    11.147,
-    13.75,
-    32.72
-   ],
-   "rotation": 5.751,
-   "visibilite": 0.333,
-   "lieu": "balcon",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-021",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    -35.439,
-    0.15,
-    12.079
-   ],
-   "rotation": 1.606,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-022",
-   "type": "Leurre_Parasol",
-   "position": [
-    -29.083,
-    13.75,
-    -1.109
-   ],
-   "rotation": 2.183,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-023",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -46.0,
-    11.45,
-    50.042
-   ],
-   "rotation": 1.353,
-   "visibilite": 0.889,
-   "lieu": "vitre",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-024",
+   "id": "leurre-006",
    "type": "Leurre_Botte",
    "position": [
-    38.173,
-    10.55,
-    10.844
-   ],
-   "rotation": 4.916,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "E3"
-  },
-  {
-   "id": "leurre-025",
-   "type": "Leurre_Ballon",
-   "position": [
-    -33.849,
-    0.15,
-    -27.552
-   ],
-   "rotation": 1.667,
-   "visibilite": 0.556,
-   "lieu": "sol",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-026",
-   "type": "Leurre_Plot",
-   "position": [
-    33.834,
-    0.15,
-    -29.022
-   ],
-   "rotation": 2.668,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-027",
-   "type": "Leurre_BorneIncendie",
-   "position": [
-    51.884,
-    0.15,
-    -29.644
-   ],
-   "rotation": 1.669,
-   "visibilite": 0.741,
-   "lieu": "sol",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-028",
-   "type": "Leurre_Plot",
-   "position": [
-    50.913,
-    0.15,
-    27.717
-   ],
-   "rotation": 0.248,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "F2"
-  },
-  {
-   "id": "leurre-029",
-   "type": "Leurre_Ballon",
-   "position": [
-    -40.544,
-    20.25,
-    -43.4
-   ],
-   "rotation": 3.566,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-030",
-   "type": "Leurre_Ballon",
-   "position": [
-    -48.999,
-    33.05,
-    34.594
-   ],
-   "rotation": 1.232,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "A2"
-  },
-  {
-   "id": "leurre-031",
-   "type": "Leurre_Parasol",
-   "position": [
-    -28.975,
-    10.55,
-    0.191
-   ],
-   "rotation": 1.265,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-032",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.718,
-    20.25,
-    -36.508
-   ],
-   "rotation": 1.346,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C5"
-  },
-  {
-   "id": "leurre-033",
-   "type": "Leurre_Plot",
-   "position": [
-    37.793,
-    17.05,
-    -30.171
-   ],
-   "rotation": 1.915,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-034",
-   "type": "Leurre_Plot",
-   "position": [
-    5.057,
-    7.35,
-    -29.155
-   ],
-   "rotation": 1.975,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-035",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -10.041,
+    -4.737,
     0.21,
-    -2.62
+    8.944
    ],
-   "rotation": 4.336,
+   "rotation": 5.482,
    "visibilite": 1.0,
    "lieu": "sol",
    "zone": "C3"
   },
   {
-   "id": "leurre-036",
-   "type": "Leurre_BorneIncendie",
+   "id": "leurre-007",
+   "type": "Leurre_BusScolaire",
    "position": [
-    11.97,
-    0.15,
-    35.718
+    50.069,
+    8.25,
+    43.816
    ],
-   "rotation": 3.391,
+   "rotation": 2.23,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "F1"
+  },
+  {
+   "id": "leurre-008",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -28.009,
+    0.15,
+    28.215
+   ],
+   "rotation": 4.041,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "B2"
+  },
+  {
+   "id": "leurre-009",
+   "type": "Leurre_Citron",
+   "position": [
+    5.835,
+    0.15,
+    -27.369
+   ],
+   "rotation": 0.303,
    "visibilite": 1.0,
    "lieu": "sol",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-010",
+   "type": "Leurre_Eponge",
+   "position": [
+    -46.551,
+    16.95,
+    10.9
+   ],
+   "rotation": 2.811,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-011",
+   "type": "Leurre_Fromage",
+   "position": [
+    -41.81,
+    0.15,
+    51.184
+   ],
+   "rotation": 5.916,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-012",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    8.38,
+    0.15,
+    -11.622
+   ],
+   "rotation": 2.849,
+   "visibilite": 0.333,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-013",
+   "type": "Leurre_Panneau",
+   "position": [
+    49.85,
+    17.05,
+    -32.276
+   ],
+   "rotation": 1.835,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-014",
+   "type": "Leurre_Parapluie",
+   "position": [
+    52.422,
+    0.15,
+    -45.147
+   ],
+   "rotation": 2.376,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-015",
+   "type": "Leurre_Parasol",
+   "position": [
+    -31.365,
+    23.45,
+    -39.02
+   ],
+   "rotation": 1.564,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-016",
+   "type": "Leurre_Plot",
+   "position": [
+    5.616,
+    13.75,
+    50.839
+   ],
+   "rotation": 4.726,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-017",
+   "type": "Leurre_Smiley",
+   "position": [
+    10.063,
+    14.65,
+    30.888
+   ],
+   "rotation": 2.374,
+   "visibilite": 0.444,
+   "lieu": "vitre",
    "zone": "D2"
   },
   {
-   "id": "leurre-037",
+   "id": "leurre-018",
+   "type": "Leurre_Smiley",
+   "position": [
+    33.659,
+    0.15,
+    11.374
+   ],
+   "rotation": 5.814,
+   "visibilite": 0.926,
+   "lieu": "sol",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-019",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -28.825,
+    20.15,
+    -4.579
+   ],
+   "rotation": 3.822,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-020",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -36.583,
+    13.75,
+    -29.051
+   ],
+   "rotation": 3.25,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-021",
+   "type": "Leurre_Tournesol",
+   "position": [
+    50.047,
+    21.05,
+    30.634
+   ],
+   "rotation": 4.763,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "F2"
+  },
+  {
+   "id": "leurre-022",
+   "type": "Leurre_Parasol",
+   "position": [
+    31.411,
+    20.25,
+    32.408
+   ],
+   "rotation": 3.315,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "E2"
+  },
+  {
+   "id": "leurre-023",
+   "type": "Leurre_Parapluie",
+   "position": [
+    -41.943,
+    45.85,
+    34.693
+   ],
+   "rotation": 2.512,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A2"
+  },
+  {
+   "id": "leurre-024",
+   "type": "Leurre_Valise",
+   "position": [
+    10.929,
+    13.75,
+    -40.555
+   ],
+   "rotation": 1.252,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-025",
+   "type": "Leurre_Smiley",
+   "position": [
+    -6.046,
+    36.25,
+    -45.871
+   ],
+   "rotation": 3.372,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C5"
+  },
+  {
+   "id": "leurre-026",
+   "type": "Leurre_Taxi",
+   "position": [
+    52.151,
+    0.15,
+    8.836
+   ],
+   "rotation": 1.299,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-027",
+   "type": "Leurre_Smiley",
+   "position": [
+    -46.902,
+    20.25,
+    -45.33
+   ],
+   "rotation": 3.736,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A5"
+  },
+  {
+   "id": "leurre-028",
+   "type": "Leurre_Ballon",
+   "position": [
+    39.854,
+    17.05,
+    -31.181
+   ],
+   "rotation": 3.878,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-029",
+   "type": "Leurre_Seau",
+   "position": [
+    -9.081,
+    0.15,
+    -28.446
+   ],
+   "rotation": 1.271,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-030",
    "type": "Leurre_CasqueChantier",
    "position": [
-    31.459,
-    0.15,
-    51.86
+    -43.235,
+    13.75,
+    -28.964
    ],
-   "rotation": 4.993,
+   "rotation": 1.146,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-031",
+   "type": "Leurre_Valise",
+   "position": [
+    -8.284,
+    20.15,
+    -29.127
+   ],
+   "rotation": 5.124,
    "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-032",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    1.469,
+    13.75,
+    -29.038
+   ],
+   "rotation": 0.164,
+   "visibilite": 0.778,
+   "lieu": "balcon",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-033",
+   "type": "Leurre_Parasol",
+   "position": [
+    5.616,
+    7.35,
+    50.973
+   ],
+   "rotation": 2.885,
+   "visibilite": 0.778,
+   "lieu": "balcon",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-034",
+   "type": "Leurre_BorneIncendie",
+   "position": [
+    -0.21,
+    0.15,
+    12.229
+   ],
+   "rotation": 2.717,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C2"
+  },
+  {
+   "id": "leurre-035",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -43.61,
+    0.15,
+    10.944
+   ],
+   "rotation": 3.601,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-036",
+   "type": "Leurre_Seau",
+   "position": [
+    48.12,
+    17.05,
+    -39.235
+   ],
+   "rotation": 5.654,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-037",
+   "type": "Leurre_Parasol",
+   "position": [
+    -31.437,
+    20.25,
+    39.926
+   ],
+   "rotation": 3.154,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-038",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    1.905,
+    0.21,
+    9.297
+   ],
+   "rotation": 0.483,
+   "visibilite": 0.556,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-039",
+   "type": "Leurre_Plot",
+   "position": [
+    27.993,
+    0.15,
+    51.502
+   ],
+   "rotation": 5.551,
+   "visibilite": 0.889,
    "lieu": "sol",
    "zone": "E1"
   },
   {
-   "id": "leurre-038",
-   "type": "Leurre_Parasol",
-   "position": [
-    -27.569,
-    0.15,
-    48.838
-   ],
-   "rotation": 1.245,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-039",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -40.986,
-    0.15,
-    12.174
-   ],
-   "rotation": 2.764,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A2"
-  },
-  {
    "id": "leurre-040",
-   "type": "Leurre_Ballon",
+   "type": "Leurre_Valise",
    "position": [
-    -51.77,
+    -47.494,
     0.15,
-    52.178
+    50.956
    ],
-   "rotation": 1.26,
+   "rotation": 3.72,
    "visibilite": 1.0,
    "lieu": "sol",
    "zone": "A1"
   },
   {
    "id": "leurre-041",
-   "type": "Leurre_Ballon",
+   "type": "Leurre_Plot",
    "position": [
-    50.026,
-    0.55,
-    -35.743
+    -8.293,
+    36.25,
+    -47.327
    ],
-   "rotation": 0.909,
-   "visibilite": 0.667,
+   "rotation": 0.815,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C5"
+  },
+  {
+   "id": "leurre-042",
+   "type": "Leurre_Eponge",
+   "position": [
+    37.189,
+    0.15,
+    12.105
+   ],
+   "rotation": 5.902,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "E2"
+  },
+  {
+   "id": "leurre-043",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    8.193,
+    17.05,
+    31.403
+   ],
+   "rotation": 5.397,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-044",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    45.178,
+    8.25,
+    -29.955
+   ],
+   "rotation": 1.36,
+   "visibilite": 0.778,
    "lieu": "vitre",
    "zone": "F4"
   },
   {
-   "id": "leurre-042",
-   "type": "Leurre_Botte",
-   "position": [
-    11.052,
-    7.35,
-    -44.12
-   ],
-   "rotation": 1.692,
-   "visibilite": 0.556,
-   "lieu": "balcon",
-   "zone": "D5"
-  },
-  {
-   "id": "leurre-043",
-   "type": "Leurre_Parasol",
-   "position": [
-    4.059,
-    0.21,
-    4.357
-   ],
-   "rotation": 2.592,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-044",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    51.05,
-    0.15,
-    -11.872
-   ],
-   "rotation": 3.429,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "F3"
-  },
-  {
    "id": "leurre-045",
-   "type": "Leurre_Botte",
+   "type": "Leurre_Eponge",
    "position": [
-    38.179,
-    14.65,
-    9.976
+    -28.879,
+    20.15,
+    -40.033
    ],
-   "rotation": 3.825,
-   "visibilite": 0.556,
-   "lieu": "vitre",
-   "zone": "E3"
+   "rotation": 4.968,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "B5"
   },
   {
    "id": "leurre-046",
-   "type": "Leurre_Plot",
+   "type": "Leurre_Parapluie",
    "position": [
-    -7.037,
-    0.15,
-    -27.893
+    45.555,
+    17.05,
+    9.773
    ],
-   "rotation": 4.281,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C4"
+   "rotation": 4.702,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "F3"
   },
   {
    "id": "leurre-047",
-   "type": "Leurre_Jardiniere",
+   "type": "Leurre_Tournesol",
    "position": [
-    50.07,
-    11.45,
-    33.257
+    -29.079,
+    13.75,
+    31.464
    ],
-   "rotation": 0.907,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "F2"
+   "rotation": 1.197,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "B2"
   },
   {
    "id": "leurre-048",
-   "type": "Leurre_Arrosoir",
+   "type": "Leurre_Ballon",
    "position": [
-    -2.204,
+    33.067,
     17.05,
-    49.868
+    5.338
    ],
-   "rotation": 4.497,
-   "visibilite": 0.333,
+   "rotation": 1.629,
+   "visibilite": 1.0,
    "lieu": "toit",
-   "zone": "C1"
+   "zone": "E3"
   },
   {
    "id": "leurre-049",
-   "type": "Leurre_Arrosoir",
+   "type": "Leurre_Botte",
    "position": [
-    -49.8,
-    33.05,
-    -38.247
+    -42.642,
+    0.15,
+    12.169
    ],
-   "rotation": 0.415,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "A5"
+   "rotation": 5.796,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A2"
   },
   {
    "id": "leurre-050",
-   "type": "Leurre_Jardiniere",
+   "type": "Leurre_SousMarin",
    "position": [
-    -41.772,
-    45.85,
-    -4.903
+    -27.753,
+    0.15,
+    -31.615
    ],
-   "rotation": 1.227,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "A3"
+   "rotation": 4.774,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "B4"
   },
   {
    "id": "leurre-051",
    "type": "Leurre_Ballon",
    "position": [
-    -27.784,
+    40.137,
     0.15,
-    -36.924
+    12.503
    ],
-   "rotation": 4.796,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-052",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.51,
-    23.45,
-    34.917
-   ],
-   "rotation": 3.778,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-053",
-   "type": "Leurre_Parasol",
-   "position": [
-    11.004,
-    10.55,
-    41.052
-   ],
-   "rotation": 3.642,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-054",
-   "type": "Leurre_Parasol",
-   "position": [
-    -47.826,
-    23.45,
-    -30.223
-   ],
-   "rotation": 2.837,
-   "visibilite": 0.556,
-   "lieu": "toit",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-055",
-   "type": "Leurre_Parasol",
-   "position": [
-    49.846,
-    39.45,
-    -48.568
-   ],
-   "rotation": 0.936,
+   "rotation": 0.407,
    "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "F5"
-  },
-  {
-   "id": "leurre-056",
-   "type": "Leurre_Parasol",
-   "position": [
-    -33.838,
-    0.15,
-    -29.021
-   ],
-   "rotation": 4.256,
-   "visibilite": 1.0,
    "lieu": "sol",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-057",
-   "type": "Leurre_Plot",
-   "position": [
-    50.907,
-    10.55,
-    36.379
-   ],
-   "rotation": 5.871,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-058",
-   "type": "Leurre_Ballon",
-   "position": [
-    34.384,
-    36.25,
-    -40.005
-   ],
-   "rotation": 5.715,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "E5"
-  },
-  {
-   "id": "leurre-059",
-   "type": "Leurre_Ballon",
-   "position": [
-    -34.622,
-    20.25,
-    32.332
-   ],
-   "rotation": 0.219,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-060",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -28.613,
-    0.15,
-    44.415
-   ],
-   "rotation": 5.635,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-061",
-   "type": "Leurre_Plot",
-   "position": [
-    -0.003,
-    23.45,
-    33.203
-   ],
-   "rotation": 1.274,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-062",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    33.502,
-    0.15,
-    52.561
-   ],
-   "rotation": 3.499,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-063",
-   "type": "Leurre_Plot",
-   "position": [
-    40.51,
-    23.45,
-    7.621
-   ],
-   "rotation": 1.607,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-064",
-   "type": "Leurre_BorneIncendie",
-   "position": [
-    -43.542,
-    0.15,
-    -27.878
-   ],
-   "rotation": 0.47,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-065",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -44.559,
-    20.25,
-    5.362
-   ],
-   "rotation": 4.89,
-   "visibilite": 0.889,
-   "lieu": "toit",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-066",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    50.064,
-    5.05,
-    30.936
-   ],
-   "rotation": 4.485,
-   "visibilite": 0.333,
-   "lieu": "vitre",
    "zone": "F2"
   },
   {
-   "id": "leurre-067",
+   "id": "leurre-052",
+   "type": "Leurre_Botte",
+   "position": [
+    -44.535,
+    10.55,
+    -28.933
+   ],
+   "rotation": 4.677,
+   "visibilite": 0.556,
+   "lieu": "balcon",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-053",
+   "type": "Leurre_Tournesol",
+   "position": [
+    45.846,
+    23.45,
+    36.791
+   ],
+   "rotation": 5.75,
+   "visibilite": 0.556,
+   "lieu": "toit",
+   "zone": "F1"
+  },
+  {
+   "id": "leurre-054",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -30.923,
+    21.05,
+    10.059
+   ],
+   "rotation": 3.89,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-055",
    "type": "Leurre_Ballon",
    "position": [
-    -42.872,
-    20.25,
-    -46.038
-   ],
-   "rotation": 4.691,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-068",
-   "type": "Leurre_Plot",
-   "position": [
-    -45.261,
-    33.05,
-    33.065
-   ],
-   "rotation": 1.512,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "A2"
-  },
-  {
-   "id": "leurre-069",
-   "type": "Leurre_Parasol",
-   "position": [
-    30.2,
+    31.966,
     36.25,
-    -38.165
+    -44.968
    ],
-   "rotation": 4.639,
-   "visibilite": 0.333,
+   "rotation": 2.733,
+   "visibilite": 1.0,
    "lieu": "toit",
    "zone": "E5"
   },
   {
-   "id": "leurre-070",
-   "type": "Leurre_Botte",
+   "id": "leurre-056",
+   "type": "Leurre_Eponge",
    "position": [
-    -28.88,
-    10.55,
-    -46.248
+    -0.792,
+    7.35,
+    50.882
    ],
-   "rotation": 0.997,
-   "visibilite": 0.333,
+   "rotation": 2.416,
+   "visibilite": 0.889,
    "lieu": "balcon",
-   "zone": "B5"
+   "zone": "C1"
   },
   {
-   "id": "leurre-071",
-   "type": "Leurre_Arrosoir",
+   "id": "leurre-057",
+   "type": "Leurre_Fromage",
    "position": [
-    33.79,
-    17.05,
-    -35.846
+    -10.768,
+    0.15,
+    -11.995
    ],
-   "rotation": 2.199,
+   "rotation": 0.453,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C3"
+  },
+  {
+   "id": "leurre-058",
+   "type": "Leurre_Panneau",
+   "position": [
+    33.11,
+    23.45,
+    -32.835
+   ],
+   "rotation": 4.544,
    "visibilite": 1.0,
    "lieu": "toit",
    "zone": "E4"
   },
   {
-   "id": "leurre-072",
-   "type": "Leurre_Botte",
+   "id": "leurre-059",
+   "type": "Leurre_CasqueChantier",
    "position": [
-    43.114,
+    6.367,
+    36.25,
+    -47.247
+   ],
+   "rotation": 4.574,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-060",
+   "type": "Leurre_Smiley",
+   "position": [
+    -44.988,
+    20.25,
+    -45.699
+   ],
+   "rotation": 4.796,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A5"
+  },
+  {
+   "id": "leurre-061",
+   "type": "Leurre_Seau",
+   "position": [
+    -46.551,
+    13.75,
+    10.959
+   ],
+   "rotation": 3.251,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-062",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -8.284,
     7.35,
-    50.866
+    -29.12
    ],
-   "rotation": 4.709,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-073",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    7.381,
-    0.21,
-    4.03
-   ],
-   "rotation": 1.53,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-074",
-   "type": "Leurre_Taxi",
-   "position": [
-    9.965,
-    0.55,
-    33.481
-   ],
-   "rotation": 1.991,
-   "visibilite": 1.0,
-   "lieu": "vitre",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-075",
-   "type": "Leurre_Botte",
-   "position": [
-    -30.973,
-    0.15,
-    -28.417
-   ],
-   "rotation": 2.397,
-   "visibilite": 0.63,
-   "lieu": "sol",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-076",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -49.9,
-    0.15,
-    51.147
-   ],
-   "rotation": 1.296,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-077",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    10.052,
-    8.25,
-    -33.718
-   ],
-   "rotation": 4.914,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-078",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -29.15,
-    10.55,
-    32.911
-   ],
-   "rotation": 3.348,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-079",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -3.32,
-    16.95,
-    -28.878
-   ],
-   "rotation": 4.592,
-   "visibilite": 0.333,
+   "rotation": 6.063,
+   "visibilite": 0.889,
    "lieu": "balcon",
    "zone": "C4"
   },
   {
-   "id": "leurre-080",
-   "type": "Leurre_Taxi",
+   "id": "leurre-063",
+   "type": "Leurre_Eponge",
    "position": [
-    11.186,
-    0.15,
-    47.564
+    10.904,
+    13.75,
+    48.105
    ],
-   "rotation": 2.234,
-   "visibilite": 1.0,
-   "lieu": "sol",
+   "rotation": 3.379,
+   "visibilite": 0.889,
+   "lieu": "balcon",
    "zone": "D1"
   },
   {
-   "id": "leurre-081",
+   "id": "leurre-064",
    "type": "Leurre_Plot",
    "position": [
-    -35.786,
-    10.55,
-    11.137
+    -48.509,
+    20.25,
+    -45.238
    ],
-   "rotation": 0.937,
-   "visibilite": 0.333,
-   "lieu": "balcon",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-082",
-   "type": "Leurre_Parasol",
-   "position": [
-    -3.097,
-    23.45,
-    -38.4
-   ],
-   "rotation": 5.709,
-   "visibilite": 0.333,
+   "rotation": 1.481,
+   "visibilite": 1.0,
    "lieu": "toit",
-   "zone": "C5"
+   "zone": "A5"
   },
   {
-   "id": "leurre-083",
-   "type": "Leurre_Taxi",
+   "id": "leurre-065",
+   "type": "Leurre_Seau",
    "position": [
-    -7.276,
-    0.21,
-    -9.295
+    32.261,
+    20.25,
+    35.298
    ],
-   "rotation": 0.493,
-   "visibilite": 0.444,
+   "rotation": 2.845,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E2"
+  },
+  {
+   "id": "leurre-066",
+   "type": "Leurre_Plot",
+   "position": [
+    34.725,
+    17.05,
+    5.666
+   ],
+   "rotation": 2.638,
+   "visibilite": 0.926,
+   "lieu": "toit",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-067",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    46.921,
+    0.55,
+    50.101
+   ],
+   "rotation": 4.423,
+   "visibilite": 1.0,
+   "lieu": "vitre",
+   "zone": "F1"
+  },
+  {
+   "id": "leurre-068",
+   "type": "Leurre_Seau",
+   "position": [
+    -38.182,
+    23.45,
+    -47.043
+   ],
+   "rotation": 1.005,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-069",
+   "type": "Leurre_Parapluie",
+   "position": [
+    -0.527,
+    17.05,
+    47.479
+   ],
+   "rotation": 5.157,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C1"
+  },
+  {
+   "id": "leurre-070",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -42.134,
+    14.65,
+    -30.032
+   ],
+   "rotation": 4.203,
+   "visibilite": 0.889,
+   "lieu": "vitre",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-071",
+   "type": "Leurre_Valise",
+   "position": [
+    -44.897,
+    7.35,
+    50.922
+   ],
+   "rotation": 1.785,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-072",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -29.91,
+    14.65,
+    33.272
+   ],
+   "rotation": 3.197,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "B2"
+  },
+  {
+   "id": "leurre-073",
+   "type": "Leurre_Fromage",
+   "position": [
+    -29.896,
+    17.85,
+    49.061
+   ],
+   "rotation": 4.461,
+   "visibilite": 0.889,
+   "lieu": "vitre",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-074",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    31.473,
+    36.25,
+    -46.719
+   ],
+   "rotation": 0.886,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E5"
+  },
+  {
+   "id": "leurre-075",
+   "type": "Leurre_Panneau",
+   "position": [
+    4.46,
+    23.45,
+    -39.146
+   ],
+   "rotation": 3.055,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-076",
+   "type": "Leurre_Panneau",
+   "position": [
+    -35.2,
+    23.45,
+    -35.585
+   ],
+   "rotation": 1.855,
+   "visibilite": 0.63,
+   "lieu": "toit",
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-077",
+   "type": "Leurre_Botte",
+   "position": [
+    -7.556,
+    0.21,
+    0.763
+   ],
+   "rotation": 5.677,
+   "visibilite": 1.0,
    "lieu": "sol",
    "zone": "C3"
   },
   {
-   "id": "leurre-084",
-   "type": "Leurre_Plot",
+   "id": "leurre-078",
+   "type": "Leurre_BorneIncendie",
    "position": [
-    52.207,
+    -29.3,
     0.15,
-    -12.435
+    11.566
    ],
-   "rotation": 3.126,
+   "rotation": 1.09,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-079",
+   "type": "Leurre_Valise",
+   "position": [
+    50.617,
+    0.15,
+    -28.905
+   ],
+   "rotation": 2.978,
    "visibilite": 1.0,
    "lieu": "sol",
    "zone": "F4"
   },
   {
-   "id": "leurre-085",
-   "type": "Leurre_Jardiniere",
+   "id": "leurre-080",
+   "type": "Leurre_Ballon",
    "position": [
-    32.434,
-    0.55,
-    10.042
+    -44.675,
+    45.85,
+    33.872
    ],
-   "rotation": 1.79,
+   "rotation": 1.894,
    "visibilite": 1.0,
-   "lieu": "vitre",
-   "zone": "E3"
+   "lieu": "toit",
+   "zone": "A2"
   },
   {
-   "id": "leurre-086",
+   "id": "leurre-081",
    "type": "Leurre_Arrosoir",
    "position": [
-    48.398,
-    39.45,
-    -43.23
+    7.463,
+    17.05,
+    33.69
    ],
-   "rotation": 0.678,
+   "rotation": 3.413,
    "visibilite": 0.667,
    "lieu": "toit",
-   "zone": "F5"
+   "zone": "D2"
   },
   {
-   "id": "leurre-087",
-   "type": "Leurre_Parasol",
+   "id": "leurre-082",
+   "type": "Leurre_Taxi",
    "position": [
-    11.938,
+    52.567,
     0.15,
-    -48.232
+    -8.587
    ],
-   "rotation": 1.081,
-   "visibilite": 0.889,
-   "lieu": "sol",
-   "zone": "D5"
-  },
-  {
-   "id": "leurre-088",
-   "type": "Leurre_Botte",
-   "position": [
-    -9.353,
-    0.15,
-    52.455
-   ],
-   "rotation": 5.123,
+   "rotation": 3.39,
    "visibilite": 1.0,
    "lieu": "sol",
-   "zone": "C1"
+   "zone": "F3"
   },
   {
-   "id": "leurre-089",
-   "type": "Leurre_Jardiniere",
+   "id": "leurre-083",
+   "type": "Leurre_SousMarin",
    "position": [
-    6.33,
+    9.011,
     0.21,
-    8.714
+    3.12
    ],
-   "rotation": 4.704,
-   "visibilite": 0.667,
+   "rotation": 5.063,
+   "visibilite": 1.0,
    "lieu": "sol",
    "zone": "D3"
   },
   {
-   "id": "leurre-090",
+   "id": "leurre-084",
+   "type": "Leurre_Botte",
+   "position": [
+    7.71,
+    13.75,
+    -29.193
+   ],
+   "rotation": 1.062,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-085",
    "type": "Leurre_Ballon",
    "position": [
-    50.017,
-    11.45,
-    -49.215
+    51.895,
+    0.15,
+    -39.589
    ],
-   "rotation": 2.407,
-   "visibilite": 0.667,
-   "lieu": "vitre",
+   "rotation": 3.638,
+   "visibilite": 1.0,
+   "lieu": "sol",
    "zone": "F5"
   },
   {
-   "id": "leurre-091",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.444,
-    0.21,
-    3.761
-   ],
-   "rotation": 5.955,
-   "visibilite": 0.444,
-   "lieu": "sol",
-   "zone": "C3"
-  },
-  {
-   "id": "leurre-092",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -4.164,
-    23.45,
-    35.641
-   ],
-   "rotation": 5.4,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-093",
+   "id": "leurre-086",
    "type": "Leurre_Jardiniere",
    "position": [
-    -45.172,
-    36.25,
-    0.925
+    36.63,
+    20.25,
+    36.783
    ],
-   "rotation": 5.725,
-   "visibilite": 0.889,
+   "rotation": 4.405,
+   "visibilite": 0.556,
    "lieu": "toit",
-   "zone": "A3"
+   "zone": "E1"
   },
   {
-   "id": "leurre-094",
+   "id": "leurre-087",
+   "type": "Leurre_Ballon",
+   "position": [
+    33.98,
+    7.35,
+    -29.175
+   ],
+   "rotation": 1.534,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-088",
    "type": "Leurre_Arrosoir",
    "position": [
-    -0.248,
-    23.45,
-    -43.243
+    -3.151,
+    36.25,
+    -45.066
    ],
-   "rotation": 4.264,
-   "visibilite": 0.667,
+   "rotation": 2.74,
+   "visibilite": 0.556,
    "lieu": "toit",
    "zone": "C5"
   },
   {
-   "id": "leurre-095",
-   "type": "Leurre_Botte",
+   "id": "leurre-089",
+   "type": "Leurre_Taxi",
    "position": [
-    -34.264,
-    5.05,
-    10.016
+    50.085,
+    0.55,
+    30.434
    ],
-   "rotation": 5.087,
-   "visibilite": 0.444,
+   "rotation": 3.692,
+   "visibilite": 0.889,
    "lieu": "vitre",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-096",
-   "type": "Leurre_Plot",
-   "position": [
-    43.945,
-    23.45,
-    33.374
-   ],
-   "rotation": 5.459,
-   "visibilite": 1.0,
-   "lieu": "toit",
    "zone": "F2"
   },
   {
-   "id": "leurre-097",
-   "type": "Leurre_Parasol",
+   "id": "leurre-090",
+   "type": "Leurre_CasqueChantier",
    "position": [
-    33.596,
-    23.45,
-    44.541
+    -44.459,
+    8.25,
+    10.005
    ],
-   "rotation": 1.6,
+   "rotation": 4.304,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-091",
+   "type": "Leurre_Seau",
+   "position": [
+    -34.654,
+    23.45,
+    -39.13
+   ],
+   "rotation": 2.89,
    "visibilite": 1.0,
    "lieu": "toit",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-092",
+   "type": "Leurre_Citron",
+   "position": [
+    10.084,
+    8.25,
+    30.73
+   ],
+   "rotation": 2.704,
+   "visibilite": 0.778,
+   "lieu": "vitre",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-093",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -39.419,
+    21.05,
+    -29.981
+   ],
+   "rotation": 2.668,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-094",
+   "type": "Leurre_Plot",
+   "position": [
+    37.07,
+    23.45,
+    43.664
+   ],
+   "rotation": 2.763,
+   "visibilite": 0.333,
+   "lieu": "toit",
    "zone": "E1"
+  },
+  {
+   "id": "leurre-095",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -48.993,
+    20.25,
+    -47.601
+   ],
+   "rotation": 4.412,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A5"
+  },
+  {
+   "id": "leurre-096",
+   "type": "Leurre_Seau",
+   "position": [
+    -5.132,
+    23.45,
+    -32.889
+   ],
+   "rotation": 2.853,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-097",
+   "type": "Leurre_Plot",
+   "position": [
+    33.429,
+    23.45,
+    0.276
+   ],
+   "rotation": 2.078,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E3"
   },
   {
    "id": "leurre-098",
    "type": "Leurre_Plot",
    "position": [
-    -28.923,
-    10.55,
-    45.431
+    50.917,
+    7.35,
+    32.49
    ],
-   "rotation": 4.145,
+   "rotation": 5.692,
    "visibilite": 0.444,
    "lieu": "balcon",
-   "zone": "B1"
+   "zone": "F2"
   },
   {
    "id": "leurre-099",
-   "type": "Leurre_CasqueChantier",
+   "type": "Leurre_Parasol",
    "position": [
-    9.309,
-    0.15,
-    -28.816
+    43.187,
+    23.45,
+    48.367
    ],
-   "rotation": 5.399,
-   "visibilite": 0.889,
-   "lieu": "sol",
-   "zone": "D4"
+   "rotation": 1.0,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "F1"
   },
   {
    "id": "leurre-100",
-   "type": "Leurre_Parasol",
+   "type": "Leurre_Parapluie",
    "position": [
-    52.475,
-    0.15,
-    -4.727
+    31.597,
+    20.25,
+    34.335
    ],
-   "rotation": 1.831,
+   "rotation": 0.786,
    "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F3"
+   "lieu": "toit",
+   "zone": "E2"
   },
   {
    "id": "leurre-101",
-   "type": "Leurre_Botte",
+   "type": "Leurre_Seau",
    "position": [
-    10.944,
-    16.95,
-    -44.12
+    -1.83,
+    17.05,
+    44.204
    ],
-   "rotation": 3.334,
+   "rotation": 3.16,
    "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "D5"
+   "lieu": "toit",
+   "zone": "C1"
   },
   {
    "id": "leurre-102",
-   "type": "Leurre_Parasol",
+   "type": "Leurre_Smiley",
    "position": [
-    41.68,
-    0.15,
-    -28.95
+    -3.17,
+    36.25,
+    -48.187
    ],
-   "rotation": 3.284,
-   "visibilite": 0.889,
-   "lieu": "sol",
-   "zone": "F4"
+   "rotation": 0.381,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "C5"
   },
   {
    "id": "leurre-103",
-   "type": "Leurre_Plot",
+   "type": "Leurre_Jardiniere",
    "position": [
-    -2.02,
-    7.35,
-    -29.073
+    30.641,
+    36.25,
+    -49.243
    ],
-   "rotation": 6.036,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-104",
-   "type": "Leurre_Ballon",
-   "position": [
-    33.489,
-    5.05,
-    -29.939
-   ],
-   "rotation": 0.803,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-105",
-   "type": "Leurre_Botte",
-   "position": [
-    -28.822,
-    10.55,
-    34.211
-   ],
-   "rotation": 4.45,
-   "visibilite": 0.333,
-   "lieu": "balcon",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-106",
-   "type": "Leurre_Ballon",
-   "position": [
-    10.872,
-    16.95,
-    31.42
-   ],
-   "rotation": 5.985,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-107",
-   "type": "Leurre_Ballon",
-   "position": [
-    38.428,
-    42.65,
-    -45.56
-   ],
-   "rotation": 5.821,
+   "rotation": 2.964,
    "visibilite": 1.0,
    "lieu": "toit",
    "zone": "E5"
   },
   {
-   "id": "leurre-108",
+   "id": "leurre-104",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    10.547,
+    0.21,
+    -2.463
+   ],
+   "rotation": 1.689,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-105",
+   "type": "Leurre_Eponge",
+   "position": [
+    -29.995,
+    21.05,
+    30.722
+   ],
+   "rotation": 5.904,
+   "visibilite": 0.889,
+   "lieu": "vitre",
+   "zone": "B2"
+  },
+  {
+   "id": "leurre-106",
    "type": "Leurre_Parasol",
    "position": [
-    -5.705,
-    7.35,
-    50.973
+    -28.982,
+    13.75,
+    38.561
    ],
-   "rotation": 2.688,
-   "visibilite": 0.778,
+   "rotation": 3.986,
+   "visibilite": 0.667,
    "lieu": "balcon",
-   "zone": "C1"
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-107",
+   "type": "Leurre_Parasol",
+   "position": [
+    38.788,
+    17.05,
+    -32.279
+   ],
+   "rotation": 3.666,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-108",
+   "type": "Leurre_Smiley",
+   "position": [
+    -7.967,
+    0.21,
+    -0.305
+   ],
+   "rotation": 2.505,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C3"
   },
   {
    "id": "leurre-109",
-   "type": "Leurre_CasqueChantier",
+   "type": "Leurre_Parasol",
    "position": [
-    41.447,
-    14.65,
-    49.985
+    40.534,
+    0.15,
+    -28.801
    ],
-   "rotation": 2.971,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "F1"
+   "rotation": 2.601,
+   "visibilite": 0.556,
+   "lieu": "sol",
+   "zone": "F4"
   },
   {
    "id": "leurre-110",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -46.325,
-    33.05,
-    -39.338
+    9.759,
+    23.45,
+    41.6
    ],
-   "rotation": 3.947,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-111",
-   "type": "Leurre_Plot",
-   "position": [
-    -33.949,
-    17.05,
-    -38.23
-   ],
-   "rotation": 0.208,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-112",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -33.716,
-    0.55,
-    -29.982
-   ],
-   "rotation": 3.804,
-   "visibilite": 0.889,
-   "lieu": "vitre",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-113",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -46.454,
-    20.25,
-    49.833
-   ],
-   "rotation": 3.543,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-114",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    9.76,
-    20.25,
-    48.14
-   ],
-   "rotation": 5.666,
+   "rotation": 0.511,
    "visibilite": 0.667,
    "lieu": "toit",
    "zone": "D1"
   },
   {
-   "id": "leurre-115",
-   "type": "Leurre_Ballon",
+   "id": "leurre-111",
+   "type": "Leurre_Parasol",
    "position": [
-    31.872,
-    13.75,
-    10.866
+    10.867,
+    0.15,
+    -46.458
    ],
-   "rotation": 2.255,
+   "rotation": 5.384,
    "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-112",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -45.827,
+    23.45,
+    -32.794
+   ],
+   "rotation": 2.398,
+   "visibilite": 0.926,
+   "lieu": "toit",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-113",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    51.55,
+    0.15,
+    -51.265
+   ],
+   "rotation": 1.735,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-114",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -49.8,
+    36.25,
+    41.79
+   ],
+   "rotation": 4.452,
+   "visibilite": 0.556,
+   "lieu": "toit",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-115",
+   "type": "Leurre_Parasol",
+   "position": [
+    51.057,
+    7.35,
+    -7.356
+   ],
+   "rotation": 1.497,
+   "visibilite": 0.667,
    "lieu": "balcon",
-   "zone": "E3"
+   "zone": "F3"
   },
   {
    "id": "leurre-116",
-   "type": "Leurre_Ballon",
-   "position": [
-    -45.224,
-    13.75,
-    -29.15
-   ],
-   "rotation": 2.564,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-117",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -41.539,
-    33.05,
-    35.04
+    -40.243,
+    0.0,
+    15.213
    ],
-   "rotation": 2.362,
-   "visibilite": 1.0,
-   "lieu": "toit",
+   "rotation": 6.276,
+   "visibilite": 0.333,
+   "lieu": "sol",
    "zone": "A2"
   },
   {
-   "id": "leurre-118",
-   "type": "Leurre_Arrosoir",
+   "id": "leurre-117",
+   "type": "Leurre_SousMarin",
    "position": [
-    -32.899,
-    17.05,
-    -30.17
+    6.341,
+    0.15,
+    -28.864
    ],
-   "rotation": 3.527,
+   "rotation": 0.93,
+   "visibilite": 0.667,
+   "lieu": "sol",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-118",
+   "type": "Leurre_Botte",
+   "position": [
+    -28.92,
+    20.15,
+    8.157
+   ],
+   "rotation": 0.978,
    "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "B4"
+   "lieu": "balcon",
+   "zone": "B3"
   },
   {
    "id": "leurre-119",
-   "type": "Leurre_Ballon",
+   "type": "Leurre_CasqueChantier",
    "position": [
-    -7.299,
-    0.21,
-    -3.773
+    -42.212,
+    11.45,
+    -29.956
    ],
-   "rotation": 1.792,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C3"
-  },
-  {
-   "id": "leurre-120",
-   "type": "Leurre_Botte",
-   "position": [
-    -46.524,
-    10.55,
-    -29.146
-   ],
-   "rotation": 0.095,
-   "visibilite": 1.0,
-   "lieu": "balcon",
+   "rotation": 4.311,
+   "visibilite": 0.667,
+   "lieu": "vitre",
    "zone": "A4"
   },
   {
-   "id": "leurre-121",
-   "type": "Leurre_Arrosoir",
+   "id": "leurre-120",
+   "type": "Leurre_BusScolaire",
    "position": [
-    -3.32,
-    10.55,
-    -28.863
+    36.787,
+    14.65,
+    10.053
    ],
-   "rotation": 3.629,
-   "visibilite": 0.333,
+   "rotation": 0.85,
+   "visibilite": 0.778,
+   "lieu": "vitre",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-121",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -29.028,
+    10.55,
+    45.732
+   ],
+   "rotation": 0.188,
+   "visibilite": 0.667,
    "lieu": "balcon",
-   "zone": "C4"
+   "zone": "B1"
   },
   {
    "id": "leurre-122",
-   "type": "Leurre_BoiteAuxLettres",
+   "type": "Leurre_Jardiniere",
    "position": [
-    4.355,
-    0.21,
-    -10.671
+    30.931,
+    5.05,
+    50.076
    ],
-   "rotation": 1.277,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D3"
+   "rotation": 0.094,
+   "visibilite": 0.556,
+   "lieu": "vitre",
+   "zone": "E1"
   },
   {
    "id": "leurre-123",
    "type": "Leurre_Jardiniere",
    "position": [
-    -43.207,
-    33.05,
-    -40.364
+    43.052,
+    17.05,
+    -30.4
    ],
-   "rotation": 1.937,
-   "visibilite": 0.667,
+   "rotation": 2.593,
+   "visibilite": 0.333,
    "lieu": "toit",
-   "zone": "A5"
+   "zone": "F4"
   },
   {
    "id": "leurre-124",
-   "type": "Leurre_BoiteAuxLettres",
+   "type": "Leurre_Tournesol",
    "position": [
-    12.314,
-    0.15,
-    -27.855
+    49.77,
+    17.05,
+    44.552
    ],
-   "rotation": 2.107,
-   "visibilite": 0.556,
-   "lieu": "sol",
-   "zone": "D4"
+   "rotation": 5.302,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "F1"
   },
   {
    "id": "leurre-125",
-   "type": "Leurre_Ballon",
+   "type": "Leurre_Valise",
    "position": [
-    -6.8,
-    20.25,
-    -36.113
+    -29.161,
+    23.35,
+    -5.879
    ],
-   "rotation": 2.838,
-   "visibilite": 0.593,
-   "lieu": "toit",
-   "zone": "C5"
+   "rotation": 3.214,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "B3"
   },
   {
    "id": "leurre-126",
-   "type": "Leurre_CasqueChantier",
+   "type": "Leurre_Jardiniere",
    "position": [
-    32.537,
-    10.55,
-    -28.881
+    -47.823,
+    36.25,
+    39.498
    ],
-   "rotation": 4.418,
-   "visibilite": 0.333,
-   "lieu": "balcon",
-   "zone": "E4"
+   "rotation": 5.059,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A1"
   },
   {
    "id": "leurre-127",
-   "type": "Leurre_Taxi",
+   "type": "Leurre_Tournesol",
    "position": [
-    11.075,
-    0.15,
-    -49.301
+    2.001,
+    17.05,
+    49.822
    ],
-   "rotation": 1.203,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D5"
+   "rotation": 2.777,
+   "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "D1"
   },
   {
    "id": "leurre-128",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -49.001,
-    14.65,
-    10.077
+    49.809,
+    17.05,
+    -41.208
    ],
-   "rotation": 6.203,
+   "rotation": 1.738,
    "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-129",
+   "type": "Leurre_Ballon",
+   "position": [
+    -28.961,
+    10.55,
+    -38.733
+   ],
+   "rotation": 4.949,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-130",
+   "type": "Leurre_BoiteAuxLettres",
+   "position": [
+    12.054,
+    0.15,
+    -37.585
+   ],
+   "rotation": 5.766,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-131",
+   "type": "Leurre_Smiley",
+   "position": [
+    -44.626,
+    11.45,
+    10.039
+   ],
+   "rotation": 3.25,
+   "visibilite": 0.667,
    "lieu": "vitre",
    "zone": "A3"
   },
   {
-   "id": "leurre-129",
-   "type": "Leurre_Taxi",
-   "position": [
-    10.062,
-    5.05,
-    30.796
-   ],
-   "rotation": 1.623,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-130",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    30.798,
-    11.45,
-    10.119
-   ],
-   "rotation": 1.68,
-   "visibilite": 0.556,
-   "lieu": "vitre",
-   "zone": "E3"
-  },
-  {
-   "id": "leurre-131",
-   "type": "Leurre_Botte",
-   "position": [
-    51.239,
-    0.15,
-    33.794
-   ],
-   "rotation": 1.984,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F2"
-  },
-  {
    "id": "leurre-132",
-   "type": "Leurre_Parasol",
+   "type": "Leurre_Seau",
    "position": [
-    -44.888,
+    10.901,
     0.15,
-    51.892
+    -31.212
    ],
-   "rotation": 0.243,
-   "visibilite": 1.0,
+   "rotation": 5.232,
+   "visibilite": 0.889,
    "lieu": "sol",
-   "zone": "A1"
+   "zone": "D4"
   },
   {
    "id": "leurre-133",
-   "type": "Leurre_Jardiniere",
+   "type": "Leurre_CasqueChantier",
    "position": [
-    41.294,
-    21.05,
-    50.079
+    -9.8,
+    36.25,
+    -43.117
    ],
-   "rotation": 4.796,
-   "visibilite": 0.889,
-   "lieu": "vitre",
-   "zone": "F1"
+   "rotation": 0.254,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "C5"
   },
   {
    "id": "leurre-134",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    49.75,
-    20.25,
-    -31.754
-   ],
-   "rotation": 0.968,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-135",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -4.345,
-    23.45,
-    31.911
-   ],
-   "rotation": 3.938,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-136",
-   "type": "Leurre_Plot",
-   "position": [
-    -28.879,
-    10.55,
-    44.131
-   ],
-   "rotation": 1.198,
-   "visibilite": 0.333,
-   "lieu": "balcon",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-137",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    50.072,
-    14.65,
-    -9.08
-   ],
-   "rotation": 1.292,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-138",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    35.308,
+    37.973,
     36.25,
-    -40.832
+    -47.074
    ],
-   "rotation": 2.314,
-   "visibilite": 1.0,
+   "rotation": 1.589,
+   "visibilite": 0.333,
    "lieu": "toit",
    "zone": "E5"
   },
   {
-   "id": "leurre-139",
-   "type": "Leurre_Botte",
+   "id": "leurre-135",
+   "type": "Leurre_Ballon",
    "position": [
-    50.055,
-    0.55,
-    -43.4
+    -30.885,
+    17.85,
+    -29.932
    ],
-   "rotation": 2.201,
-   "visibilite": 0.333,
+   "rotation": 2.921,
+   "visibilite": 0.667,
    "lieu": "vitre",
-   "zone": "F5"
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-136",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -7.87,
+    23.45,
+    -30.18
+   ],
+   "rotation": 1.566,
+   "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-137",
+   "type": "Leurre_Tournesol",
+   "position": [
+    10.844,
+    10.55,
+    33.643
+   ],
+   "rotation": 0.032,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-138",
+   "type": "Leurre_Plot",
+   "position": [
+    43.2,
+    23.45,
+    1.756
+   ],
+   "rotation": 3.632,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-139",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -29.119,
+    42.55,
+    31.464
+   ],
+   "rotation": 2.446,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "B2"
   },
   {
    "id": "leurre-140",
-   "type": "Leurre_Arrosoir",
+   "type": "Leurre_Plot",
    "position": [
-    39.218,
-    0.15,
-    51.661
+    35.929,
+    23.45,
+    -33.619
    ],
-   "rotation": 3.577,
-   "visibilite": 0.778,
-   "lieu": "sol",
-   "zone": "E1"
+   "rotation": 0.474,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "E4"
   },
   {
    "id": "leurre-141",
-   "type": "Leurre_Jardiniere",
+   "type": "Leurre_BorneIncendie",
    "position": [
-    4.947,
-    23.45,
-    39.289
+    -4.033,
+    0.15,
+    52.448
    ],
-   "rotation": 1.584,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "D1"
+   "rotation": 2.158,
+   "visibilite": 0.667,
+   "lieu": "sol",
+   "zone": "C1"
   },
   {
    "id": "leurre-142",
-   "type": "Leurre_Parasol",
+   "type": "Leurre_BorneIncendie",
    "position": [
-    -5.705,
-    10.55,
-    51.004
+    -7.239,
+    0.21,
+    -4.461
    ],
-   "rotation": 6.069,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "C1"
+   "rotation": 1.795,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C3"
   },
   {
    "id": "leurre-143",
-   "type": "Leurre_Botte",
+   "type": "Leurre_Arrosoir",
    "position": [
-    -29.991,
-    11.45,
-    -3.962
+    51.112,
+    16.95,
+    32.49
    ],
-   "rotation": 4.368,
-   "visibilite": 0.889,
-   "lieu": "vitre",
-   "zone": "B3"
+   "rotation": 3.345,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "F2"
   },
   {
    "id": "leurre-144",
-   "type": "Leurre_Parasol",
+   "type": "Leurre_Parapluie",
    "position": [
-    -39.13,
-    17.05,
-    -43.179
+    -40.815,
+    0.15,
+    12.175
    ],
-   "rotation": 5.89,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "B5"
+   "rotation": 4.025,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A2"
   },
   {
    "id": "leurre-145",
-   "type": "Leurre_Botte",
+   "type": "Leurre_BoiteAuxLettres",
    "position": [
-    -28.864,
-    0.15,
-    28.853
+    2.087,
+    0.71,
+    0.133
    ],
-   "rotation": 4.178,
+   "rotation": 5.854,
    "visibilite": 1.0,
    "lieu": "sol",
-   "zone": "B2"
+   "zone": "D3"
   },
   {
    "id": "leurre-146",
-   "type": "Leurre_BorneIncendie",
+   "type": "Leurre_Ballon",
    "position": [
-    36.253,
-    0.15,
-    11.862
+    -41.263,
+    20.25,
+    -44.039
    ],
-   "rotation": 0.699,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E3"
+   "rotation": 4.227,
+   "visibilite": 0.889,
+   "lieu": "toit",
+   "zone": "A5"
   },
   {
    "id": "leurre-147",
-   "type": "Leurre_Jardiniere",
+   "type": "Leurre_Plot",
    "position": [
-    -6.695,
-    45.85,
-    -47.453
+    49.78,
+    23.45,
+    -49.174
    ],
-   "rotation": 2.162,
-   "visibilite": 1.0,
+   "rotation": 1.664,
+   "visibilite": 0.667,
    "lieu": "toit",
-   "zone": "C5"
+   "zone": "F5"
   },
   {
    "id": "leurre-148",
-   "type": "Leurre_CasqueChantier",
+   "type": "Leurre_Smiley",
    "position": [
-    -13.367,
-    0.0,
-    -2.168
+    -46.952,
+    45.85,
+    31.285
    ],
-   "rotation": 2.716,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C3"
+   "rotation": 6.178,
+   "visibilite": 0.889,
+   "lieu": "toit",
+   "zone": "A2"
   },
   {
    "id": "leurre-149",
-   "type": "Leurre_Plot",
+   "type": "Leurre_Parapluie",
    "position": [
-    49.217,
-    0.15,
-    -52.256
+    6.916,
+    10.55,
+    50.923
    ],
-   "rotation": 2.555,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F5"
+   "rotation": 5.567,
+   "visibilite": 0.556,
+   "lieu": "balcon",
+   "zone": "D1"
   },
   {
    "id": "leurre-150",
-   "type": "Leurre_BorneIncendie",
+   "type": "Leurre_Tournesol",
    "position": [
-    34.008,
-    0.15,
-    -27.88
+    10.829,
+    29.75,
+    -45.009
    ],
-   "rotation": 1.482,
+   "rotation": 3.872,
    "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E4"
+   "lieu": "balcon",
+   "zone": "D5"
   },
   {
    "id": "leurre-151",
-   "type": "Leurre_Ballon",
+   "type": "Leurre_BorneIncendie",
    "position": [
-    10.039,
-    14.65,
-    33.607
+    45.158,
+    0.15,
+    52.016
    ],
-   "rotation": 1.733,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "D2"
+   "rotation": 3.496,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F1"
   },
   {
    "id": "leurre-152",
-   "type": "Leurre_Arrosoir",
+   "type": "Leurre_Tournesol",
    "position": [
-    -43.749,
-    33.05,
-    36.75
-   ],
-   "rotation": 1.23,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-153",
-   "type": "Leurre_Ballon",
-   "position": [
-    7.054,
-    23.45,
-    -43.134
-   ],
-   "rotation": 5.063,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "D5"
-  },
-  {
-   "id": "leurre-154",
-   "type": "Leurre_Botte",
-   "position": [
-    -28.957,
-    13.75,
-    5.657
-   ],
-   "rotation": 2.448,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-155",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -29.104,
-    10.55,
-    -39.912
-   ],
-   "rotation": 6.02,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-156",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    10.103,
-    11.45,
-    41.189
-   ],
-   "rotation": 0.21,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-157",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -40.484,
-    20.25,
-    -45.179
-   ],
-   "rotation": 4.355,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-158",
-   "type": "Leurre_Taxi",
-   "position": [
-    52.195,
-    0.15,
-    12.359
-   ],
-   "rotation": 1.534,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F2"
-  },
-  {
-   "id": "leurre-159",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    -30.804,
-    0.15,
-    27.946
-   ],
-   "rotation": 0.127,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-160",
-   "type": "Leurre_Plot",
-   "position": [
-    39.496,
-    23.45,
-    46.976
-   ],
-   "rotation": 4.256,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-161",
-   "type": "Leurre_Ballon",
-   "position": [
-    44.218,
-    5.05,
-    -29.896
-   ],
-   "rotation": 6.183,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-162",
-   "type": "Leurre_Plot",
-   "position": [
-    -9.8,
-    23.45,
-    36.839
-   ],
-   "rotation": 1.983,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "C1"
-  },
-  {
-   "id": "leurre-163",
-   "type": "Leurre_Parasol",
-   "position": [
-    10.816,
-    10.55,
-    -32.109
-   ],
-   "rotation": 2.54,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-164",
-   "type": "Leurre_Botte",
-   "position": [
-    -32.434,
+    1.469,
     16.95,
-    50.932
+    -29.022
    ],
-   "rotation": 5.101,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-165",
-   "type": "Leurre_Botte",
-   "position": [
-    49.171,
-    0.15,
-    -11.921
-   ],
-   "rotation": 5.594,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-166",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -44.245,
-    0.15,
-    -29.1
-   ],
-   "rotation": 2.96,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-167",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    40.818,
-    23.45,
-    49.76
-   ],
-   "rotation": 5.154,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-168",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -39.9,
-    0.15,
-    -28.995
-   ],
-   "rotation": 0.071,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-169",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.562,
-    20.25,
-    -30.25
-   ],
-   "rotation": 5.833,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-170",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    0.9,
-    0.21,
-    9.154
-   ],
-   "rotation": 1.939,
-   "visibilite": 0.889,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-171",
-   "type": "Leurre_BorneIncendie",
-   "position": [
-    -2.693,
-    0.15,
-    12.265
-   ],
-   "rotation": 0.272,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-172",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -40.862,
-    20.25,
-    9.837
-   ],
-   "rotation": 0.27,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-173",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    10.826,
-    10.55,
-    -44.12
-   ],
-   "rotation": 2.307,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "D5"
-  },
-  {
-   "id": "leurre-174",
-   "type": "Leurre_Taxi",
-   "position": [
-    50.533,
-    0.15,
-    12.623
-   ],
-   "rotation": 4.681,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F2"
-  },
-  {
-   "id": "leurre-175",
-   "type": "Leurre_Parasol",
-   "position": [
-    -48.118,
-    33.05,
-    -38.24
-   ],
-   "rotation": 2.903,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-176",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -30.209,
-    17.05,
-    -47.651
-   ],
-   "rotation": 2.355,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-177",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -1.837,
-    23.45,
-    34.94
-   ],
-   "rotation": 0.498,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "C2"
-  },
-  {
-   "id": "leurre-178",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    3.216,
-    0.21,
-    9.352
-   ],
-   "rotation": 3.239,
-   "visibilite": 0.333,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-179",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -28.579,
-    0.15,
-    -29.173
-   ],
-   "rotation": 3.265,
-   "visibilite": 0.444,
-   "lieu": "sol",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-180",
-   "type": "Leurre_Parasol",
-   "position": [
-    -28.538,
-    0.15,
-    -10.642
-   ],
-   "rotation": 3.484,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-181",
-   "type": "Leurre_Taxi",
-   "position": [
-    -42.229,
-    0.15,
-    51.347
-   ],
-   "rotation": 5.053,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-182",
-   "type": "Leurre_Ballon",
-   "position": [
-    11.027,
-    16.95,
-    48.456
-   ],
-   "rotation": 0.646,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-183",
-   "type": "Leurre_Ballon",
-   "position": [
-    50.031,
-    14.65,
-    -33.504
-   ],
-   "rotation": 4.853,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-184",
-   "type": "Leurre_Parasol",
-   "position": [
-    52.491,
-    0.15,
-    1.965
-   ],
-   "rotation": 5.304,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-185",
-   "type": "Leurre_Ballon",
-   "position": [
-    -41.976,
-    23.45,
-    -35.362
-   ],
-   "rotation": 0.438,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-186",
-   "type": "Leurre_Plot",
-   "position": [
-    -39.199,
-    0.15,
-    52.273
-   ],
-   "rotation": 2.237,
-   "visibilite": 0.889,
-   "lieu": "sol",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-187",
-   "type": "Leurre_Ballon",
-   "position": [
-    12.198,
-    0.15,
-    -29.463
-   ],
-   "rotation": 4.114,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-188",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -1.993,
-    45.85,
-    -43.159
-   ],
-   "rotation": 0.925,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "C5"
-  },
-  {
-   "id": "leurre-189",
-   "type": "Leurre_Plot",
-   "position": [
-    -41.644,
-    16.95,
-    11.041
-   ],
-   "rotation": 4.379,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-190",
-   "type": "Leurre_Taxi",
-   "position": [
-    50.009,
-    21.05,
-    36.246
-   ],
-   "rotation": 4.51,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-191",
-   "type": "Leurre_Botte",
-   "position": [
-    11.002,
-    10.55,
-    32.72
-   ],
-   "rotation": 6.094,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-192",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -3.461,
-    17.05,
-    49.802
-   ],
-   "rotation": 0.956,
-   "visibilite": 0.556,
-   "lieu": "toit",
-   "zone": "C1"
-  },
-  {
-   "id": "leurre-193",
-   "type": "Leurre_Botte",
-   "position": [
-    -30.044,
-    11.45,
-    30.724
-   ],
-   "rotation": 3.187,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-194",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    38.173,
-    7.35,
-    11.1
-   ],
-   "rotation": 0.431,
-   "visibilite": 0.444,
-   "lieu": "balcon",
-   "zone": "E3"
-  },
-  {
-   "id": "leurre-195",
-   "type": "Leurre_Taxi",
-   "position": [
-    50.015,
-    27.45,
-    -49.163
-   ],
-   "rotation": 4.49,
-   "visibilite": 0.556,
-   "lieu": "vitre",
-   "zone": "F5"
-  },
-  {
-   "id": "leurre-196",
-   "type": "Leurre_Botte",
-   "position": [
-    -11.664,
-    0.15,
-    -3.101
-   ],
-   "rotation": 1.718,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "C3"
-  },
-  {
-   "id": "leurre-197",
-   "type": "Leurre_Ballon",
-   "position": [
-    31.502,
-    0.55,
-    50.045
-   ],
-   "rotation": 2.996,
-   "visibilite": 1.0,
-   "lieu": "vitre",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-198",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -3.32,
-    13.75,
-    -29.193
-   ],
-   "rotation": 0.765,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-199",
-   "type": "Leurre_Taxi",
-   "position": [
-    37.925,
-    0.15,
-    -28.001
-   ],
-   "rotation": 5.451,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-200",
-   "type": "Leurre_Plot",
-   "position": [
-    -40.344,
-    16.95,
-    10.906
-   ],
-   "rotation": 1.835,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-201",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    39.024,
-    0.15,
-    -27.585
-   ],
-   "rotation": 1.36,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-202",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -5.087,
-    0.21,
-    6.927
-   ],
-   "rotation": 0.898,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C3"
-  },
-  {
-   "id": "leurre-203",
-   "type": "Leurre_Taxi",
-   "position": [
-    30.603,
-    5.05,
-    10.01
-   ],
-   "rotation": 1.81,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "E3"
-  },
-  {
-   "id": "leurre-204",
-   "type": "Leurre_Plot",
-   "position": [
-    -38.84,
-    13.75,
-    -28.985
-   ],
-   "rotation": 3.662,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "B4"
-  },
-  {
-   "id": "leurre-205",
-   "type": "Leurre_Botte",
-   "position": [
-    -33.999,
-    17.85,
-    50.114
-   ],
-   "rotation": 4.432,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-206",
-   "type": "Leurre_Ballon",
-   "position": [
-    -1.034,
-    17.85,
-    -29.945
-   ],
-   "rotation": 3.697,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-207",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    11.599,
-    0.15,
-    -51.281
-   ],
-   "rotation": 1.468,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D5"
-  },
-  {
-   "id": "leurre-208",
-   "type": "Leurre_Taxi",
-   "position": [
-    9.94,
-    8.25,
-    30.842
-   ],
-   "rotation": 1.536,
-   "visibilite": 0.333,
-   "lieu": "vitre",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-209",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -47.225,
-    0.55,
-    -29.881
-   ],
-   "rotation": 2.274,
-   "visibilite": 0.889,
-   "lieu": "vitre",
-   "zone": "A4"
-  },
-  {
-   "id": "leurre-210",
-   "type": "Leurre_Ballon",
-   "position": [
-    42.254,
-    7.35,
-    -29.147
-   ],
-   "rotation": 4.832,
-   "visibilite": 1.0,
-   "lieu": "balcon",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-211",
-   "type": "Leurre_Parasol",
-   "position": [
-    51.045,
-    13.75,
-    35.079
-   ],
-   "rotation": 5.188,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "F2"
-  },
-  {
-   "id": "leurre-212",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -33.429,
-    17.05,
-    -40.553
-   ],
-   "rotation": 6.261,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-213",
-   "type": "Leurre_Parasol",
-   "position": [
-    50.909,
-    13.75,
-    -39.954
-   ],
-   "rotation": 5.958,
-   "visibilite": 0.889,
-   "lieu": "balcon",
-   "zone": "F5"
-  },
-  {
-   "id": "leurre-214",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    4.008,
-    13.75,
-    51.071
-   ],
-   "rotation": 5.965,
-   "visibilite": 0.556,
-   "lieu": "balcon",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-215",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    35.1,
-    0.15,
-    50.963
-   ],
-   "rotation": 2.627,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-216",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    49.767,
-    20.25,
-    6.722
-   ],
-   "rotation": 0.414,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-217",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -1.737,
-    17.05,
-    48.966
-   ],
-   "rotation": 4.321,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "C1"
-  },
-  {
-   "id": "leurre-218",
-   "type": "Leurre_Parasol",
-   "position": [
-    -7.102,
-    23.45,
-    -38.193
-   ],
-   "rotation": 3.717,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "C5"
-  },
-  {
-   "id": "leurre-219",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -40.488,
-    20.25,
-    -48.07
-   ],
-   "rotation": 5.02,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-220",
-   "type": "Leurre_Parasol",
-   "position": [
-    -33.68,
-    20.25,
-    0.391
-   ],
-   "rotation": 0.726,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-221",
-   "type": "Leurre_BorneIncendie",
-   "position": [
-    -37.32,
-    0.15,
-    12.584
-   ],
-   "rotation": 1.306,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-222",
-   "type": "Leurre_Ballon",
-   "position": [
-    41.52,
-    0.15,
-    51.62
-   ],
-   "rotation": 5.828,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-223",
-   "type": "Leurre_Taxi",
-   "position": [
-    6.569,
-    0.21,
-    -7.247
-   ],
-   "rotation": 1.034,
-   "visibilite": 0.963,
-   "lieu": "sol",
-   "zone": "D3"
-  },
-  {
-   "id": "leurre-224",
-   "type": "Leurre_Plot",
-   "position": [
-    5.511,
-    0.15,
-    -12.057
-   ],
-   "rotation": 1.223,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D4"
-  },
-  {
-   "id": "leurre-225",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -45.967,
-    17.85,
-    50.097
-   ],
-   "rotation": 1.24,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "A1"
-  },
-  {
-   "id": "leurre-226",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -43.42,
-    0.15,
-    11.016
-   ],
-   "rotation": 4.431,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-227",
-   "type": "Leurre_BoiteAuxLettres",
-   "position": [
-    -34.297,
-    0.15,
-    12.067
-   ],
-   "rotation": 1.456,
-   "visibilite": 0.667,
-   "lieu": "sol",
-   "zone": "B2"
-  },
-  {
-   "id": "leurre-228",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    43.114,
-    20.15,
-    51.011
-   ],
-   "rotation": 5.469,
-   "visibilite": 0.667,
-   "lieu": "balcon",
-   "zone": "F1"
-  },
-  {
-   "id": "leurre-229",
-   "type": "Leurre_Ballon",
-   "position": [
-    51.075,
-    0.15,
-    -5.58
-   ],
-   "rotation": 1.258,
-   "visibilite": 0.852,
-   "lieu": "sol",
-   "zone": "F3"
-  },
-  {
-   "id": "leurre-230",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    31.762,
-    17.05,
-    -32.431
-   ],
-   "rotation": 0.536,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-231",
-   "type": "Leurre_Taxi",
-   "position": [
-    -10.515,
-    0.15,
-    50.943
-   ],
-   "rotation": 5.638,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "C1"
-  },
-  {
-   "id": "leurre-232",
-   "type": "Leurre_Taxi",
-   "position": [
-    27.571,
-    0.15,
-    50.993
-   ],
-   "rotation": 4.352,
-   "visibilite": 0.963,
-   "lieu": "sol",
-   "zone": "E1"
-  },
-  {
-   "id": "leurre-233",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    5.057,
-    10.55,
-    -28.942
-   ],
-   "rotation": 0.92,
+   "rotation": 3.633,
    "visibilite": 0.481,
    "lieu": "balcon",
    "zone": "D4"
   },
   {
-   "id": "leurre-234",
-   "type": "Leurre_Taxi",
+   "id": "leurre-153",
+   "type": "Leurre_Smiley",
    "position": [
-    50.117,
-    17.85,
-    -49.323
+    10.878,
+    13.75,
+    33.643
    ],
-   "rotation": 4.917,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "F5"
+   "rotation": 3.665,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "D2"
   },
   {
-   "id": "leurre-235",
-   "type": "Leurre_Parasol",
+   "id": "leurre-154",
+   "type": "Leurre_Jardiniere",
    "position": [
-    -47.8,
-    23.45,
-    40.894
+    37.953,
+    36.25,
+    -48.512
    ],
-   "rotation": 2.369,
-   "visibilite": 1.0,
+   "rotation": 3.768,
+   "visibilite": 0.333,
    "lieu": "toit",
-   "zone": "A1"
+   "zone": "E5"
   },
   {
-   "id": "leurre-236",
+   "id": "leurre-155",
+   "type": "Leurre_Banane",
+   "position": [
+    -8.606,
+    0.15,
+    51.036
+   ],
+   "rotation": 4.589,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "C1"
+  },
+  {
+   "id": "leurre-156",
+   "type": "Leurre_Parapluie",
+   "position": [
+    46.671,
+    23.45,
+    1.834
+   ],
+   "rotation": 1.613,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-157",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -40.434,
-    20.25,
-    -46.587
+    40.14,
+    10.55,
+    -28.995
    ],
-   "rotation": 1.746,
-   "visibilite": 0.333,
+   "rotation": 3.371,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-158",
+   "type": "Leurre_Panneau",
+   "position": [
+    -5.106,
+    36.25,
+    -44.376
+   ],
+   "rotation": 4.304,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C5"
+  },
+  {
+   "id": "leurre-159",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -43.725,
+    20.25,
+    -46.962
+   ],
+   "rotation": 0.709,
+   "visibilite": 0.963,
    "lieu": "toit",
    "zone": "A5"
   },
   {
-   "id": "leurre-237",
-   "type": "Leurre_Taxi",
-   "position": [
-    -34.236,
-    0.15,
-    51.854
-   ],
-   "rotation": 5.259,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "B1"
-  },
-  {
-   "id": "leurre-238",
+   "id": "leurre-160",
    "type": "Leurre_Arrosoir",
    "position": [
-    -9.161,
-    0.21,
-    8.711
+    36.293,
+    10.55,
+    10.948
    ],
-   "rotation": 0.952,
-   "visibilite": 0.333,
+   "rotation": 4.541,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-161",
+   "type": "Leurre_Parasol",
+   "position": [
+    -29.166,
+    13.75,
+    -5.879
+   ],
+   "rotation": 3.655,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-162",
+   "type": "Leurre_BoiteAuxLettres",
+   "position": [
+    -6.984,
+    0.21,
+    6.104
+   ],
+   "rotation": 2.626,
+   "visibilite": 0.667,
    "lieu": "sol",
    "zone": "C3"
   },
   {
-   "id": "leurre-239",
-   "type": "Leurre_Botte",
+   "id": "leurre-163",
+   "type": "Leurre_Parapluie",
    "position": [
-    -46.524,
-    13.75,
-    -28.886
+    -44.535,
+    16.95,
+    -29.198
    ],
-   "rotation": 5.465,
-   "visibilite": 0.333,
+   "rotation": 0.901,
+   "visibilite": 1.0,
    "lieu": "balcon",
    "zone": "A4"
   },
   {
-   "id": "leurre-240",
-   "type": "Leurre_Jardiniere",
+   "id": "leurre-164",
+   "type": "Leurre_Eponge",
    "position": [
-    10.046,
-    8.25,
-    -43.824
+    -29.036,
+    16.95,
+    47.032
    ],
-   "rotation": 3.583,
-   "visibilite": 0.667,
-   "lieu": "vitre",
-   "zone": "D5"
+   "rotation": 5.648,
+   "visibilite": 0.778,
+   "lieu": "balcon",
+   "zone": "B1"
   },
   {
-   "id": "leurre-241",
-   "type": "Leurre_Botte",
+   "id": "leurre-165",
+   "type": "Leurre_Parasol",
    "position": [
-    2.361,
-    0.71,
-    0.495
+    -49.9,
+    0.15,
+    51.089
    ],
-   "rotation": 0.334,
+   "rotation": 5.005,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-166",
+   "type": "Leurre_SousMarin",
+   "position": [
+    2.411,
+    0.21,
+    -4.269
+   ],
+   "rotation": 5.958,
    "visibilite": 1.0,
    "lieu": "sol",
    "zone": "D3"
   },
   {
-   "id": "leurre-242",
-   "type": "Leurre_Parasol",
+   "id": "leurre-167",
+   "type": "Leurre_Parapluie",
    "position": [
-    6.485,
-    20.25,
-    33.043
+    51.076,
+    10.55,
+    32.49
    ],
-   "rotation": 3.862,
-   "visibilite": 1.0,
-   "lieu": "toit",
-   "zone": "D2"
+   "rotation": 0.743,
+   "visibilite": 0.444,
+   "lieu": "balcon",
+   "zone": "F2"
   },
   {
-   "id": "leurre-243",
+   "id": "leurre-168",
    "type": "Leurre_CasqueChantier",
    "position": [
-    -29.178,
-    10.55,
-    -47.548
+    -28.886,
+    7.35,
+    -47.063
    ],
-   "rotation": 2.598,
-   "visibilite": 1.0,
+   "rotation": 1.496,
+   "visibilite": 0.333,
    "lieu": "balcon",
    "zone": "B5"
   },
   {
-   "id": "leurre-244",
-   "type": "Leurre_Parasol",
+   "id": "leurre-169",
+   "type": "Leurre_Tournesol",
    "position": [
-    39.347,
-    23.45,
-    9.806
+    -9.411,
+    8.25,
+    -29.976
    ],
-   "rotation": 0.177,
+   "rotation": 0.358,
    "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "E3"
-  },
-  {
-   "id": "leurre-245",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -3.959,
-    11.45,
-    -29.884
-   ],
-   "rotation": 0.666,
-   "visibilite": 0.667,
    "lieu": "vitre",
    "zone": "C4"
   },
   {
-   "id": "leurre-246",
-   "type": "Leurre_Taxi",
-   "position": [
-    11.568,
-    0.15,
-    52.288
-   ],
-   "rotation": 5.171,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-247",
+   "id": "leurre-170",
    "type": "Leurre_Ballon",
    "position": [
-    51.863,
-    0.15,
-    27.366
+    -46.122,
+    23.45,
+    1.826
    ],
-   "rotation": 2.999,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F2"
+   "rotation": 2.739,
+   "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "A3"
   },
   {
-   "id": "leurre-248",
-   "type": "Leurre_CasqueChantier",
+   "id": "leurre-171",
+   "type": "Leurre_Arrosoir",
    "position": [
-    44.051,
-    0.15,
-    -27.455
+    -39.423,
+    45.85,
+    35.207
    ],
-   "rotation": 0.783,
-   "visibilite": 1.0,
-   "lieu": "sol",
-   "zone": "F4"
+   "rotation": 1.207,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "B2"
   },
   {
-   "id": "leurre-249",
-   "type": "Leurre_Botte",
+   "id": "leurre-172",
+   "type": "Leurre_Plot",
    "position": [
-    -37.15,
-    0.55,
-    -30.056
+    33.98,
+    20.15,
+    -28.912
    ],
-   "rotation": 1.853,
+   "rotation": 6.217,
+   "visibilite": 0.444,
+   "lieu": "balcon",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-173",
+   "type": "Leurre_Taxi",
+   "position": [
+    -32.31,
+    0.15,
+    -29.114
+   ],
+   "rotation": 0.9,
    "visibilite": 1.0,
-   "lieu": "vitre",
+   "lieu": "sol",
    "zone": "B4"
   },
   {
-   "id": "leurre-250",
-   "type": "Leurre_Parasol",
+   "id": "leurre-174",
+   "type": "Leurre_CasqueChantier",
    "position": [
-    -33.331,
-    33.05,
-    -3.184
+    39.635,
+    0.15,
+    50.858
    ],
-   "rotation": 2.591,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "B3"
+   "rotation": 4.226,
+   "visibilite": 0.593,
+   "lieu": "sol",
+   "zone": "E1"
   },
   {
-   "id": "leurre-251",
+   "id": "leurre-175",
+   "type": "Leurre_Parasol",
+   "position": [
+    -29.118,
+    7.35,
+    39.861
+   ],
+   "rotation": 3.675,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-176",
+   "type": "Leurre_Parapluie",
+   "position": [
+    10.859,
+    10.55,
+    32.343
+   ],
+   "rotation": 5.446,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-177",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -8.729,
+    0.21,
+    -6.905
+   ],
+   "rotation": 1.227,
+   "visibilite": 0.37,
+   "lieu": "sol",
+   "zone": "C3"
+  },
+  {
+   "id": "leurre-178",
+   "type": "Leurre_Plot",
+   "position": [
+    8.146,
+    0.21,
+    6.497
+   ],
+   "rotation": 2.403,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-179",
+   "type": "Leurre_Banane",
+   "position": [
+    -48.939,
+    14.65,
+    50.054
+   ],
+   "rotation": 6.058,
+   "visibilite": 0.556,
+   "lieu": "vitre",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-180",
+   "type": "Leurre_Panneau",
+   "position": [
+    33.948,
+    23.45,
+    48.524
+   ],
+   "rotation": 2.822,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E1"
+  },
+  {
+   "id": "leurre-181",
+   "type": "Leurre_Smiley",
+   "position": [
+    50.985,
+    7.35,
+    -35.99
+   ],
+   "rotation": 0.849,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-182",
+   "type": "Leurre_Plot",
+   "position": [
+    -47.073,
+    20.25,
+    -41.22
+   ],
+   "rotation": 3.525,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "A5"
+  },
+  {
+   "id": "leurre-183",
+   "type": "Leurre_Fromage",
+   "position": [
+    -2.261,
+    0.15,
+    -28.23
+   ],
+   "rotation": 3.711,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-184",
+   "type": "Leurre_Valise",
+   "position": [
+    -29.889,
+    37.05,
+    30.904
+   ],
+   "rotation": 4.089,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "B2"
+  },
+  {
+   "id": "leurre-185",
+   "type": "Leurre_SousMarin",
+   "position": [
+    -27.533,
+    0.15,
+    -27.675
+   ],
+   "rotation": 1.536,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-186",
+   "type": "Leurre_Parapluie",
+   "position": [
+    -3.144,
+    20.25,
+    40.291
+   ],
+   "rotation": 5.682,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "C1"
+  },
+  {
+   "id": "leurre-187",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    51.532,
+    0.15,
+    49.154
+   ],
+   "rotation": 0.82,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F1"
+  },
+  {
+   "id": "leurre-188",
+   "type": "Leurre_Plot",
+   "position": [
+    32.856,
+    23.45,
+    -34.844
+   ],
+   "rotation": 2.052,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-189",
+   "type": "Leurre_Citron",
+   "position": [
+    49.94,
+    8.25,
+    30.8
+   ],
+   "rotation": 4.419,
+   "visibilite": 0.333,
+   "lieu": "vitre",
+   "zone": "F2"
+  },
+  {
+   "id": "leurre-190",
+   "type": "Leurre_Banane",
+   "position": [
+    -42.812,
+    0.15,
+    -27.323
+   ],
+   "rotation": 2.72,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-191",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -46.551,
+    7.35,
+    11.079
+   ],
+   "rotation": 4.584,
+   "visibilite": 0.444,
+   "lieu": "balcon",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-192",
+   "type": "Leurre_Smiley",
+   "position": [
+    -28.964,
+    20.15,
+    -47.063
+   ],
+   "rotation": 6.204,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-193",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    45.737,
+    17.05,
+    -40.899
+   ],
+   "rotation": 3.01,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-194",
    "type": "Leurre_Ballon",
    "position": [
-    -9.8,
-    23.45,
-    -38.155
+    -6.747,
+    36.25,
+    -43.2
    ],
-   "rotation": 0.925,
-   "visibilite": 0.333,
+   "rotation": 1.566,
+   "visibilite": 0.556,
    "lieu": "toit",
    "zone": "C5"
   },
   {
-   "id": "leurre-252",
-   "type": "Leurre_Plot",
+   "id": "leurre-195",
+   "type": "Leurre_Jardiniere",
    "position": [
-    -41.893,
-    23.45,
-    -33.891
+    11.113,
+    16.95,
+    -45.009
    ],
-   "rotation": 3.633,
+   "rotation": 5.988,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-196",
+   "type": "Leurre_Fromage",
+   "position": [
+    -30.055,
+    33.85,
+    -6.651
+   ],
+   "rotation": 0.143,
+   "visibilite": 0.778,
+   "lieu": "vitre",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-197",
+   "type": "Leurre_Parasol",
+   "position": [
+    11.071,
+    7.35,
+    40.015
+   ],
+   "rotation": 5.382,
+   "visibilite": 0.556,
+   "lieu": "balcon",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-198",
+   "type": "Leurre_Botte",
+   "position": [
+    33.775,
+    11.45,
+    10.096
+   ],
+   "rotation": 3.207,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-199",
+   "type": "Leurre_Seau",
+   "position": [
+    48.827,
+    17.05,
+    7.474
+   ],
+   "rotation": 2.833,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-200",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -46.572,
+    45.85,
+    34.151
+   ],
+   "rotation": 1.346,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "A2"
+  },
+  {
+   "id": "leurre-201",
+   "type": "Leurre_Panneau",
+   "position": [
+    0.746,
+    0.15,
+    -27.339
+   ],
+   "rotation": 0.883,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-202",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    35.304,
+    23.45,
+    -40.522
+   ],
+   "rotation": 2.524,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E5"
+  },
+  {
+   "id": "leurre-203",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    27.078,
+    0.15,
+    49.11
+   ],
+   "rotation": 0.772,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "E1"
+  },
+  {
+   "id": "leurre-204",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -28.886,
+    10.55,
+    -40.033
+   ],
+   "rotation": 5.416,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-205",
+   "type": "Leurre_Eponge",
+   "position": [
+    -40.1,
+    8.25,
+    50.061
+   ],
+   "rotation": 2.149,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-206",
+   "type": "Leurre_Banane",
+   "position": [
+    9.962,
+    5.05,
+    30.638
+   ],
+   "rotation": 1.007,
+   "visibilite": 0.556,
+   "lieu": "vitre",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-207",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    31.715,
+    23.45,
+    -39.269
+   ],
+   "rotation": 0.167,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E5"
+  },
+  {
+   "id": "leurre-208",
+   "type": "Leurre_Arrosoir",
+   "position": [
+    -41.44,
+    23.45,
+    4.972
+   ],
+   "rotation": 2.793,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-209",
+   "type": "Leurre_BusScolaire",
+   "position": [
+    -19.217,
+    0.0,
+    7.01
+   ],
+   "rotation": 2.665,
+   "visibilite": 0.63,
+   "lieu": "sol",
+   "zone": "C3"
+  },
+  {
+   "id": "leurre-210",
+   "type": "Leurre_Botte",
+   "position": [
+    5.977,
+    0.15,
+    51.307
+   ],
+   "rotation": 0.527,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-211",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -30.171,
+    42.65,
+    -8.617
+   ],
+   "rotation": 4.515,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-212",
+   "type": "Leurre_Smiley",
+   "position": [
+    -41.424,
+    23.45,
+    -34.984
+   ],
+   "rotation": 3.328,
    "visibilite": 0.333,
    "lieu": "toit",
    "zone": "A4"
   },
   {
-   "id": "leurre-253",
-   "type": "Leurre_Botte",
+   "id": "leurre-213",
+   "type": "Leurre_Tournesol",
    "position": [
-    31.69,
-    0.55,
-    -30.003
+    41.64,
+    23.45,
+    49.819
    ],
-   "rotation": 5.464,
-   "visibilite": 1.0,
-   "lieu": "vitre",
-   "zone": "E4"
-  },
-  {
-   "id": "leurre-254",
-   "type": "Leurre_Ballon",
-   "position": [
-    -6.612,
-    45.85,
-    -43.183
-   ],
-   "rotation": 4.354,
+   "rotation": 2.275,
    "visibilite": 0.444,
    "lieu": "toit",
-   "zone": "C5"
+   "zone": "F1"
   },
   {
-   "id": "leurre-255",
-   "type": "Leurre_Ballon",
+   "id": "leurre-214",
+   "type": "Leurre_SousMarin",
    "position": [
-    51.19,
-    0.15,
-    -31.102
-   ],
-   "rotation": 6.023,
-   "visibilite": 0.556,
-   "lieu": "sol",
-   "zone": "F4"
-  },
-  {
-   "id": "leurre-256",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -41.644,
-    13.75,
-    11.065
-   ],
-   "rotation": 0.782,
-   "visibilite": 0.556,
-   "lieu": "balcon",
-   "zone": "A3"
-  },
-  {
-   "id": "leurre-257",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -30.133,
-    17.05,
-    -39.65
-   ],
-   "rotation": 3.548,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "B5"
-  },
-  {
-   "id": "leurre-258",
-   "type": "Leurre_Taxi",
-   "position": [
-    4.254,
-    8.25,
-    49.988
-   ],
-   "rotation": 4.418,
-   "visibilite": 0.778,
-   "lieu": "vitre",
-   "zone": "D1"
-  },
-  {
-   "id": "leurre-259",
-   "type": "Leurre_Arrosoir",
-   "position": [
-    -0.422,
-    20.25,
-    -33.54
-   ],
-   "rotation": 5.508,
-   "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "C4"
-  },
-  {
-   "id": "leurre-260",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -47.611,
-    20.25,
-    -47.959
-   ],
-   "rotation": 0.978,
-   "visibilite": 0.444,
-   "lieu": "toit",
-   "zone": "A5"
-  },
-  {
-   "id": "leurre-261",
-   "type": "Leurre_CasqueChantier",
-   "position": [
-    -31.007,
-    17.05,
-    9.763
-   ],
-   "rotation": 3.246,
-   "visibilite": 0.667,
-   "lieu": "toit",
-   "zone": "B3"
-  },
-  {
-   "id": "leurre-262",
-   "type": "Leurre_Plot",
-   "position": [
-    1.883,
-    20.25,
-    30.918
-   ],
-   "rotation": 4.445,
-   "visibilite": 0.963,
-   "lieu": "toit",
-   "zone": "D2"
-  },
-  {
-   "id": "leurre-263",
-   "type": "Leurre_Jardiniere",
-   "position": [
-    -29.913,
+    -29.968,
     0.55,
-    35.246
+    35.454
    ],
-   "rotation": 2.775,
+   "rotation": 4.841,
    "visibilite": 1.0,
    "lieu": "vitre",
    "zone": "B2"
   },
   {
-   "id": "leurre-264",
+   "id": "leurre-215",
    "type": "Leurre_Jardiniere",
    "position": [
-    -12.846,
-    0.15,
-    49.671
+    40.698,
+    17.05,
+    9.6
    ],
-   "rotation": 0.877,
+   "rotation": 5.962,
    "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-216",
+   "type": "Leurre_Ballon",
+   "position": [
+    30.2,
+    23.45,
+    1.792
+   ],
+   "rotation": 2.418,
+   "visibilite": 0.556,
+   "lieu": "toit",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-217",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    43.717,
+    23.45,
+    -44.282
+   ],
+   "rotation": 1.722,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-218",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -29.956,
+    33.85,
+    36.22
+   ],
+   "rotation": 1.801,
+   "visibilite": 0.444,
+   "lieu": "vitre",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-219",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -11.442,
+    0.15,
+    -28.513
+   ],
+   "rotation": 1.698,
+   "visibilite": 0.37,
+   "lieu": "sol",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-220",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -7.746,
+    36.25,
+    -48.72
+   ],
+   "rotation": 3.532,
+   "visibilite": 0.481,
+   "lieu": "toit",
+   "zone": "C5"
+  },
+  {
+   "id": "leurre-221",
+   "type": "Leurre_Tournesol",
+   "position": [
+    4.096,
+    23.45,
+    -33.538
+   ],
+   "rotation": 5.511,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-222",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    -11.909,
+    0.15,
+    50.29
+   ],
+   "rotation": 5.72,
+   "visibilite": 1.0,
    "lieu": "sol",
    "zone": "C1"
   },
   {
-   "id": "leurre-265",
-   "type": "Leurre_Parasol",
+   "id": "leurre-223",
+   "type": "Leurre_BusScolaire",
    "position": [
-    39.473,
-    7.35,
-    11.005
+    49.985,
+    5.05,
+    30.632
    ],
-   "rotation": 0.282,
+   "rotation": 1.207,
+   "visibilite": 0.778,
+   "lieu": "vitre",
+   "zone": "F2"
+  },
+  {
+   "id": "leurre-224",
+   "type": "Leurre_Valise",
+   "position": [
+    -37.883,
+    13.75,
+    -29.08
+   ],
+   "rotation": 2.82,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "B4"
+  },
+  {
+   "id": "leurre-225",
+   "type": "Leurre_Plot",
+   "position": [
+    10.994,
+    23.35,
+    -45.009
+   ],
+   "rotation": 2.419,
+   "visibilite": 0.667,
+   "lieu": "balcon",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-226",
+   "type": "Leurre_SousMarin",
+   "position": [
+    0.582,
+    0.71,
+    4.739
+   ],
+   "rotation": 1.389,
+   "visibilite": 0.741,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-227",
+   "type": "Leurre_Tournesol",
+   "position": [
+    33.98,
+    16.95,
+    -28.866
+   ],
+   "rotation": 0.239,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-228",
+   "type": "Leurre_Parapluie",
+   "position": [
+    51.156,
+    10.55,
+    -35.99
+   ],
+   "rotation": 3.886,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-229",
+   "type": "Leurre_Taxi",
+   "position": [
+    -10.835,
+    0.15,
+    51.377
+   ],
+   "rotation": 5.49,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C1"
+  },
+  {
+   "id": "leurre-230",
+   "type": "Leurre_Valise",
+   "position": [
+    37.593,
+    7.35,
+    11.026
+   ],
+   "rotation": 6.003,
    "visibilite": 0.667,
    "lieu": "balcon",
    "zone": "E3"
   },
   {
-   "id": "leurre-266",
-   "type": "Leurre_Arrosoir",
+   "id": "leurre-231",
+   "type": "Leurre_Tournesol",
    "position": [
-    49.906,
-    23.45,
-    49.6
+    32.68,
+    16.95,
+    -28.854
    ],
-   "rotation": 1.583,
+   "rotation": 4.48,
    "visibilite": 0.333,
-   "lieu": "toit",
-   "zone": "F1"
+   "lieu": "balcon",
+   "zone": "E4"
   },
   {
-   "id": "leurre-267",
-   "type": "Leurre_Arrosoir",
+   "id": "leurre-232",
+   "type": "Leurre_Jardiniere",
    "position": [
-    -40.632,
+    -35.892,
     23.45,
-    49.83
+    -30.193
    ],
-   "rotation": 2.05,
+   "rotation": 4.078,
    "visibilite": 0.444,
    "lieu": "toit",
-   "zone": "A1"
+   "zone": "B4"
   },
   {
-   "id": "leurre-268",
-   "type": "Leurre_Plot",
+   "id": "leurre-233",
+   "type": "Leurre_Ballon",
    "position": [
-    31.627,
-    23.45,
-    49.841
+    36.11,
+    0.15,
+    50.998
    ],
-   "rotation": 5.848,
-   "visibilite": 0.333,
-   "lieu": "toit",
+   "rotation": 0.926,
+   "visibilite": 1.0,
+   "lieu": "sol",
    "zone": "E1"
   },
   {
-   "id": "leurre-269",
-   "type": "Leurre_Plot",
+   "id": "leurre-234",
+   "type": "Leurre_Arrosoir",
    "position": [
-    2.136,
-    0.21,
-    9.184
+    42.101,
+    23.45,
+    -48.98
    ],
-   "rotation": 5.581,
+   "rotation": 3.256,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-235",
+   "type": "Leurre_Taxi",
+   "position": [
+    -29.963,
+    5.05,
+    1.316
+   ],
+   "rotation": 4.336,
+   "visibilite": 0.333,
+   "lieu": "vitre",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-236",
+   "type": "Leurre_Botte",
+   "position": [
+    10.963,
+    7.35,
+    -33.452
+   ],
+   "rotation": 5.071,
+   "visibilite": 0.778,
+   "lieu": "balcon",
+   "zone": "D4"
+  },
+  {
+   "id": "leurre-237",
+   "type": "Leurre_Smiley",
+   "position": [
+    50.004,
+    11.45,
+    -33.748
+   ],
+   "rotation": 0.953,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-238",
+   "type": "Leurre_Parasol",
+   "position": [
+    51.132,
+    13.75,
+    4.667
+   ],
+   "rotation": 4.31,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "F3"
+  },
+  {
+   "id": "leurre-239",
+   "type": "Leurre_Ballon",
+   "position": [
+    -40.06,
+    23.45,
+    -30.23
+   ],
+   "rotation": 2.441,
+   "visibilite": 0.667,
+   "lieu": "toit",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-240",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -1.952,
+    23.45,
+    -30.153
+   ],
+   "rotation": 0.531,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "C4"
+  },
+  {
+   "id": "leurre-241",
+   "type": "Leurre_BusScolaire",
+   "position": [
+    52.381,
+    0.15,
+    28.524
+   ],
+   "rotation": 0.215,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F2"
+  },
+  {
+   "id": "leurre-242",
+   "type": "Leurre_Panneau",
+   "position": [
+    -1.755,
+    20.25,
+    -43.181
+   ],
+   "rotation": 2.881,
+   "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "C5"
+  },
+  {
+   "id": "leurre-243",
+   "type": "Leurre_Eponge",
+   "position": [
+    -31.316,
+    0.15,
+    27.181
+   ],
+   "rotation": 3.804,
+   "visibilite": 0.815,
+   "lieu": "sol",
+   "zone": "B2"
+  },
+  {
+   "id": "leurre-244",
+   "type": "Leurre_Panneau",
+   "position": [
+    48.623,
+    0.15,
+    52.425
+   ],
+   "rotation": 3.897,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F1"
+  },
+  {
+   "id": "leurre-245",
+   "type": "Leurre_Botte",
+   "position": [
+    12.678,
+    0.15,
+    -41.338
+   ],
+   "rotation": 1.391,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-246",
+   "type": "Leurre_Tournesol",
+   "position": [
+    -4.332,
+    0.21,
+    3.303
+   ],
+   "rotation": 2.778,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "C3"
+  },
+  {
+   "id": "leurre-247",
+   "type": "Leurre_BorneIncendie",
+   "position": [
+    11.005,
+    0.15,
+    45.583
+   ],
+   "rotation": 2.279,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-248",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -45.251,
+    7.35,
+    10.927
+   ],
+   "rotation": 2.381,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "A3"
+  },
+  {
+   "id": "leurre-249",
+   "type": "Leurre_Eponge",
+   "position": [
+    -28.929,
+    10.55,
+    47.032
+   ],
+   "rotation": 2.893,
+   "visibilite": 0.556,
+   "lieu": "balcon",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-250",
+   "type": "Leurre_Panneau",
+   "position": [
+    39.317,
+    23.45,
+    -43.197
+   ],
+   "rotation": 2.226,
+   "visibilite": 0.556,
+   "lieu": "toit",
+   "zone": "E5"
+  },
+  {
+   "id": "leurre-251",
+   "type": "Leurre_Seau",
+   "position": [
+    -28.441,
+    0.15,
+    -44.229
+   ],
+   "rotation": 0.77,
+   "visibilite": 0.667,
+   "lieu": "sol",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-252",
+   "type": "Leurre_Seau",
+   "position": [
+    11.552,
+    0.15,
+    -4.181
+   ],
+   "rotation": 1.338,
    "visibilite": 0.889,
    "lieu": "sol",
    "zone": "D3"
   },
   {
+   "id": "leurre-253",
+   "type": "Leurre_Plot",
+   "position": [
+    11.002,
+    0.15,
+    33.405
+   ],
+   "rotation": 4.589,
+   "visibilite": 0.889,
+   "lieu": "sol",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-254",
+   "type": "Leurre_Parapluie",
+   "position": [
+    -43.745,
+    0.15,
+    50.967
+   ],
+   "rotation": 0.951,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-255",
+   "type": "Leurre_Plot",
+   "position": [
+    -43.142,
+    36.25,
+    40.35
+   ],
+   "rotation": 4.544,
+   "visibilite": 0.333,
+   "lieu": "toit",
+   "zone": "A1"
+  },
+  {
+   "id": "leurre-256",
+   "type": "Leurre_Jardiniere",
+   "position": [
+    -29.919,
+    14.65,
+    6.295
+   ],
+   "rotation": 2.893,
+   "visibilite": 0.778,
+   "lieu": "vitre",
+   "zone": "B3"
+  },
+  {
+   "id": "leurre-257",
+   "type": "Leurre_BorneIncendie",
+   "position": [
+    3.009,
+    0.21,
+    -6.36
+   ],
+   "rotation": 4.083,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D3"
+  },
+  {
+   "id": "leurre-258",
+   "type": "Leurre_Parasol",
+   "position": [
+    -46.82,
+    23.45,
+    -30.179
+   ],
+   "rotation": 2.545,
+   "visibilite": 0.444,
+   "lieu": "toit",
+   "zone": "A4"
+  },
+  {
+   "id": "leurre-259",
+   "type": "Leurre_Parasol",
+   "position": [
+    10.849,
+    7.35,
+    33.643
+   ],
+   "rotation": 1.313,
+   "visibilite": 0.333,
+   "lieu": "balcon",
+   "zone": "D2"
+  },
+  {
+   "id": "leurre-260",
+   "type": "Leurre_Parasol",
+   "position": [
+    31.934,
+    23.45,
+    0.703
+   ],
+   "rotation": 0.605,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "E3"
+  },
+  {
+   "id": "leurre-261",
+   "type": "Leurre_Tournesol",
+   "position": [
+    50.881,
+    16.95,
+    -46.92
+   ],
+   "rotation": 1.036,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "F5"
+  },
+  {
+   "id": "leurre-262",
+   "type": "Leurre_Smiley",
+   "position": [
+    -29.88,
+    17.85,
+    41.112
+   ],
+   "rotation": 1.701,
+   "visibilite": 0.667,
+   "lieu": "vitre",
+   "zone": "B1"
+  },
+  {
+   "id": "leurre-263",
+   "type": "Leurre_Tournesol",
+   "position": [
+    31.43,
+    0.55,
+    -29.893
+   ],
+   "rotation": 3.734,
+   "visibilite": 0.889,
+   "lieu": "vitre",
+   "zone": "E4"
+  },
+  {
+   "id": "leurre-264",
+   "type": "Leurre_Smiley",
+   "position": [
+    10.752,
+    0.15,
+    44.128
+   ],
+   "rotation": 1.534,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "D1"
+  },
+  {
+   "id": "leurre-265",
+   "type": "Leurre_Parasol",
+   "position": [
+    11.078,
+    20.15,
+    -39.255
+   ],
+   "rotation": 2.85,
+   "visibilite": 0.444,
+   "lieu": "balcon",
+   "zone": "D5"
+  },
+  {
+   "id": "leurre-266",
+   "type": "Leurre_Smiley",
+   "position": [
+    -29.903,
+    0.55,
+    -38.4
+   ],
+   "rotation": 4.012,
+   "visibilite": 0.444,
+   "lieu": "vitre",
+   "zone": "B5"
+  },
+  {
+   "id": "leurre-267",
+   "type": "Leurre_CasqueChantier",
+   "position": [
+    50.909,
+    20.15,
+    31.19
+   ],
+   "rotation": 4.097,
+   "visibilite": 0.889,
+   "lieu": "balcon",
+   "zone": "F2"
+  },
+  {
+   "id": "leurre-268",
+   "type": "Leurre_Banane",
+   "position": [
+    52.514,
+    0.15,
+    -31.569
+   ],
+   "rotation": 3.253,
+   "visibilite": 1.0,
+   "lieu": "sol",
+   "zone": "F4"
+  },
+  {
+   "id": "leurre-269",
+   "type": "Leurre_Plot",
+   "position": [
+    -0.593,
+    23.45,
+    -35.512
+   ],
+   "rotation": 3.703,
+   "visibilite": 1.0,
+   "lieu": "toit",
+   "zone": "C4"
+  },
+  {
    "id": "leurre-270",
    "type": "Leurre_Ballon",
    "position": [
-    49.803,
-    23.45,
-    32.041
+    -29.148,
+    16.95,
+    32.764
    ],
-   "rotation": 4.832,
-   "visibilite": 0.556,
-   "lieu": "toit",
-   "zone": "F2"
+   "rotation": 0.827,
+   "visibilite": 1.0,
+   "lieu": "balcon",
+   "zone": "B2"
   }
  ]
 }

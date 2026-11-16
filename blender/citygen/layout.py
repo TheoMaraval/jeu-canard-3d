@@ -33,12 +33,26 @@ KIT = {"Perso_Debout", "Perso_Marche", "Perso_Salue", "Perso_Robe", "Perso_Raye"
        "Perso_Buste", "Coiffe_Court", "Coiffe_Long", "Coiffe_Chignon", "Coiffe_Chapeau",
        "Coiffe_Casquette", "Voiture", "Taxi", "Camionnette", "Bus", "Rickshaw", "Arbre_A",
        "Arbre_B", "Arbre_C", "Banc", "Lampadaire", "Poubelle", "Table_Cafe", "Chaise", "Parasol",
-       "Etal", "Vache"}
+       "Etal", "Vache",
+       # kit_loufoque.py : animaux, tags, désordre, végétation, saynètes, coiffes folles
+       "Chien", "Chat", "Pigeon", "Poule", "Singe", "Elephant", "Tag_Coin", "Tag_Zap", "Tag_Lol",
+       "Tag_Coeur", "Tag_Smiley", "Tag_Couronne", "Tag_Fleche", "Tag_Eclair", "Tag_Canard", "Fissure",
+       "Lierre", "Planches", "Echelle", "Flaque", "Cartons", "Canape", "Piano_Suspendu", "Fumee",
+       "Borne_Geyser", "Fruits_Sol", "Tambour", "Barriere", "Trou", "Tas_Sable", "Brouette", "Confettis",
+       "Sacs_Poubelle", "Poubelle_Renversee", "Transat", "Chevalet", "Ballons", "Velo", "Lampadaire_Tordu",
+       "Pot_Plante", "Pot_Fleurs", "Buisson", "Massif_Fleurs", "Palmier", "Arbre_D", "Coiffe_Toque",
+       "Coiffe_Couronne", "Coiffe_HautDeForme", "Coiffe_Cone", "Coiffe_Sombrero", "Coiffe_Heaume",
+       "Coiffe_Helice", "Coiffe_Lapin"}
+TAGS = ["Tag_Coin", "Tag_Zap", "Tag_Lol", "Tag_Coeur", "Tag_Smiley", "Tag_Couronne", "Tag_Fleche",
+        "Tag_Eclair", "Tag_Canard"]
+COIFFES_FOLLES = ["Coiffe_Toque", "Coiffe_Couronne", "Coiffe_HautDeForme", "Coiffe_Cone", "Coiffe_Sombrero",
+                  "Coiffe_Heaume", "Coiffe_Helice", "Coiffe_Lapin"]
+DEBOUT = ["Perso_Debout", "Perso_Marche", "Perso_Salue", "Perso_Robe", "Perso_Raye"]
 DZ_TETE = {"Perso_Assis": -0.12, "Perso_Buste": -0.56}  # tête plus basse que debout
 VEHICULES = {  # type du thème -> (modèle, longueur, largeur, hauteur)
     "voiture": ("Voiture", 4.2, 1.8, 1.45), "taxi": ("Taxi", 4.2, 1.8, 1.55),
     "camionnette": ("Camionnette", 5.0, 2.0, 2.2), "bus": ("Bus", 9.0, 2.5, 2.95),
-    "rickshaw": ("Rickshaw", 2.6, 1.4, 1.75),
+    "rickshaw": ("Rickshaw", 2.6, 1.4, 1.75), "bus_scolaire": ("Bus", 9.0, 2.5, 2.95),
 }
 DOSSIER_THEMES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes")
 
@@ -145,17 +159,181 @@ class Plan:
             self.slot_sol(*self._derriere(x, y, r, h))
 
     # ---- passants ---------------------------------------------------------
-    def _personne(self, modele, x, y, z, rot, k=1.0):
-        """Un personnage du kit, ses couleurs et sa coiffe."""
+    def _personne(self, modele, x, y, z, rot, k=1.0, haut=None, coiffe="auto", chapeau=None):
+        """Un personnage du kit, ses couleurs et sa coiffe (imposées ou tirées au sort)."""
         rng = self.rng
         self.inst(modele, x, y, z, rot, k,
-                  haut=self.choix("rayures") if modele == "Perso_Raye" else self.choix("vetements"),
+                  haut=haut or (self.choix("rayures") if modele == "Perso_Raye" else self.choix("vetements")),
                   bas=self.choix("pantalons"), peau=self.choix("peaux"))
-        coiffe = rng.choices([None, "Coiffe_Court", "Coiffe_Long", "Coiffe_Chignon", "Coiffe_Chapeau",
-                              "Coiffe_Casquette"], [1, 4, 3, 1.5, 1.5, 1.5])[0]
+        if coiffe == "auto":
+            if rng.random() < self.s["coiffes_folles"]:  # toque, heaume, plot sur la tête…
+                coiffe = rng.choice(COIFFES_FOLLES)
+            else:
+                coiffe = rng.choices([None, "Coiffe_Court", "Coiffe_Long", "Coiffe_Chignon", "Coiffe_Chapeau",
+                                      "Coiffe_Casquette"], [1, 4, 3, 1.5, 1.5, 1.5])[0]
         if coiffe:
             self.inst(coiffe, x, y, z + DZ_TETE.get(modele, 0.0) * k, rot, k,
-                      cheveux=self.choix("cheveux"), chapeau=self.choix("vetements"))
+                      cheveux=self.choix("cheveux"), chapeau=chapeau or self.choix("vetements"))
+
+    def poser(self, typ, pos, z, rot=0.0, k=1.0, r=0.3, **couleurs):
+        """Pose un modèle au sol s'il y a la place (r = 0 : sans emprise, toujours posé)."""
+        if r and not self.libre(*pos):
+            return False
+        self.inst(typ, pos[0], pos[1], z, rot, k, **couleurs)
+        if r:
+            self.emprise(pos[0], pos[1], r)
+        return True
+
+    def figurant(self, pos, z, rot, modele=None, k=None, **options):
+        """Un personnage de saynète, s'il y a la place."""
+        if not self.libre(*pos):
+            return False
+        self._personne(modele or self.rng.choice(DEBOUT), pos[0], pos[1], z, rot,
+                       k or self.rng.uniform(0.94, 1.06), **options)
+        self.emprise(pos[0], pos[1], 0.25)
+        return True
+
+    # ---- saynètes : (P, le long, vers la rue, z, distance au mur ou None) ---------
+    def s_chiens(self, P, ra, rd, z, m):
+        self.figurant(P(0), z, ra, "Perso_Marche")
+        for i in range(self.rng.randint(4, 6)):
+            self.poser("Chien", P(0.8 + 0.5 * (i % 3) + self.rng.uniform(-0.1, 0.1), (i // 3) * 0.5 - 0.25), z,
+                       ra + self.rng.uniform(-0.4, 0.4), self.rng.uniform(0.7, 1.25), r=0.2, poil=self.choix("poils"))
+
+    def s_fanfare(self, P, ra, rd, z, m):
+        couleur = self.choix("rayures")
+        for i in range(6):
+            self.figurant(P(i * 0.75), z, ra + math.pi, "Perso_Marche", haut=couleur,
+                          coiffe="Coiffe_Casquette", chapeau=couleur)
+        x, y = P(-0.55)
+        self.inst("Tambour", x, y, z + 0.85, ra)
+
+    def s_queue(self, P, ra, rd, z, m):
+        for i in range(self.rng.randint(5, 8)):
+            self.figurant(P(i * 0.62, self.rng.uniform(-0.08, 0.08)), z, ra + math.pi,
+                          self.rng.choice(["Perso_Debout", "Perso_Robe", "Perso_Raye"]))
+
+    def s_peintre(self, P, ra, rd, z, m):
+        x, y = P(0, -m + 0.08)
+        self.inst("Echelle", x, y, z, rd)
+        x, y = P(0, -m + 0.5)
+        self._personne("Perso_Salue", x, y, z + 1.6, rd + math.pi, coiffe="Coiffe_Casquette", haut="blanc")
+        x, y = P(1.3, 0.2)
+        self.inst("Flaque", x, y, z + 0.005, self.rng.uniform(0, 6), 0.8, flaque=self.choix("couleurs"))
+        self.figurant(P(-1.3, 0.4), z, ra)
+
+    def s_demenagement(self, P, ra, rd, z, m):
+        x, y = P(0.5, m + 1.4)
+        self.inst("Camionnette", x, y, 0.0, ra, caisse="blanc")
+        self.emprise(x, y, 2.5)
+        self.poser("Cartons", P(-1.2, 0.3), z, ra, r=0.5)
+        self.poser("Cartons", P(1.9, -0.2), z, ra + 1.0, r=0.5)
+        self.poser("Canape", P(3.3, 0.1), z, rd, r=0.9, toile=self.choix("auvents"))
+        x, y = P(-2.4, -m + 0.8)
+        self.inst("Piano_Suspendu", x, y, z + 4.2, rd)  # le piano monte par la façade
+        self.figurant(P(-2.4, 0.7), z, rd + math.pi, "Perso_Salue")
+        self.figurant(P(-3.1, 0.4), z, rd + math.pi, "Perso_Salue")
+
+    def s_panne(self, P, ra, rd, z, m):
+        x, y = P(0, m + 1.4)
+        self.inst("Voiture", x, y, 0.0, ra, caisse=self.choix("voitures"))
+        self.emprise(x, y, 2.2)
+        x, y = P(1.6, m + 1.4)
+        self.inst("Fumee", x, y, 0.9)
+        self.figurant(P(3.0, m + 1.0), 0.0, ra, "Perso_Salue")
+        self.slot_derriere(*P(0, m + 1.4), 1.0, 1.4, n=2)
+
+    def s_geyser(self, P, ra, rd, z, m):
+        self.poser("Borne_Geyser", P(0, m - 0.5), z, r=0.2)
+        x, y = P(0.3, m + 1.0)
+        self.inst("Flaque", x, y, 0.005, 0.5, 1.7, flaque="eau")
+        for a, c in ((-0.9, 0.3), (0.9, 0.2), (-0.4, -0.5), (0.6, -0.6)):
+            self.figurant(P(a, m - 0.5 + c), z, self.rng.uniform(0, 6.28), "Perso_Salue", k=0.68)
+
+    def s_etal_renverse(self, P, ra, rd, z, m):
+        x, y = P(0)
+        self.inst("Fruits_Sol", x, y, z, self.rng.uniform(0, 6.28))
+        self.figurant(P(-1.1, 0.2), z, ra, "Perso_Salue")
+        self.poser("Chien", P(1.2, -0.2), z, ra + math.pi, r=0.2, poil=self.choix("poils"))
+        self.poser("Poule", P(0.6, 0.6), z, self.rng.uniform(0, 6.28), r=0.15, poil=self.choix("poils"))
+
+    def s_musicien(self, P, ra, rd, z, m):
+        self.figurant(P(0, -0.5), z, rd, "Perso_Debout", coiffe="Coiffe_HautDeForme")
+        for i in range(6):
+            self.figurant(P(-1.5 + i * 0.6, 0.85 + 0.25 * (i % 2)), z, rd + math.pi)
+
+    def s_chantier(self, P, ra, rd, z, m):
+        x, y = P(0, m + 1.7)
+        self.inst("Trou", x, y, 0.0)
+        self.emprise(x, y, 1.1)
+        self.poser("Barriere", P(0, m + 0.45), 0.0, ra, r=0.4)
+        self.poser("Barriere", P(-1.5, m + 1.7), 0.0, rd, r=0.4)
+        self.poser("Barriere", P(1.5, m + 1.7), 0.0, rd, r=0.4)
+        self.poser("Tas_Sable", P(2.9, m + 1.5), 0.0, r=0.9)
+        self.poser("Brouette", P(-2.8, m + 1.4), 0.0, ra, r=0.5)
+        self.figurant(P(0.4, m + 3.1), 0.0, rd + math.pi, "Perso_Debout", coiffe="Coiffe_Casquette", chapeau="v_orange")
+        self.slot_derriere(*P(2.9, m + 1.5), 0.9, 0.7, n=2)
+
+    def s_mariage(self, P, ra, rd, z, m):
+        self.figurant(P(-0.3), z, rd, "Perso_Robe", haut="blanc", coiffe="Coiffe_Chignon")
+        self.figurant(P(0.3), z, rd, "Perso_Debout", haut="v_marine", coiffe="Coiffe_HautDeForme")
+        x, y = P(0, 0.7)
+        self.inst("Confettis", x, y, z + 0.01)
+        for i in range(6):
+            self.figurant(P(-1.8 + i * 0.7, 1.4), z, rd + math.pi, "Perso_Salue")
+
+    def s_ballons(self, P, ra, rd, z, m):
+        if self.figurant(P(0), z, rd):
+            x, y = P(0)
+            teintes = [self.choix("couleurs") for _ in range(3)]
+            if self.rng.random() < 0.5:
+                teintes[0] = "jaune"
+            self.inst("Ballons", x, y, z, 0.0, b1=teintes[0], b2=teintes[1], b3=teintes[2])
+        self.figurant(P(0.8, 0.3), z, ra + math.pi, "Perso_Salue", k=0.68)
+        self.figurant(P(-0.7, 0.4), z, ra, k=0.68)
+
+    def s_ordures(self, P, ra, rd, z, m):
+        self.poser("Sacs_Poubelle", P(0, -0.2), z, self.rng.uniform(0, 6), r=0.5)
+        self.poser("Poubelle_Renversee", P(1.3, 0), z, ra, r=0.3)
+        self.poser("Chat", P(-0.9, 0.1), z, rd, r=0.15, poil=self.choix("poils"))
+        self.poser("Cartons", P(-1.7, -0.3), z, 0.4, r=0.5)
+
+    def s_artiste(self, P, ra, rd, z, m):
+        self.poser("Chevalet", P(0), z, ra, r=0.4, toile=self.choix("couleurs"))
+        self.figurant(P(0.85), z, ra + math.pi, "Perso_Debout", coiffe="Coiffe_Chapeau")
+        self.figurant(P(1.7, 0.5), z, ra + math.pi)
+        self.figurant(P(1.8, -0.4), z, ra + math.pi)
+
+    def s_pigeons(self, P, ra, rd, z, m):
+        self.figurant(P(0, -0.4), z, rd)
+        for _ in range(9):
+            self.poser("Pigeon", P(self.rng.uniform(-1.6, 1.6), self.rng.uniform(0.0, 1.4)), z,
+                       self.rng.uniform(0, 6.28), r=0.1)
+
+    def s_velos(self, P, ra, rd, z, m):
+        for i in range(self.rng.randint(3, 5)):
+            self.poser("Velo", P(i * 0.5, 0.0), z, rd + 0.25, r=0.2, caisse=self.choix("couleurs"))
+
+    def s_elephant(self, P, ra, rd, z, m):
+        if self.poser("Elephant", P(0), z, ra, r=1.6, toile=self.choix("auvents")):
+            x, y = P(-0.1)
+            self._personne("Perso_Assis", x, y, z + 2.62, ra, coiffe="Coiffe_Couronne")
+        for a, c in ((2.6, 0.8), (2.9, -0.6), (-2.6, 0.9)):
+            self.figurant(P(a, c), z, ra + math.pi, "Perso_Salue")
+
+    def s_geant(self, P, ra, rd, z, m):
+        """Géant de procession : un personnage de plus de cinq mètres et ses porteurs."""
+        x, y = P(0)
+        if not self.libre(x, y):
+            return
+        self._personne("Perso_Robe", x, y, z, rd, 3.2, coiffe="Coiffe_Couronne")
+        self.emprise(x, y, 0.9)
+        for a, c in ((1.5, 0.6), (-1.5, 0.6), (1.2, -0.9), (-1.2, -0.9), (0, 1.6)):
+            self.figurant(P(a, c), z, rd + math.pi, "Perso_Salue")
+
+    def saynete(self, nom, P, ra, rd, z, m):
+        getattr(self, "s_" + nom)(P, ra, rd, z, m)
+        self.slot_derriere(*P(0), 0.6, 1.2, n=2)
 
     def passant(self, x, y, z, emprise=True):
         rng = self.rng
@@ -181,9 +359,9 @@ class Plan:
     # ---- mobilier ---------------------------------------------------------
     def arbre(self, x, y, z, k=1.0):
         rng = self.rng
-        modele = rng.choices(["Arbre_A", "Arbre_B", "Arbre_C"], [3, 2, 1])[0]
+        modele = self.choix("arbres_modeles")
         self.inst(modele, x, y, z, rng.uniform(0, 2 * math.pi), k * rng.uniform(0.9, 1.12),
-                  feuille=rng.choice(["feuillage", "feuillage2"]))
+                  feuille=self.choix("feuillages"))
         self.emprise(x, y, 0.2 * k)
         self.slot_derriere(x, y, 0.15 * k, 2.4 * k, n=2)
         for _ in range(2):  # sous le feuillage, vu de la caméra
@@ -277,7 +455,7 @@ class Plan:
         modele, long, larg, h = VEHICULES[typ]
         rot = (0.0 if le_long_de_x else math.pi / 2) + (math.pi if self.rng.random() < 0.5 else 0.0)
         couleurs = {"voiture": {"caisse": self.choix("voitures")}, "taxi": {"caisse": "jaune"},
-                    "camionnette": {"caisse": "jaune"}, "bus": {"caisse": self.choix("bus")},
+                    "camionnette": {"caisse": "jaune"}, "bus": {"caisse": self.choix("bus")}, "bus_scolaire": {"caisse": "jaune"},
                     "rickshaw": {"caisse": "vertfonce", "toit": "jaune"}}[typ]
         self.inst(modele, x, y, 0.0, rot, **couleurs)
         if le_long_de_x:
@@ -323,7 +501,14 @@ class Plan:
         hf = he - 1.4
         self._el(f, "interieur", 0, long, -EP, -EP + 0.05, z0, z0 + haut)  # fond sombre des niches
 
-        # rez-de-chaussée : vitrine
+        rot_mur = math.atan2(f[2][1], f[2][0]) + math.pi / 2  # modèles muraux : face vers la rue
+
+        def mural(typ, sx, o, z, k=1.0, **c):
+            x, y = self._pt(f, sx, o)
+            self.inst(typ, x, y, z, rot_mur, k, **c)
+
+        # rez-de-chaussée : vitrine, ou rideau de fer tagué si la boutique est fermée
+        ferme = long > 3 and rng.random() < s["rideaux"]
         zl = z0 + rdc - 0.6
         self._el(f, trim, 0, long, -EP, 0, z0, z0 + 0.4)
         for s0, s1 in ((0, 0.45), (long - 0.45, long)):
@@ -331,7 +516,13 @@ class Plan:
         porte = rng.uniform(1.3, long - 1.3) if long > 4 else None
         if porte:
             self._el(f, "porte", porte - 0.5, porte + 0.5, -EP, -0.12, z0, zl)
-        self._el(f, "verre", 0.45, long - 0.45, -0.1, -0.07, z0 + 0.4, zl)
+        if ferme:
+            self._el(f, "metal", 0.45, long - 0.45, -0.13, -0.09, z0 + 0.4, zl)
+            for _ in range(rng.randint(1, 3)):
+                mural(rng.choice(TAGS), rng.uniform(1.2, long - 1.2), -0.085, z0 + rng.uniform(0.6, 1.6),
+                      rng.uniform(0.8, 1.2), tag=self.choix("tags_couleurs"))
+        else:
+            self._el(f, "verre", 0.45, long - 0.45, -0.1, -0.07, z0 + 0.4, zl)
         sx = 0.45
         while sx < long - 0.4:  # montants de vitrine
             self._el(f, "blanc", sx - 0.035, sx + 0.035, -0.14, -0.06, z0 + 0.4, zl)
@@ -340,7 +531,7 @@ class Plan:
             x, y = self._pt(f, long / 2, 0.66)
             taille = (long - 1.2, 1.2, 0.1) if f[1][0] else (1.2, long - 1.2, 0.1)
             self.rayures(self.toile(), taille, (x, y, z0 + rdc - 0.45), bool(f[1][0]), pas=0.7)
-        sx = 0.9
+        sx = long if ferme else 0.9
         while sx < long - 0.9:
             if porte is None or abs(sx - porte) > 0.85:
                 x, y = self._pt(f, sx, -rng.uniform(0.38, 0.56))
@@ -360,6 +551,18 @@ class Plan:
         for e in range(n + 1):
             zb = z0 + rdc + e * he - (0.6 if e == 0 else 0.5)
             self._el(f, trim, 0, long, -EP, 0, zb, min(z0 + haut, z0 + rdc + e * he + al))
+        # tags sur les bandeaux entre deux rangées de fenêtres, lierre et fissures sur les trumeaux
+        libres = [e for e in range(1, n + 1) if not (s["balcons"] == "filants" and e in (1, 2, n - 2, n - 1))] or [n]
+        if long > 2.6 and rng.random() < s["tags"]:
+            for _ in range(rng.randint(1, 3)):
+                e = rng.choice(libres[:2] + libres)  # plus souvent en bas
+                k = rng.uniform(0.75, 1.15)
+                mural(rng.choice(TAGS), rng.uniform(1.1, long - 1.1), 0.065, z0 + rdc + e * he - 0.35, k,
+                      tag=self.choix("tags_couleurs"))
+        if rng.random() < s["lierre"]:
+            mural("Lierre", rng.choice(bords[::2]) + 0.3, 0.07, z0, rng.uniform(1.0, 1.7), feuille=self.choix("feuillages"))
+        if rng.random() < s["fissures"]:
+            mural("Fissure", rng.choice(bords[::2]) + 0.25, 0.065, z0 + rdc + rng.uniform(0.5, 3.0), rng.uniform(1.0, 2.2))
         volets = self.choix("volets") if s["volets"] and rng.random() < 0.6 else None
         for e in range(n):
             zs = z0 + rdc + e * he + al  # appui de fenêtre = sol de la niche
@@ -373,6 +576,9 @@ class Plan:
                 # croisée : un montant et une traverse, qui masquent un peu ce qui est derrière
                 self._el(f, "blanc", c - 0.03, c + 0.03, -0.14, -0.06, zs, zs + hf)
                 self._el(f, "blanc", c - wf / 2, c + wf / 2, -0.14, -0.06, zs + hf * 0.62, zs + hf * 0.62 + 0.05)
+                if rng.random() < s["planches"]:  # fenêtre condamnée
+                    mural("Planches", c, 0.07, zs + hf / 2)
+                    continue
                 if volets:
                     self._el(f, volets, c - wf / 2 - 0.3, c - wf / 2, 0.06, 0.11, zs, zs + hf)
                     self._el(f, volets, c + wf / 2, c + wf / 2 + 0.3, 0.06, 0.11, zs, zs + hf)
@@ -402,8 +608,12 @@ class Plan:
                 sx = 0.8
                 while sx < long - 0.8:
                     x, y = self._pt(f, sx, rng.uniform(0.25, 0.55))
-                    if rng.random() < 0.08:
+                    tirage = rng.random()
+                    if tirage < 0.08:
                         self.passant(x, y, zf, emprise=False)
+                    elif tirage < 0.08 + s["pots"]:
+                        self.inst(rng.choice(["Pot_Plante", "Pot_Fleurs"]), x, y, zf, 0.0, rng.uniform(0.8, 1.2),
+                                  feuille=self.choix("feuillages"), fleur=self.choix("fleurs"))
                     else:
                         self.slot("balcon", x, y, zf)
                     sx += 1.3
@@ -424,6 +634,27 @@ class Plan:
     def extra_toit(self, typ, x, y, z):
         """Pose un élément de toit, renvoie (demi-largeur, hauteur) pour les cachettes."""
         rng = self.rng
+        if typ == "transat":
+            rot = rng.uniform(0, 6.28)
+            self.inst("Transat", x, y, z, rot, toile=self.choix("auvents"))
+            if rng.random() < 0.6:
+                self._personne("Perso_Assis", x, y, z - 0.12, rot)
+            return 0.6, 0.9
+        if typ == "jardin":
+            self.inst("Buisson", x, y, z, rng.uniform(0, 6.28), 0.8, feuille=self.choix("feuillages"))
+            for a in (0.5, 2.6, 4.4):
+                self.inst(rng.choice(["Pot_Plante", "Pot_Fleurs"]), x + 0.9 * math.cos(a), y + 0.9 * math.sin(a), z,
+                          0.0, rng.uniform(0.9, 1.3), feuille=self.choix("feuillages"), fleur=self.choix("fleurs"))
+            return 0.9, 0.9
+        if typ in ("pigeons", "singe", "chat"):
+            modele, nb = {"pigeons": ("Pigeon", 5), "singe": ("Singe", 2), "chat": ("Chat", 1)}[typ]
+            for _ in range(nb):
+                self.inst(modele, x + rng.uniform(-0.6, 0.6), y + rng.uniform(-0.6, 0.6), z, rng.uniform(0, 6.28),
+                          poil=self.choix("poils"))
+            return 0.3, 0.5
+        if typ == "vache":  # que fait-elle là ?
+            self.inst("Vache", x, y, z, rng.uniform(0, 6.28), 0.8)
+            return 0.7, 1.1
         if typ == "chateau_eau":
             for dx in (-0.6, 0.6):
                 for dy in (-0.6, 0.6):
@@ -623,6 +854,25 @@ class Plan:
                         self.haie(*pt(a, t * 0.54), 2.6, cote == "S",
                                   mat=rng.choice(["bois", "vertfonce"]), ep=0.1, h=0.55)
                     a += 5.0
+            ra = 0.0 if cote in "SN" else math.pi / 2                      # le long du trottoir
+            rd = {"S": -math.pi / 2, "N": math.pi / 2, "W": math.pi, "E": 0.0}[cote]  # vers la chaussée
+            if cote in VISIBLES:  # une ou deux saynètes par trottoir visible
+                for a in (bloc * 0.3, bloc * 0.72):
+                    if rng.random() < s["saynete_rue"]:
+                        a0 = a + rng.uniform(-2, 2)
+                        self.saynete(self.choix("saynetes_rue"), lambda da, b=0.0, a0=a0: pt(a0 + da, t / 2 - b),
+                                     ra, rd, z, t / 2)
+            for _ in range(s["nb_betes"]):
+                self.poser(self.choix("betes"), pt(rng.uniform(1, bloc - 1), rng.uniform(0.3, t - 0.3)), z,
+                           rng.uniform(0, 6.28), rng.uniform(0.8, 1.2), r=0.15, poil=self.choix("poils"))
+            a = 2.5
+            while a < bloc - 2.5:  # pots au pied des façades, parfois un lampadaire plié
+                if rng.random() < s["pots"]:
+                    self.poser(rng.choice(["Pot_Plante", "Pot_Fleurs", "Pot_Fleurs"]), pt(a, t - 0.35), z, 0.0,
+                               rng.uniform(0.9, 1.4), r=0.25, feuille=self.choix("feuillages"), fleur=self.choix("fleurs"))
+                elif rng.random() < 0.03:
+                    self.poser("Lampadaire_Tordu", pt(a, 0.7), z, rng.uniform(0, 6.28), r=0.15)
+                a += rng.uniform(2.0, 4.0)
             for _ in range(28):  # cachettes libres sur le trottoir
                 self.slot_sol(*pt(rng.uniform(0.5, bloc - 0.5), rng.uniform(0.3, t - 0.3)))
             self.foule(s["foule"], lambda: pt(rng.uniform(0.5, bloc - 0.5), rng.uniform(0.3, t - 0.3)))
@@ -630,7 +880,7 @@ class Plan:
             while a < bloc - 4.5:  # stationnement le long de la bordure, côté chaussée
                 if rng.random() < 0.5:
                     typ = self.choix("vehicules")
-                    typ = "voiture" if typ == "bus" else typ
+                    typ = "voiture" if typ.startswith("bus") else typ
                     a += self.vehicule(*pt(a, -1.3), le_long_de_x=cote in "SN", typ=typ) + 1.3
                 else:
                     a += 5.5
@@ -653,6 +903,19 @@ class Plan:
             if math.hypot(x - cx, y - cy) > rayon_libre and self.libre(x, y):
                 self.arbre(x, y, z)
                 pose += 1
+        hasard = lambda marge: (rng.uniform(bx + marge, bx + bloc - marge), rng.uniform(by + marge, by + bloc - marge))  # noqa: E731
+        for nom in rng.sample(self.s["saynetes_place"], min(self.s["nb_saynetes_place"], len(self.s["saynetes_place"]))):
+            for _ in range(12):  # cherche un coin dégagé
+                x0, y0 = hasard(4.0)
+                if math.hypot(x0 - cx, y0 - cy) > rayon_libre - 2.5 and self.libre(x0, y0):
+                    self.saynete(nom, lambda da, b=0.0, x0=x0, y0=y0: (x0 + da, y0 - b), 0.0, -math.pi / 2, z, None)
+                    break
+        for _ in range(7):
+            self.poser(rng.choice(["Buisson", "Buisson", "Massif_Fleurs"]), hasard(2.0), z, rng.uniform(0, 6.28),
+                       rng.uniform(0.8, 1.3), r=0.7, feuille=self.choix("feuillages"), fleur=self.choix("fleurs"))
+        for _ in range(self.s["nb_betes"] * 4):
+            self.poser(self.choix("betes"), hasard(1.0), z, rng.uniform(0, 6.28), rng.uniform(0.8, 1.2), r=0.15,
+                       poil=self.choix("poils"))
         for _ in range(140):
             self.slot_sol(rng.uniform(bx + 0.5, bx + bloc - 0.5), rng.uniform(by + 0.5, by + bloc - 0.5))
         self.foule(gens, lambda: (rng.uniform(bx + 1, bx + bloc - 1), rng.uniform(by + 1, by + bloc - 1)))

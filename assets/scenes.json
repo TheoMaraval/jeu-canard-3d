@@ -2,25 +2,25 @@
  {
   "id": "paris",
   "nom": "Paris — Grands Boulevards",
-  "version": 2,
+  "version": 3,
   "ordre": 0
  },
  {
   "id": "new_york",
   "nom": "New York — Greenwich Village",
-  "version": 2,
+  "version": 3,
   "ordre": 1
  },
  {
   "id": "lille",
   "nom": "Lille — Vieux-Lille",
-  "version": 2,
+  "version": 3,
   "ordre": 2
  },
  {
   "id": "delhi",
   "nom": "Delhi — Chandni Chowk",
-  "version": 2,
+  "version": 3,
   "ordre": 3
  }
 ]

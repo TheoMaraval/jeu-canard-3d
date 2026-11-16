@@ -78,6 +78,26 @@ class TestLayout(unittest.TestCase):
                 for role, couleur in i["c"].items():
                     self.assertIn(couleur, theme["palette"], f"{v} : {i['type']}.{role}")
 
+    def test_du_piment(self):
+        # tags, bêtes, végétation variée, accessoires de saynètes : la ville n'est pas lisse
+        for v, theme, plan in self.pour_chaque_ville():
+            types = [i["type"] for i in plan["insts"]]
+            self.assertGreaterEqual(sum(t.startswith("Tag_") for t in types), 10, v)
+            self.assertGreaterEqual(sum(t in ("Chien", "Chat", "Pigeon", "Poule", "Singe", "Elephant") for t in types), 15, v)
+            self.assertGreaterEqual(sum(t in ("Pot_Plante", "Pot_Fleurs", "Buisson", "Massif_Fleurs", "Lierre") for t in types), 15, v)
+            accessoires = {"Cartons", "Sacs_Poubelle", "Velo", "Fumee", "Trou", "Confettis", "Fruits_Sol", "Tambour",
+                           "Echelle", "Piano_Suspendu", "Borne_Geyser", "Chevalet", "Ballons", "Elephant", "Barriere"}
+            self.assertGreaterEqual(len(accessoires & set(types)), 4, v)
+            self.assertGreaterEqual(len(set(types)), 45, v)
+
+    def test_une_signature_par_ville(self):
+        types = {v: {i["type"] for i in PLANS[v]["insts"]} for v in VILLES}
+        self.assertIn("Elephant", types["delhi"])
+        self.assertIn("Palmier", types["delhi"])
+        self.assertTrue(any(i["type"] == "Perso_Robe" and i["k"] > 3 for i in PLANS["lille"]["insts"]))  # le géant
+        self.assertTrue(any(i["type"] == "Bus" and i["c"].get("caisse") == "jaune" for i in PLANS["new_york"]["insts"])
+                        or "Borne_Geyser" in types["new_york"])
+
     def test_gros_leurres_jaunes(self):
         for v, theme, plan in self.pour_chaque_ville():
             jaunes = [i for i in plan["insts"] if "jaune" in i["c"].values()]

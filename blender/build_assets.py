@@ -147,7 +147,129 @@ def ballon():
     return b
 
 
-ASSETS = [arrosoir, botte, ballon, canard, canard_loin, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
+def banane():
+    b = Builder("Leurre_Banane")
+    pts = [(0.23 * math.cos(a), 0.0, 0.05 + 0.23 * (1 - math.sin(a))) for a in (0.45, 1.0, 1.57, 2.14, 2.69)]
+    for p0, p1 in zip(pts, pts[1:]):
+        b.tube(J, p0, p1, 0.055, 0.055, seg=6)
+    for p in (pts[0], pts[-1]):
+        b.sphere(N, 0.03, xf(p), u=5, v=3)
+    return b
+
+
+def citron():
+    b = Builder("Leurre_Citron")
+    b.sphere(J, 0.13, xf((0, 0, 0.13), (1.3, 1, 1)), u=10, v=6)
+    for s in (1, -1):
+        b.cone(J, 0.05, 0.0, 0.08, xf((s * 0.19, 0, 0.13), rot=(0, s * H, 0)), seg=6)
+    b.box(V, (0.1, 0.06, 0.015), (-0.12, 0.05, 0.24), rot=(0, 0.4, 0.5))
+    return b
+
+
+def fromage():
+    """Part de fromage : un prisme à trois côtés, et ses trous."""
+    b = Builder("Leurre_Fromage")
+    b.cyl(J, 0.27, 0.2, xf((0, 0, 0.1)), seg=3)
+    for x, y in ((0.02, 0.02), (-0.08, 0.08), (0.1, -0.03)):
+        b.sphere(T, 0.035, xf((x, y, 0.2), (1, 1, 0.3)), u=6, v=4)
+    b.sphere(T, 0.04, xf((-0.135, 0.0, 0.1), (0.3, 1, 1)), u=6, v=4)
+    return b
+
+
+def sous_marin():
+    b = Builder("Leurre_SousMarin")
+    b.lathe(J, [(0, -0.21), (0.08, -0.17), (0.11, -0.05), (0.11, 0.1), (0.07, 0.19), (0, 0.22)],
+            xf((0, 0, 0.14), rot=(0, H, 0)), seg=10)
+    b.rbox(J, (0.14, 0.09, 0.1), (0.02, 0, 0.28), bevel=0.03)
+    b.cyl(G, 0.012, 0.12, xf((0.05, 0, 0.38)), seg=5)
+    b.box(G, (0.02, 0.2, 0.02), (-0.21, 0, 0.14))
+    for x in (-0.06, 0.04, 0.12):
+        b.sphere(B, 0.028, xf((x, -0.105, 0.15), (1, 0.3, 1)), u=6, v=4)
+    return b
+
+
+def bus_scolaire():
+    b = Builder("Leurre_BusScolaire")
+    b.rbox(J, (0.46, 0.18, 0.2), (0, 0, 0.17), bevel=0.03)
+    b.box(N, (0.34, 0.185, 0.07), (-0.03, 0, 0.21))
+    b.box(N, (0.47, 0.19, 0.02), (0, 0, 0.11))
+    b.box(O, (0.02, 0.05, 0.05), (0.1, -0.1, 0.16))
+    for x in (0.14, -0.14):
+        for s in (1, -1):
+            b.cyl(N, 0.045, 0.04, xf((x, s * 0.09, 0.045), rot=(H, 0, 0)), seg=8)
+    return b
+
+
+def seau():
+    b = Builder("Leurre_Seau")
+    b.lathe(J, [(0, 0.0), (0.13, 0.0), (0.18, 0.3), (0.16, 0.3), (0.12, 0.03), (0, 0.03)], seg=10)
+    for s in (1, -1):
+        b.tube(G, (0, s * 0.18, 0.28), (0, s * 0.09, 0.44), 0.012, 0.012, seg=4)
+    b.tube(G, (0, 0.09, 0.44), (0, -0.09, 0.44), 0.012, 0.012, seg=4)
+    return b
+
+
+def eponge():
+    b = Builder("Leurre_Eponge")
+    b.rbox(J, (0.3, 0.2, 0.11), (0, 0, 0.055), bevel=0.03)
+    b.rbox(V, (0.3, 0.2, 0.04), (0, 0, 0.13), bevel=0.015)
+    return b
+
+
+def smiley():
+    """Balle à sourire : deux yeux noirs comme le canard, mais ni bec ni tête."""
+    b = Builder("Leurre_Smiley")
+    b.sphere(J, 0.2, xf((0, 0, 0.2)))
+    for y in (0.07, -0.07):
+        b.sphere(N, 0.028, xf((0.18, y, 0.27), (0.4, 1, 1.4)), u=6, v=4)
+    for y, z in ((0.09, 0.16), (0.045, 0.13), (0.0, 0.12), (-0.045, 0.13), (-0.09, 0.16)):
+        b.sphere(N, 0.018, xf((0.19 - abs(y) * 0.25, y, z)), u=5, v=3)
+    return b
+
+
+def tournesol():
+    """Pétales jaunes, cœur orangé : la couleur du bec, sans bec."""
+    b = Builder("Leurre_Tournesol")
+    b.lathe(T, [(0.1, 0), (0.14, 0.18), (0.11, 0.2), (0, 0.2)], seg=8)
+    b.tube(V, (0, 0, 0.2), (0.03, 0, 0.5), 0.02, 0.02, seg=5)
+    b.box(V, (0.14, 0.07, 0.015), (0.06, 0.05, 0.34), rot=(0.3, 0, 0.6))
+    for i in range(8):
+        a = i * math.pi / 4
+        b.box(J, (0.02, 0.09, 0.15), (0.05, 0.13 * math.sin(a), 0.6 + 0.13 * math.cos(a)), rot=(-a, 0, 0))
+    b.cyl(O, 0.085, 0.035, xf((0.06, 0, 0.6), rot=(0, H, 0)), seg=10)
+    return b
+
+
+def valise():
+    b = Builder("Leurre_Valise")
+    b.rbox(J, (0.42, 0.15, 0.3), (0, 0, 0.19), bevel=0.04)
+    b.box(G, (0.43, 0.155, 0.02), (0, 0, 0.19))
+    b.box(G, (0.14, 0.03, 0.05), (0, 0, 0.365))
+    for x in (0.15, -0.15):
+        b.cyl(N, 0.03, 0.1, xf((x, 0, 0.03), rot=(H, 0, 0)), seg=6)
+    return b
+
+
+def parapluie():
+    b = Builder("Leurre_Parapluie")
+    b.lathe(J, [(0.245, 0.3), (0.2, 0.37), (0.1, 0.44), (0, 0.47)], seg=8)
+    b.cyl(G, 0.012, 0.44, xf((0, 0, 0.25)), seg=5)
+    b.tube(G, (0, 0, 0.03), (0.05, 0, 0.0), 0.012, 0.012, seg=4)
+    b.sphere(G, 0.02, xf((0, 0, 0.48)), u=5, v=3)
+    return b
+
+
+def panneau():
+    b = Builder("Leurre_Panneau")
+    b.cyl(G, 0.02, 0.5, xf((0, 0, 0.25)), seg=6)
+    b.box(J, (0.03, 0.3, 0.3), (0, 0, 0.62), rot=(math.pi / 4, 0, 0))
+    b.box(N, (0.035, 0.05, 0.14), (0, 0, 0.64))
+    b.box(N, (0.035, 0.05, 0.04), (0, 0, 0.53))
+    return b
+
+
+ASSETS = [banane, citron, fromage, sous_marin, bus_scolaire, seau, eponge, smiley, tournesol, valise,
+          parapluie, panneau, arrosoir, botte, ballon, canard, canard_loin, plot, borne_incendie, parasol, taxi, boite_aux_lettres, jardiniere, casque]
 
 
 def taille_jaune(obj):

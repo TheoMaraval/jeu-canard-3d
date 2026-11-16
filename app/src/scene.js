@@ -25,6 +25,8 @@ const DISTANCE_CAMERA = 300;
 const ANGLE_ARETE = 50; // degrés : en dessous, pas de trait (flancs des cylindres, sphères)
 const ROLES_MAX = 4;
 const SEUIL_CONTOURS_PPM = 12; // en dessous, les coques des modèles ne sont pas dessinées
+const SEUIL_DECOUPE = 80; // au-delà de ce nombre d'instances, un modèle est découpé par zones
+const TAILLE_ZONE = 40; // mètres
 
 // Ombrage en trois paliers nets (cel-shading) au lieu d'un dégradé.
 const PALIERS = new THREE.DataTexture(new Uint8Array([150, 215, 255]), 3, 1, THREE.RedFormat);
@@ -213,7 +215,21 @@ export async function chargerScene(canvas, info) {
    * @param instances [{p, r, s, c: {rôle: '#hex'}}]
    */
   function instancier(racine, nom, instances) {
-    const { geometrie, roles, defauts } = fusionnerModele(racine, nom);
+    const modele = fusionnerModele(racine, nom);
+    if (instances.length <= SEUIL_DECOUPE) return creer(modele, modele.geometrie, instances);
+    // Modèle très répété (passants, arbres) : un maillage par zone de la carte. De près,
+    // seules les zones à l'écran sont dessinées (élimination par le champ de la caméra).
+    const zones = new Map();
+    for (const inst of instances) {
+      const cle = `${Math.floor(inst.p[0] / TAILLE_ZONE)}:${Math.floor(inst.p[2] / TAILLE_ZONE)}`;
+      if (!zones.has(cle)) zones.set(cle, []);
+      zones.get(cle).push(inst);
+    }
+    for (const groupe of zones.values()) creer(modele, modele.geometrie.clone(), groupe);
+    return null;
+  }
+
+  function creer({ roles, defauts }, geometrie, instances) {
     const n = instances.length;
     const tints = [];
     for (let j = 0; j < ROLES_MAX; j += 1) {

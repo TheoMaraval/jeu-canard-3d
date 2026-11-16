@@ -63,6 +63,16 @@ Spec : section 9 de `docs/superpowers/specs/2026-11-16-jeu-canard-3d-design.md`.
 - [x] `scene.js` : instanciation unifiée avec teintes par rôle.
 - [x] Contrôle à l'image : canard en vitrine à Paris, passants et étals à Delhi.
 
+### Tâche 8 : du piment (révision 4)
+- [x] `kit_loufoque.py` : 59 modèles (animaux, tags, désordre, accessoires, végétation,
+      coiffes folles). `build_assets.py` : 12 leurres jaunes de plus (22 au total).
+- [x] `layout.py` : `poser()`, `figurant()`, 18 saynètes `s_*`, tags et lierre sur les
+      façades, rideaux de fer, fenêtres condamnées, bêtes, pots, vie sur les toits.
+- [x] Thèmes : listes de saynètes, de bêtes, de feuillages et d'arbres par ville.
+- [x] Tests : `test_du_piment`, `test_une_signature_par_ville`.
+- [x] `scene.js` : découpage par zones des modèles de plus de 80 instances.
+- [x] Contrôle à l'image : Delhi, Lille, New York.
+
 ## Commandes
 
 ```bash

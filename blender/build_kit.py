@@ -37,6 +37,8 @@ register({
     "K_Vert": "#2F6B4A", "K_Orange": "#F28C28", "K_Rouge": "#D8342B", "K_Pomme": "#7DBB3C",
     "K_Tache": "#4A3B33", "K_Museau": "#F0A8A8", "K_Interieur": "#3A3550",
 })
+from kit_loufoque import ASSETS_LOUFOQUES  # noqa: E402  (après register : mêmes matériaux)
+
 H = math.pi / 2
 TETE = {"debout": 1.37, "assis": 1.25, "buste": 0.81}  # hauteur du centre de la tête
 
@@ -306,6 +308,7 @@ ASSETS = [
     lambda: arbre("Arbre_A", [(0, 0, 3.2, 1.25), (0.6, 0.2, 3.8, 0.85), (-0.5, -0.3, 3.9, 0.9), (0.05, 0.45, 4.4, 0.7)]),
     lambda: arbre("Arbre_B", [(0, 0, 3.4, 1.4), (0.25, 0.1, 4.6, 0.9)], tronc=2.6),
     arbre_cone, banc, lampadaire, poubelle, table_cafe, chaise, parasol, etal, vache,
+    *ASSETS_LOUFOQUES,
 ]
 
 
