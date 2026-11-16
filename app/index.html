@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Jeu Canard 3D</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <header id="hud">
+    <div id="compteur" aria-label="Canards trouvés">0 / 30</div>
+    <div id="aide"></div>
+  </header>
+
+  <div id="message" role="status" hidden></div>
+
+  <section id="fin" hidden>
+    <div class="carte">
+      <h1>30 canards trouvés !</h1>
+      <dl>
+        <dt>Temps</dt><dd id="fin-temps"></dd>
+        <dt>Taps</dt><dd id="fin-taps"></dd>
+        <dt>Précision</dt><dd id="fin-precision"></dd>
+      </dl>
+      <button id="rejouer" type="button">Rejouer</button>
+    </div>
+  </section>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

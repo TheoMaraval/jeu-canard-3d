@@ -27,7 +27,7 @@ fixe comment on les réalise en 3D.
 | Zoom mini / maxi | quartier entier / canard ≈ 120 px | Au seuil de révélation, l'écran ne montre qu'~1/60 de la carte : ratisser est long |
 | Visibilité des cachettes | canard : 40 à 90 % visible ; leurre : 40 à 100 % | Jamais invisible, rarement offert |
 | Orientation du canard | bec et au moins un œil visibles de la caméra | Un canard vu de dos serait indiscernable même de près |
-| Tap | tolérance de 22 px autour du canard | Confort tactile ; aucun retour sur un tap raté |
+| Tap | seulement quand la vue est révélée ; rayon `max(canard à l'écran, 22 px)` | Confort tactile sans permettre de tapoter la vue d'ensemble ; aucun retour sur un tap raté |
 
 Les 15 % du cahier des charges sont interprétés comme la part de canards parmi les objets
 jaunes. Écart à journaliser si le playtest impose une autre lecture.
@@ -67,8 +67,8 @@ La logique (plan du quartier, choix des placements) vit dans `blender/citygen/` 
 pur, testée hors de Blender (`blender/tests/`).
 4. **`app/`** — modules indépendants :
    - `scene` : charge les GLB, crée les instances (`InstancedMesh`) à partir des placements ;
-   - `camera` : pan, pinch, molette, bornes de zoom, inertie ;
-   - `lod` : bascule loin/près selon la taille à l'écran ;
+   - `vue` : position et zoom, bornes, projection écran, seuil de révélation (pur) ;
+   - `entrees` : pan, pinch, molette, tap ;
    - `picking` : tap → canard le plus proche dans la tolérance, ou rien ;
    - `partie` : état pur (trouvés, taps, temps), sans dépendance à Three.js ;
    - `sauvegarde` : `localStorage`, par scène ;
@@ -132,3 +132,9 @@ manuelle des cachettes, export Godot.
   - leurres acceptés jusqu'à 100 % de visibilité (un plot en plein trottoir est naturel) ;
     92 leurres sur 170 sont dans la même plage de visibilité que les canards.
   - Mesuré pour Paris : 53 282 triangles, 31 matériaux, `quartier.glb` 2,2 Mo.
+- 2026-11-16 : après la première version jouable de l'app. Écarts journalisés :
+  - `camera` et `lod` fusionnés en `vue.js` (le zoom d'une caméra orthographique est
+    global : la révélation dépend d'un seul nombre) ; gestes dans `entrees.js` ;
+  - pas d'inertie sur le déplacement en v1 ;
+  - un tap sous le seuil de révélation ne trouve rien (anti-tapotage) ;
+  - mesuré sur desktop : 48 draw calls. Fluidité iPad non mesurée.
