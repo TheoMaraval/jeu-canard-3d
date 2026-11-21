@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { creerPartie, precision, serialiser, taper, terminee } from '../src/partie.js';
 import { charger, cle, effacer, enregistrer } from '../src/sauvegarde.js';
 import { choisirCanard } from '../src/picking.js';
+import { chrono, pourcent } from '../src/hud.js';
 import {
   axesCamera, borner, creerVue, deplacer, estRevele, limitesCarte, ppmMini, ppmRevelation, projeter, zoomer,
 } from '../src/vue.js';
@@ -16,6 +17,24 @@ function faussStockage() {
     removeItem: (k) => m.delete(k),
   };
 }
+
+describe('affichage du temps et de la précision', () => {
+  it('formate le chrono en minutes et secondes, puis en heures', () => {
+    expect(chrono(0)).toBe('0:00');
+    expect(chrono(999)).toBe('0:00');
+    expect(chrono(7000)).toBe('0:07');
+    expect(chrono(187000)).toBe('3:07');
+    expect(chrono(754000)).toBe('12:34');
+    expect(chrono(3600000 + 125000)).toBe('1:02:05');
+    expect(chrono(-50)).toBe('0:00');
+  });
+
+  it('affiche un tiret tant qu’aucun tap n’a été fait, puis la précision', () => {
+    expect(pourcent(0, 0)).toBe('—');
+    expect(pourcent(3 / 4, 4)).toBe('75 %');
+    expect(pourcent(1 / 3, 3)).toBe('33 %');
+  });
+});
 
 describe('partie', () => {
   it('compte un canard trouvé et le tap', () => {

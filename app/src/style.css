@@ -63,6 +63,21 @@ html, body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+#stats {
+  display: flex;
+  gap: 12px;
+  background: var(--papier);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums; /* les chiffres ne bougent pas quand le temps défile */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+#stats b { display: inline-block; min-width: 2.2ch; }
+#stats span:first-child b { min-width: 3.6ch; }
+
 #aide {
   background: var(--papier);
   border-radius: 999px;

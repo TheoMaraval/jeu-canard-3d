@@ -23,6 +23,9 @@ Lille, Delhi. Un canard trouvé passe en vert, +1 au compteur. Fin de partie à 
   du décor n'est jaune (un test le vérifie pour chaque ville).
 - **Révélation** : le bec et l'œil ne sont affichés que lorsque le canard fait au moins
   28 px à l'écran. En dessous, c'est une masse jaune (`Canard_Loin`).
+- **Compteurs en direct** (`hud.js`, `main.js`) : temps (mm:ss, qui ne tourne que page visible et
+  partie en cours), taps, précision (canards trouvés / taps, « — » avant le premier tap).
+  Tout tap compte, y compris en vue d'ensemble où il ne peut rien trouver.
 - **Un tap ne trouve un canard que si la vue est révélée.** Sinon il suffirait de tapoter
   la vue d'ensemble. Tolérance : `max(rayon du canard à l'écran, 22 px)`.
 - **Pas de pénalité** pour un tap raté (leurre ou vide → rien).

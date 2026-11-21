@@ -5,7 +5,9 @@ import { creerPartie, precision, serialiser, taper, terminee } from './partie.js
 import { charger, effacer, enregistrer } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
-import { afficherAide, afficherCompteur, afficherFin, afficherMessage, afficherVilles } from './hud.js';
+import {
+  afficherAide, afficherCompteur, afficherFin, afficherMessage, afficherStats, afficherVilles,
+} from './hud.js';
 
 const canvas = document.getElementById('scene');
 
@@ -50,6 +52,13 @@ async function demarrer() {
     if (!document.hidden && !terminee(partie)) partie = { ...partie, ecouleMs: partie.ecouleMs + (t - repere) };
     repere = t;
   };
+  // temps, taps et précision en direct : le chrono avance deux fois par seconde
+  const majStats = () => {
+    horloge();
+    afficherStats({ ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) });
+  };
+  const minuteur = setInterval(majStats, 500);
+
   let rejoue = false; // « Rejouer » : plus aucune sauvegarde, sinon la partie finie est réécrite
   const sauver = () => {
     if (rejoue) return;
@@ -59,16 +68,20 @@ async function demarrer() {
   document.addEventListener('visibilitychange', sauver);
   window.addEventListener('pagehide', sauver);
 
-  const finir = () => afficherFin(
-    { ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) },
-    () => {
-      // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
-      // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
-      rejoue = true;
-      effacer(localStorage, info.id, info.version);
-      location.reload();
-    },
-  );
+  const finir = () => {
+    clearInterval(minuteur);
+    majStats(); // dernière valeur exacte, figée
+    afficherFin(
+      { ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) },
+      () => {
+        // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
+        // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
+        rejoue = true;
+        effacer(localStorage, info.id, info.version);
+        location.reload();
+      },
+    );
+  };
 
   ecouterEntrees(canvas, {
     deplacer: (dx, dy) => {
@@ -92,12 +105,14 @@ async function demarrer() {
         afficherCompteur(partie.trouves.size, partie.ids.length);
       }
       sauver();
+      majStats(); // le tap compte tout de suite, sans attendre le prochain tic du chrono
       if (terminee(partie)) finir();
     },
   });
 
   window.addEventListener('resize', rafraichir);
   afficherCompteur(partie.trouves.size, partie.ids.length);
+  majStats();
   rafraichir();
   if (terminee(partie)) finir();
 
