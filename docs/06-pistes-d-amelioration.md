@@ -167,7 +167,7 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 | **Compresser les modèles** (Meshopt ou Draco) | Le site pèse environ 16 Mo : long en 4G | S à M |
 | **Niveaux de détail** | Passants et arbres simplifiés en vue d'ensemble | M |
 | **Application installable, hors ligne** (PWA) | Icône sur l'écran d'accueil, jeu sans réseau | S |
-| **Vibration et sons** | Petit retour quand on trouve un canard | S |
+| **Plus de sons** | Le « coinnn » et la vibration existent ; manquent une ambiance de ville, un son de tap raté, une fanfare de fin. Ou remplacer le cri synthétisé par un enregistrement libre de droits | S |
 | **Daltonisme** | Un canard trouvé passe au vert : ajouter aussi un signe (coche) | S |
 | **Test de bout en bout** | Aujourd'hui, l'affichage et les gestes ne sont testés qu'à la main ; un test automatique (Playwright) pourrait jouer une partie à chaque publication | M |
 | **Bundle plus léger** | Le code de l'app fait 630 Ko (Three.js surtout) ; découpage possible | S |

@@ -7,6 +7,7 @@ import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
 import { charger, effacer, enregistrer } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
+import { creerSon } from './son.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
 import '@fontsource/fredoka/600.css';
 import '@fontsource/fredoka/700.css';
@@ -18,7 +19,7 @@ import {
 } from './partage.js';
 import {
   afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
-  afficherMessage, afficherStats, celebrer,
+  afficherMessage, afficherSon, afficherStats, celebrer,
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
@@ -129,7 +130,15 @@ async function jouer(info) {
     });
   };
 
-  afficherHud({ menu: () => allerA(null), partager: partagerPartie });
+  const son = creerSon();
+  // iOS n'autorise le son qu'après un geste : on débloque l'audio dès le premier contact
+  canvas.addEventListener('pointerdown', () => son.deverrouiller(), { once: true });
+  afficherHud({
+    menu: () => allerA(null),
+    partager: partagerPartie,
+    son: () => afficherSon(son.basculer()),
+  });
+  afficherSon(son.actif());
 
   ecouterEntrees(canvas, {
     deplacer: (dx, dy) => {
@@ -152,6 +161,7 @@ async function jouer(info) {
         scene.marquerTrouve([...partie.trouves].at(-1), true);
         afficherCompteur(partie.trouves.size, partie.ids.length);
         celebrer();
+        son.coin();
       }
       sauver();
       majStats(); // le tap compte tout de suite, sans attendre le prochain tic du chrono

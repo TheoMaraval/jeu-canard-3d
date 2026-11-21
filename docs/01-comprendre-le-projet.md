@@ -71,6 +71,7 @@ Ces règles sont garanties par le code. Si l'une casse, le jeu devient trop faci
  │  sauvegarde.js progression par ville                       (pur, testé)        │
  │  hud.js       accueil, compteur, chrono, précision, écran de fin               │
  │  partage.js   messages de score et d'invitation, partage   (pur, testé)        │
+ │  son.js       le « coinnn » synthétisé, bouton son         (testé)             │
  └─────────────────────────────────────────────────────────────────────────────────┘
             │  GitHub Actions à chaque envoi sur main
             ▼
@@ -90,7 +91,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/` |
-| `app/` | L'application ; `app/tests/` : 34 tests |
+| `app/` | L'application ; `app/tests/` : 38 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -108,9 +109,14 @@ décalées nettes, boutons qui s'enfoncent à l'appui, fond papier tramé. Tout 
   Les émojis ne servent qu'aux emblèmes des villes.
 - Mascotte : un canard dessiné en SVG (`<symbol id="canard">`), sur l'accueil, le
   chargement, l'écran de fin et le compteur.
-- Retours de jeu : le compteur saute, un « +1 » jaillit et le téléphone vibre quand on
-  trouve un canard ; confettis, étoiles et titre selon la précision à la fin
+- Retours de jeu : le compteur saute, un « +1 » jaillit, le téléphone vibre et un canard
+  fait « coinnn » quand on en trouve un ; confettis, étoiles et titre selon la précision à la fin
   (`titreFin` : 70 % et plus « Œil de lynx », 40 % « Fin limier », sinon « Chasseur tenace »).
+- Son (`app/src/son.js`) : le « coinnn » est **synthétisé** avec Web Audio (voix grinçante
+  dont la hauteur retombe, filtres nasaux), sans fichier son ; chaque cri varie un peu.
+  Le bouton haut-parleur le coupe, et le choix est gardé sur l'appareil. Sur iPhone, le
+  son est débloqué au premier contact avec la ville ; le bouton silencieux du téléphone
+  le coupe aussi. Pour changer le cri : `parametresCoin()` (hauteur, chute, durée, nasal).
 - Accessibilité : cibles tactiles de 44 px au moins, contour orange au clavier, animations
   coupées si le système demande moins de mouvement.
 
@@ -180,7 +186,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 41 tests du générateur et les 34 de l'app passent, et sont relancés par GitHub à
+- Les 41 tests du générateur et les 38 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
 - **Pas mesuré** : la fluidité sur téléphone et tablette. Les scènes sont lourdes

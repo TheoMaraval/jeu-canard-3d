@@ -70,10 +70,18 @@ export function afficherAide(revele) {
   aide.hidden = false;
 }
 
-export function afficherHud({ menu, partager }) {
+export function afficherHud({ menu, partager, son }) {
   $('menu').onclick = menu;
   $('partager').onclick = partager;
+  $('son').onclick = son;
   $('hud').hidden = false;
+}
+
+/** Bouton haut-parleur : icône et libellé selon l'état du son. */
+export function afficherSon(actif) {
+  $('son-icone').setAttribute('href', actif ? '#i-son' : '#i-muet');
+  $('son').setAttribute('aria-pressed', String(actif));
+  $('son').setAttribute('aria-label', actif ? 'Couper le son' : 'Remettre le son');
 }
 
 // ----------------------------------------------------------------------- accueil
