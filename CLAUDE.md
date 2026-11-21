@@ -72,31 +72,34 @@ cd app && npm run dev                                     # http://localhost:517
 cd app && npm test                                        # 51 tests
 ```
 
-Le serveur de dev se lance avec la configuration `canard-3d` de `.claude/launch.json` (la
-même existe dans `jeuFind/.claude/launch.json`). Si le port 5173 est déjà pris, ouvrir
-directement `http://localhost:5173` : c'est souvent ce serveur, déjà lancé. Recette pour tester dans le navigateur intégré
-(taille d'écran, sauvegarde injectée, zoom sur un canard) : `docs/05`, section « Tester dans
-le navigateur ».
+Le serveur de dev se lance avec la configuration `canard-3d` de `.claude/launch.json`. Si le
+port 5173 est déjà pris, c'est en général ce même serveur, déjà lancé par l'utilisateur :
+ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigateur intégré
+(taille d'écran, sauvegarde et record injectés, zoom sur un canard, sons neutralisés) :
+`docs/05`, section « Tester dans le navigateur ».
 
 ## État (21/11/2026)
 
-- Fait :
-  - quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ; kit de
-    81 modèles (passants, véhicules, animaux, tags, végétation) ; 18 saynètes ; 22 leurres ;
-  - générateur : validation des thèmes avec messages clairs ; une ville minimale
-    (id, nom, graine) se génère, garanti par un test ;
-  - app : écran d'accueil (tickets de ville avec progression) ; compteurs en direct ;
-    partage du score et invitation ; interface « autocollant de BD » ; « coin coin » enregistré quand on
-    trouve un canard, musique enregistrée quand on a tout trouvé, bouton pour couper le son ;
-    record (meilleur temps) par ville, gardé quand on rejoue ; aide qui s'efface après 5 s ;
-    panneau de mesure de fluidité (`&debug`). « Rejouer » corrigé.
-- Mesuré : fluidité sur un iPhone récent, Delhi (la plus lourde) : 59 images/s sans
-  saccade, 4 à 7 ms par image, 590 000 à 810 000 triangles (`&debug`, `docs/05`).
-- **Jamais mesuré ni vérifié** : fluidité sur un Android modeste ou un vieux téléphone ; rendu réel sur téléphone ; les sons
-  sur téléphone (seulement analysés dans le navigateur) ; une partie complète jouée pour régler la
-  difficulté.
-- Prochaine étape conseillée : lancer `&debug` sur un téléphone modeste, puis le mode « Cacher mes
-  canards » (conception dans `docs/06`).
+- **Générateur** : quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ;
+  kit de 81 modèles (passants, véhicules, animaux, tags, végétation) ; 18 saynètes ;
+  22 leurres ; validation des thèmes avec messages clairs ; une ville minimale (id, nom,
+  graine) se génère, garanti par un test.
+- **App** :
+  - écran d'accueil (tickets de ville avec progression et pastille ★ du record) ;
+  - temps, taps et précision en direct ; aide en bas de l'écran qui s'efface après 5 s ;
+  - partage du score et invitation ; interface « autocollant de BD » ;
+  - sons enregistrés à la voix par l'utilisateur : « coin coin » à chaque canard trouvé,
+    musique de fin après le dernier ; cri synthétisé en secours ; bouton pour couper le son ;
+  - record (meilleur temps, puis moins de taps) par ville, gardé quand on rejoue ; écran de
+    fin « Nouveau record ! » ou « Ton record » ;
+  - panneau de mesure de fluidité avec `&debug` dans l'adresse.
+- **Mesuré** : fluidité sur un iPhone récent, Delhi (la plus lourde) : 59 images/s sans
+  saccade, 4 à 7 ms par image, 590 000 à 810 000 triangles. Le jeu y tourne bien.
+- **Jamais mesuré ni vérifié** : fluidité sur un Android modeste ou un vieux téléphone ;
+  les sons écoutés sur téléphone (seulement analysés dans le navigateur) ; une partie
+  complète jouée pour régler la difficulté.
+- **Prochaine étape conseillée** : le mode « Cacher mes canards » (conception dans
+  `docs/06`), ou un `&debug` sur un téléphone modeste avant d'ajouter du contenu.
 
 ## Pièges pour Claude
 
@@ -114,16 +117,25 @@ le navigateur ».
   dans un fichier, ou utiliser l'outil d'édition.
 - Python sous Windows : afficher un émoji (thèmes, `scenes.json`) plante avec
   `UnicodeEncodeError` ; préfixer `PYTHONIOENCODING=utf8`.
-- Navigateur intégré de Claude : volet masqué = page de taille nulle (fixer une taille avec
-  `resize_window`, la remettre ensuite) ; zoomer avec des `WheelEvent` synthétiques ;
-  les `PointerEvent` synthétiques échouent, faire de vrais clics. Pas de `navigator.share` :
-  le partage passe par la copie, qui écrit dans le presse-papiers de l'utilisateur.
+- Navigateur intégré de Claude :
+  - volet masqué = page de taille nulle (fixer une taille avec `resize_window`, la remettre
+    ensuite) et `requestAnimationFrame` presque arrêté : les images/s de `&debug` y sont
+    fausses, seul « image calculée » est fiable ;
+  - zoomer avec des `WheelEvent` synthétiques ; les `PointerEvent` synthétiques échouent,
+    faire de vrais clics (capture d'écran d'abord pour avoir le repère des coordonnées) ;
+  - pas de `navigator.share` : le partage passe par la copie, qui écrit dans le
+    presse-papiers de l'utilisateur ;
+  - modifier un fichier source recharge la partie ouverte (Vite) : la sauvegarde de
+    `pagehide` réécrit alors l'état en mémoire (et peut noter un record). Remettre les
+    sauvegardes de test à zéro depuis `/scenes.json` à la fin.
 - Ne pas déclencher le son dans le vrai navigateur pendant les tests (rallumer le son joue
-  un cri) : analyser les sons avec un `OfflineAudioContext`, ou neutraliser
-  `AudioBufferSourceNode.prototype.start` avant de jouer (recettes dans `docs/05`).
-- Navigateur intégré masqué : `requestAnimationFrame` ne tourne presque plus ; les
-  images/s de `&debug` y sont fausses, seul « image calculée » est fiable.
-- `assets/sons/` est le seul dossier de `assets/` écrit à la main (pas par le générateur).
+  un cri) : analyser les sons avec un `OfflineAudioContext`, ou neutraliser `start` **et**
+  `stop` de `AudioScheduledSourceNode` avant de jouer (recettes dans `docs/05`).
+- Un son ne doit jamais bloquer la partie : `coin()` et `fanfare()` avalent toute erreur
+  audio. Garder ce `try/catch` (sans lui, une erreur empêchait l'écran de fin).
+- `assets/sons/` est le seul dossier de `assets/` écrit à la main (pas par le générateur) :
+  sons découpés et convertis en MP3 avec ffmpeg (recette dans `docs/05`). Ne jamais
+  récupérer un son sur YouTube ; un son d'Internet doit avoir une licence claire.
 - Vite renvoie `index.html` pour un fichier absent : un JSON « illisible » = fichier manquant.
 - Les fiches de `.claude/skills/` (dépôt `arjun988/blender-skills`) sont des conseils, pas
   des modèles. Ne pas citer de noms de skills sans avoir listé le dépôt.

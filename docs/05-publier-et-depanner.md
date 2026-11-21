@@ -33,7 +33,7 @@ npm run dev        # http://localhost:5173
 
 ```bash
 python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 47 tests de l'app
+cd app && npm test                                        # 51 tests de l'app
 ```
 
 ## Publier
@@ -140,6 +140,7 @@ AudioBufferSourceNode.prototype.start = function (quand) {
   journalSon.push({ duree: this.buffer.duration, dans: quand - this.context.currentTime });
 };
 OscillatorNode.prototype.start = function () { journalSon.push('synthèse'); };
+AudioScheduledSourceNode.prototype.stop = function () {}; // sinon `stop` sans `start` lève une erreur
 ```
 
 Toucher la ville une première fois (déblocage du son), attendre une seconde, puis trouver
