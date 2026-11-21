@@ -209,6 +209,11 @@ Diagnostic dans la console du navigateur : `jeu.stats()`, `jeu.vue()`, `jeu.part
 
 ## Pièges connus
 
+- **`location.reload()` déclenche `pagehide`**, donc la sauvegarde automatique : « Rejouer »
+  doit couper les sauvegardes (`rejoue = true` dans `main.js`) avant d'effacer, sinon la partie
+  finie est réécrite et l'écran de fin revient. Pour tester ce genre de scénario, injecter
+  la sauvegarde depuis une page sans jeu (ex. `/scenes.json`), pas depuis le jeu.
+
 - Blender 5 : un matériau créé par script a un arbre de nœuds vide. Créer explicitement
   le Principled BSDF et la sortie (voir `material()` dans `build_assets.py`).
 - Blender 5 : même chose pour le monde. Sans nœud Background, pas de lumière d'ambiance

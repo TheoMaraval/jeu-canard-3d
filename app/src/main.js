@@ -50,7 +50,9 @@ async function demarrer() {
     if (!document.hidden && !terminee(partie)) partie = { ...partie, ecouleMs: partie.ecouleMs + (t - repere) };
     repere = t;
   };
+  let rejoue = false; // « Rejouer » : plus aucune sauvegarde, sinon la partie finie est réécrite
   const sauver = () => {
+    if (rejoue) return;
     horloge();
     enregistrer(localStorage, info.id, info.version, serialiser(partie));
   };
@@ -60,6 +62,9 @@ async function demarrer() {
   const finir = () => afficherFin(
     { ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) },
     () => {
+      // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
+      // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
+      rejoue = true;
       effacer(localStorage, info.id, info.version);
       location.reload();
     },
