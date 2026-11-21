@@ -39,9 +39,10 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 | `src/sauvegarde.js` | Progression et record (meilleur temps) par ville (`localStorage`) | oui |
 | `src/hud.js` | Affichage : accueil, compteur, chrono, aide, toasts, fin, confettis | formats |
 | `src/partage.js` | Textes de score et d'invitation, partage natif ou copie, titre de fin | oui |
+| `src/mesure.js` | Mesure de fluidité, avec `&debug` dans l'adresse (chargé à la demande) | oui |
 | `src/son.js` | « coin coin » et musique de fin enregistrés (`assets/sons/`), cri synthétisé en secours, bouton son | oui |
 
-Tests : `app/tests/` (47). Polices Fredoka et Nunito embarquées via `@fontsource`.
+Tests : `app/tests/` (51). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -68,7 +69,7 @@ python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blend
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
-cd app && npm test                                        # 47 tests
+cd app && npm test                                        # 51 tests
 ```
 
 Le serveur de dev se lance avec la configuration `canard-3d` de `.claude/launch.json` (la
@@ -87,12 +88,13 @@ le navigateur ».
   - app : écran d'accueil (tickets de ville avec progression) ; compteurs en direct ;
     partage du score et invitation ; interface « autocollant de BD » ; « coin coin » enregistré quand on
     trouve un canard, musique enregistrée quand on a tout trouvé, bouton pour couper le son ;
-    record (meilleur temps) par ville, gardé quand on rejoue ; « Rejouer » corrigé.
-- **Jamais mesuré ni vérifié** : fluidité sur téléphone (400 000 à 570 000 triangles de
-  décor, au-dessus de la cible de 500 000) ; rendu réel sur téléphone ; les sons
+    record (meilleur temps) par ville, gardé quand on rejoue ; aide qui s'efface après 5 s ;
+    panneau de mesure de fluidité (`&debug`). « Rejouer » corrigé.
+- **Jamais mesuré ni vérifié** : fluidité sur téléphone (480 000 à 830 000 triangles par
+  image ; sur ordinateur 8 à 11 ms par image, 60 images/s ; outil prêt : `&debug`, `docs/05`) ; rendu réel sur téléphone ; les sons
   sur téléphone (seulement analysés dans le navigateur) ; une partie complète jouée pour régler la
   difficulté.
-- Prochaine étape conseillée : mesurer la fluidité sur téléphone, puis le mode « Cacher mes
+- Prochaine étape conseillée : lancer `&debug` sur de vrais téléphones, puis le mode « Cacher mes
   canards » (conception dans `docs/06`).
 
 ## Pièges pour Claude
@@ -118,6 +120,8 @@ le navigateur ».
 - Ne pas déclencher le son dans le vrai navigateur pendant les tests (rallumer le son joue
   un cri) : analyser les sons avec un `OfflineAudioContext`, ou neutraliser
   `AudioBufferSourceNode.prototype.start` avant de jouer (recettes dans `docs/05`).
+- Navigateur intégré masqué : `requestAnimationFrame` ne tourne presque plus ; les
+  images/s de `&debug` y sont fausses, seul « image calculée » est fiable.
 - `assets/sons/` est le seul dossier de `assets/` écrit à la main (pas par le générateur).
 - Vite renvoie `index.html` pour un fichier absent : un JSON « illisible » = fichier manquant.
 - Les fiches de `.claude/skills/` (dépôt `arjun988/blender-skills`) sont des conseils, pas

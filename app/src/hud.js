@@ -61,13 +61,23 @@ export function afficherStats({ ecouleMs, taps, precision }) {
   $('stat-precision').textContent = pourcent(precision, taps);
 }
 
-/** Aide contextuelle, en bas de l'écran. */
+export const DUREE_AIDE_MS = 5000;
+let minuterieAide = null;
+
+/**
+ * Aide contextuelle, en bas de l'écran. Chaque message reste 5 s puis disparaît ; il ne
+ * revient que lorsque le message change (passage du zoom de révélation, dans un sens ou l'autre).
+ */
 export function afficherAide(revele) {
   const aide = $('aide');
-  aide.textContent = revele
+  const texte = revele
     ? 'Touche le canard : bec orange, œil noir. Regarde aussi derrière les vitres !'
     : 'Zoome sur un point jaune pour voir si c’est un canard.';
+  if (aide.textContent === texte) return; // déjà montré (ou déjà effacé) : on ne le relance pas
+  aide.textContent = texte;
   aide.hidden = false;
+  clearTimeout(minuterieAide);
+  minuterieAide = setTimeout(() => { aide.hidden = true; }, DUREE_AIDE_MS);
 }
 
 export function afficherHud({ menu, partager, son }) {

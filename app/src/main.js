@@ -8,7 +8,9 @@ import { creerPartie, precision, serialiser, taper, terminee } from './partie.js
 import { charger, chargerRecord, effacer, enregistrer, meilleur, retenirRecord } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { creerSon } from './son.js';
-import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
+import {
+  borner, creerVue, deplacer, estRevele, ppmMini, ppmRevelation, projeter, zoomer,
+} from './vue.js';
 import '@fontsource/fredoka/600.css';
 import '@fontsource/fredoka/700.css';
 import '@fontsource/nunito/400.css';
@@ -71,7 +73,9 @@ function accueil(scenes) {
 
 async function jouer(info) {
   afficherChargement(true, `Chargement de ${decouperNom(info.nom).ville}…`);
+  const t0 = performance.now();
   const scene = await chargerScene(canvas, info);
+  const chargementMs = performance.now() - t0;
   afficherChargement(false);
 
   let partie = creerPartie(scene.canards.map((c) => c.id), charger(localStorage, info.id, info.version));
@@ -186,6 +190,22 @@ async function jouer(info) {
 
   // pour le diagnostic depuis la console : window.jeu.stats()
   window.jeu = { stats: scene.stats, vue: () => vue, partie: () => serialiser(partie), canards: scene.canards, axes: scene.axes };
+
+  // `&debug` dans l'adresse : panneau de mesure de fluidité (voir docs/05)
+  if (new URLSearchParams(location.search).has('debug')) {
+    const { installerMesure } = await import('./mesure.js');
+    installerMesure({
+      scene,
+      ville: info.id,
+      chargementMs,
+      lireVue: () => vue,
+      regler: (v) => {
+        vue = v;
+        rafraichir();
+      },
+      zooms: { ensemble: ppmMini(ecran(), scene.limites), moyen: 30, pres: 1.2 * ppmRevelation(scene.gabarit) },
+    });
+  }
 }
 
 async function demarrer() {

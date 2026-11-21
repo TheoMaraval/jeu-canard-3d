@@ -26,8 +26,8 @@ npm run dev        # http://localhost:5173
   vers `localhost` : seuls ceux du site publié sont utilisables par d'autres.
 - **Sur un téléphone du même Wi-Fi** : utiliser l'adresse « Network » affichée par
   `npm run dev` (par exemple `http://192.168.1.20:5173`).
-- Dans une session Claude ouverte depuis `jeuFind`, le serveur se lance avec la
-  configuration `canard-3d` de `jeuFind/.claude/launch.json`.
+- Dans une session Claude, le serveur se lance avec la configuration `canard-3d` de
+  `.claude/launch.json`.
 
 ## Les tests
 
@@ -65,6 +65,7 @@ Ouvrir la console du navigateur (F12 sur ordinateur) sur la page du jeu :
 | Commande | Réponse |
 |---|---|
 | `jeu.stats()` | Ce que dessine la dernière image : `triangles`, `calls` (appels de dessin), nombre d'objets |
+| `&debug` dans l'adresse | Panneau de mesure de fluidité (voir plus bas) |
 | `jeu.vue()` | Position et zoom (`ppm` = pixels par mètre) |
 | `jeu.partie()` | Canards trouvés, taps, temps |
 | `jeu.canards` | Les 30 canards, avec leur lieu (`vitre`, `toit`…) |
@@ -162,10 +163,45 @@ Internet doit avoir une licence claire : pas de son tiré de YouTube.
 le presse-papiers. Pour simuler le partage d'un téléphone :
 `Object.defineProperty(navigator, 'share', { configurable: true, value: async (d) => console.log(d) })`.
 
+## Mesurer la fluidité (sur téléphone)
+
+Ajouter `&debug` à l'adresse d'une ville, par exemple
+**https://theomaraval.github.io/jeu-canard-3d/?ville=delhi&debug** (Delhi est la plus
+lourde). Un panneau « Mesure de fluidité » s'affiche (`app/src/mesure.js`, chargé seulement
+dans ce cas). « Mesurer (12 s) » fait glisser la vue toute seule à trois zooms (vue
+d'ensemble, moyen, de près) ; ne pas toucher l'écran pendant ce temps. Puis « Copier les
+résultats » donne un texte à coller dans un message.
+
+Pour chaque zoom :
+
+| Mesure | Ce qu'elle dit | Bon signe |
+|---|---|---|
+| images/s | Médiane pendant le balayage, plafonnée par l'écran (60 ou 120 Hz) | 50 et plus |
+| image lente | 95e centile de l'intervalle entre deux images | moins de 33 ms |
+| saccades | Images de plus de 34 ms (au moins deux images d'écran perdues) | 0 à 2 |
+| image calculée en | Temps pour dessiner une image, carte graphique comprise, vue fixe | moins de 16 ms |
+| triangles, appels | Ce que dessine la dernière image (contours compris) | — |
+
+Le panneau donne aussi la puce graphique, la taille de l'écran et la durée du chargement
+de la ville (fichiers déjà en cache ou non). « Trop peu d'images pour conclure » : l'écran
+s'est éteint ou l'onglet est passé en arrière-plan pendant la mesure ; recommencer.
+
+**Repères mesurés sur ordinateur** (21/11/2026, puce graphique intégrée AMD Radeon,
+fenêtre de 390 × 800 en densité ×2) :
+
+| Ville | images/s | image calculée | triangles par image |
+|---|---|---|---|
+| Paris | (navigateur caché, non fiable) | 8 à 11 ms | 480 k à 630 k |
+| Delhi | 60, aucune saccade | 8,3 à 9,2 ms | 590 k à 830 k |
+
+Un téléphone milieu de gamme a une puce graphique deux à quatre fois moins rapide :
+s'attendre à 20–40 ms par image, donc 25 à 50 images/s. **À confirmer** avec le panneau
+sur de vrais téléphones. Le navigateur intégré de Claude, masqué, ne dessine presque plus
+d'images : seul « image calculée » y est fiable.
+
 ## Si c'est lent sur téléphone
 
-Rien n'a encore été mesuré sur téléphone. Les scènes affichent 400 000 à 570 000 triangles
-de décor, au-dessus de la cible de 500 000. Leviers, du plus simple au plus profond :
+Leviers, du plus simple au plus profond :
 
 1. Dans le thème : baisser `style.foule`, `saynete_rue`, `nb_betes` (moins de passants et
    d'objets), puis régénérer.

@@ -162,7 +162,7 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 
 | Idée | Pourquoi | Effort |
 |---|---|---|
-| **Mesurer la fluidité sur téléphone** | Jamais fait ; tout le reste en dépend. Ajouter un affichage des images par seconde avec `?debug` dans l'adresse | S |
+| **Mesurer la fluidité sur téléphone** | L'outil existe (`&debug`, voir docs/05) ; reste à le lancer sur plusieurs vrais téléphones, dont un ancien | S |
 | **Compresser les modèles** (Meshopt ou Draco) | Le site pèse environ 16 Mo : long en 4G | S à M |
 | **Niveaux de détail** | Passants et arbres simplifiés en vue d'ensemble | M |
 | **Application installable, hors ligne** (PWA) | Icône sur l'écran d'accueil, jeu sans réseau | S |

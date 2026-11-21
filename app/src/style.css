@@ -664,3 +664,23 @@ html, body {
   .pastille-stats { order: 3; height: 38px; font-size: 14px; gap: 10px; }
   .aide { font-size: 14px; }
 }
+
+/* panneau de mesure de fluidité (&debug dans l'adresse, voir mesure.js) */
+.mesure {
+  position: fixed;
+  z-index: var(--z-toast);
+  left: max(10px, env(safe-area-inset-left));
+  right: max(10px, env(safe-area-inset-right));
+  top: calc(max(10px, env(safe-area-inset-top)) + 110px);
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+  padding: 12px;
+  font-size: 13px;
+  background: var(--carton);
+  border: 2px solid var(--encre);
+  border-radius: 14px;
+  box-shadow: var(--ombre-petite);
+}
+.mesure pre { margin: 0; white-space: pre-wrap; font: inherit; font-variant-numeric: tabular-nums; }
+.mesure .bouton { font-size: 15px; padding: 8px 12px; }

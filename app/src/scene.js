@@ -362,5 +362,22 @@ export async function chargerScene(canvas, info) {
       id: c.id, lieu: c.lieu, centre: [c.position[0], c.position[1] + HAUTEUR_CENTRE * k, c.position[2]],
     })),
     stats: () => ({ ...renderer.info.render, objets: placements.objets.length, decor: decor.instances.length }),
+    contexte: renderer.getContext(), // pour la mesure de fluidité (nom de la puce graphique)
+    /**
+     * Mesure de fluidité : dessine `n` images d'affilée avec la vue actuelle et renvoie la
+     * durée de chacune (ms), carte graphique comprise (la lecture d'un pixel attend la fin).
+     */
+    chronometrerRendu(n = 15) {
+      const gl = renderer.getContext();
+      const pixel = new Uint8Array(4);
+      const durees = [];
+      for (let i = 0; i < n; i += 1) {
+        const t = performance.now();
+        renderer.render(scene, camera);
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+        durees.push(performance.now() - t);
+      }
+      return durees;
+    },
   };
 }

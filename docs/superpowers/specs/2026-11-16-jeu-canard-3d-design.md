@@ -276,3 +276,6 @@ La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
   plus rapide, puis le moins de taps) est gardé à part de la partie : « Rejouer » ne l'efface
   pas. Il s'affiche sur l'écran de fin (« Nouveau record ! » ou « Ton record ») et sur le
   ticket de la ville à l'accueil.
+- 2026-11-21 : révision 8, mesure et confort. Panneau de mesure de fluidité avec `&debug`
+  dans l'adresse (images/s, saccades, temps de calcul d'une image, triangles). L'aide en bas
+  de l'écran disparaît après 5 s et ne revient qu'au passage du zoom de révélation.

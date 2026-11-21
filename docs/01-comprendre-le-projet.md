@@ -72,6 +72,7 @@ Ces règles sont garanties par le code. Si l'une casse, le jeu devient trop faci
  │  hud.js       accueil, compteur, chrono, précision, écran de fin               │
  │  partage.js   messages de score et d'invitation, partage   (pur, testé)        │
  │  son.js       « coin coin » et musique de fin, bouton son  (testé)             │
+ │  mesure.js    mesure de fluidité (&debug dans l'adresse)   (testé)             │
  └─────────────────────────────────────────────────────────────────────────────────┘
             │  GitHub Actions à chaque envoi sur main
             ▼
@@ -91,7 +92,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
-| `app/` | L'application ; `app/tests/` : 47 tests |
+| `app/` | L'application ; `app/tests/` : 51 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -126,6 +127,9 @@ décalées nettes, boutons qui s'enfoncent à l'appui, fond papier tramé. Tout 
   Le bouton haut-parleur coupe tout, et le choix est gardé sur l'appareil. Sur iPhone, le
   son est débloqué au premier contact avec la ville ; le bouton silencieux du téléphone
   le coupe aussi. Pour changer un son, remplacer le fichier (voir [05](05-publier-et-depanner.md)).
+- Aide en bas de l'écran : « Zoome sur un point jaune… » en vue d'ensemble, « Touche le
+  canard… » une fois zoomé. Chaque message reste 5 s (`DUREE_AIDE_MS` dans `hud.js`) et
+  ne revient que lorsqu'on franchit le zoom de révélation.
 - Accessibilité : cibles tactiles de 44 px au moins, contour orange au clavier, animations
   coupées si le système demande moins de mouvement.
 
@@ -213,7 +217,8 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 - Les 41 tests du générateur et les 38 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
-- **Pas mesuré** : la fluidité sur téléphone et tablette. Les scènes sont lourdes
-  (400 000 à 570 000 triangles pour le décor). Voir [05](05-publier-et-depanner.md).
+- **Pas encore mesuré sur téléphone** : la fluidité. Les scènes sont lourdes (480 000 à
+  830 000 triangles par image selon la ville et le zoom). L'outil existe : `&debug` dans
+  l'adresse, voir [05](05-publier-et-depanner.md).
 - **Pas joué** : aucune partie complète n'a servi à régler la difficulté. Tous les
   réglages sont des valeurs de départ.
