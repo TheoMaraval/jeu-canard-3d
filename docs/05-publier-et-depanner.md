@@ -232,6 +232,7 @@ Leviers, du plus simple au plus profond :
 | Une ville met des minutes à se mailler | Ne pas construire le décor avec `bmesh` (lent sur gros maillages) | Le décor passe par `citygen/maillage.py` |
 | Matériaux noirs ou absents dans Blender 5 | Un matériau ou un monde créé par script a un arbre de nœuds vide | Voir `material()` dans `blender/citygen/geo.py` |
 | Presque aucune cachette « à moitié visible » | Pas assez d'obstacles bas (murets, haies, étals, garde-corps) | Ajouter du décor qui masque partiellement, plutôt que d'élargir les plages de visibilité |
+| Publication en échec (croix rouge dans **Actions**) à l'étape `deploy-pages` : « No artifacts named "github-pages" were found » | Panne passagère de GitHub (le paquet a bien été envoyé, GitHub n'arrive pas à le relire) ; rien à voir avec le code | Le site reste sur la version précédente. Relancer la publication (**Re-run jobs** dans **Actions**) ou attendre le prochain `git push`. Si seuls `docs/` ou `CLAUDE.md` ont changé, le jeu en ligne est déjà à jour |
 | Le cube et la caméra par défaut apparaissent dans un `.blend` | Script Blender lancé sans repartir d'une scène vide | Les scripts commencent par `read_factory_settings(use_empty=True)` |
 
 Pièges propres au travail avec Claude (navigateur intégré, scripts dans Git Bash) : voir
