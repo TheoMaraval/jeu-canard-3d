@@ -1,21 +1,21 @@
-# jeu-canard-3D
+# jeu-canard-3D — « Où sont les canards ? »
 
 Jeu d'observation 3D : trouver 30 canards en plastique jaunes cachés dans un quartier
 dessiné, dense et loufoque. Quatre villes : Paris, New York, Lille, Delhi.
 Successeur de `../jeuFind` (prototype 2D, référence historique seulement).
 
 - **En ligne** : https://theomaraval.github.io/jeu-canard-3d/ (dépôt `TheoMaraval/jeu-canard-3d`,
-  republié à chaque `git push` sur `main` par `.github/workflows/pages.yml`).
+  republié à chaque `git push` sur `main` par `.github/workflows/pages.yml`, en 2 à 5 min).
 - **Documentation complète** : `docs/README.md`. Lire le fichier qui correspond à la tâche
   avant de commencer :
 
 | Tâche | Fichier |
 |---|---|
-| Architecture, formats de fichiers, sauvegarde | `docs/01-comprendre-le-projet.md` |
+| Architecture, formats de fichiers, sauvegarde, charte de l'interface, son | `docs/01-comprendre-le-projet.md` |
 | Créer ou modifier une ville (+ référence de toutes les clés de thème) | `docs/02-ajouter-une-ville.md` |
 | Difficulté | `docs/03-regler-la-difficulte.md` |
 | Nouveau modèle, saynète, place, toit, véhicule, leurre | `docs/04-etendre-le-generateur.md` |
-| Lancer, publier, dépanner, fluidité | `docs/05-publier-et-depanner.md` |
+| Lancer, tester dans le navigateur, publier, dépanner, fluidité | `docs/05-publier-et-depanner.md` |
 | Idées et modes futurs (cacher ses canards, créer son monde) | `docs/06-pistes-d-amelioration.md` |
 
 ## Architecture en trois lignes
@@ -23,6 +23,25 @@ Successeur de `../jeuFind` (prototype 2D, référence historique seulement).
 `blender/themes/<ville>.json` → générateur Python pur (`blender/citygen/`) + Blender 5.3 en
 ligne de commande (`blender/*.py`) → fichiers dans `assets/` → app Vite + Three.js (`app/`).
 Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/01`).
+
+## L'application (`app/`)
+
+| Fichier | Rôle | Testé |
+|---|---|---|
+| `index.html` | Structure des écrans (accueil, barre de jeu, chargement, fin) ; icônes SVG et mascotte canard en `<symbol>` | — |
+| `src/style.css` | Charte « autocollant de BD » ; variables en tête (`--encre`, `--jaune`…) | — |
+| `src/main.js` | Assemble tout : accueil sans `?ville=`, sinon la partie | — |
+| `src/scene.js` | Charge les fichiers de `assets/`, rendu toon + traits d'encre, instanciation | — |
+| `src/entrees.js` | Glisser, pincer, molette, tap | — |
+| `src/vue.js` | Position, zoom, seuil de révélation, projection écran | oui |
+| `src/picking.js` | Quel canard est sous le doigt | oui |
+| `src/partie.js` | Trouvés, taps, temps | oui |
+| `src/sauvegarde.js` | Progression par ville (`localStorage`) | oui |
+| `src/hud.js` | Affichage : accueil, compteur, chrono, aide, toasts, fin, confettis | formats |
+| `src/partage.js` | Textes de score et d'invitation, partage natif ou copie, titre de fin | oui |
+| `src/son.js` | « coinnn » synthétisé (Web Audio), bouton son | oui |
+
+Tests : `app/tests/` (38). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -48,35 +67,39 @@ Blender n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.
 python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blender, quelques secondes
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
-cd app && npm run dev                                     # http://localhost:5173/?ville=lille
+cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
 cd app && npm test                                        # 38 tests
 ```
 
 Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la configuration
-`canard-3d` de `jeuFind/.claude/launch.json`.
+`canard-3d` de `jeuFind/.claude/launch.json`. Recette pour tester dans le navigateur intégré
+(taille d'écran, sauvegarde injectée, zoom sur un canard) : `docs/05`, section « Tester dans
+le navigateur ».
 
 ## État (21/11/2026)
 
-- Fait : quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ; kit de
-  81 modèles (passants, véhicules, animaux, tags, végétation, saynètes) ; 18 saynètes ;
-  22 leurres ; menu des villes ; compteurs en direct ; « Rejouer » corrigé ; validation
-  des thèmes avec messages clairs ; ville minimale (id, nom, graine) garantie par un test ;
-  écran d'accueil (choix de la ville, progression) ; partage du score et invitation
-  (`app/src/partage.js` : partage natif sur téléphone, copie sinon) ; interface en style
-  « autocollant de BD » (charte dans `docs/01`, section « L'interface ») ; « coinnn »
-  synthétisé quand on trouve un canard, avec bouton pour couper le son (`app/src/son.js`).
-- **Jamais mesuré** : fluidité sur téléphone (400 000 à 570 000 triangles de décor, au-dessus
-  de la cible de 500 000), et aucune partie complète jouée pour régler la difficulté.
+- Fait :
+  - quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ; kit de
+    81 modèles (passants, véhicules, animaux, tags, végétation) ; 18 saynètes ; 22 leurres ;
+  - générateur : validation des thèmes avec messages clairs ; une ville minimale
+    (id, nom, graine) se génère, garanti par un test ;
+  - app : écran d'accueil (tickets de ville avec progression) ; compteurs en direct ;
+    partage du score et invitation ; interface « autocollant de BD » ; « coinnn » quand on
+    trouve un canard, bouton pour couper le son ; « Rejouer » corrigé.
+- **Jamais mesuré ni vérifié** : fluidité sur téléphone (400 000 à 570 000 triangles de
+  décor, au-dessus de la cible de 500 000) ; rendu réel sur téléphone ; le son du
+  « coinnn » à l'oreille (seulement analysé) ; une partie complète jouée pour régler la
+  difficulté.
 - Prochaine étape conseillée : mesurer la fluidité sur téléphone, puis le mode « Cacher mes
   canards » (conception dans `docs/06`).
 
 ## Pièges pour Claude
 
 - **Ne jamais supprimer `assets/scenes.json`** : l'app ne démarre plus. `place_objets.py`
-  met à jour la ligne de sa ville.
-- `location.reload()` déclenche `pagehide`, donc une sauvegarde : « Rejouer » coupe les
-  sauvegardes (`rejoue = true` dans `main.js`). Pour tester un état sauvegardé, l'injecter
-  depuis une page sans jeu (`/scenes.json`), pas depuis le jeu.
+  met à jour la ligne de sa ville (avec `embleme`, `couleur`, `ordre`, `canards`).
+- `location.reload()` et tout départ de page déclenchent `pagehide`, donc une sauvegarde :
+  « Rejouer » coupe les sauvegardes (`rejoue = true` dans `main.js`). Pour injecter ou
+  effacer une sauvegarde de test, le faire depuis une page sans jeu (`/scenes.json`).
 - Ajouter un tirage aléatoire dans du code commun du générateur déplace les canards de
   **toutes** les villes : régénérer tout et augmenter `version`.
 - Décor : ne pas utiliser `bmesh` (plus de 7 min par ville) ; passer par `citygen/maillage.py`.
@@ -84,9 +107,14 @@ Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la co
   nœuds explicitement (`material()` dans `blender/citygen/geo.py`).
 - Git Bash : un heredoc contenant `\n`, des apostrophes ou `\U` se casse. Écrire le script
   dans un fichier, ou utiliser l'outil d'édition.
+- Python sous Windows : afficher un émoji (thèmes, `scenes.json`) plante avec
+  `UnicodeEncodeError` ; préfixer `PYTHONIOENCODING=utf8`.
 - Navigateur intégré de Claude : volet masqué = page de taille nulle (fixer une taille avec
   `resize_window`, la remettre ensuite) ; zoomer avec des `WheelEvent` synthétiques ;
-  les `PointerEvent` synthétiques échouent, faire de vrais clics.
+  les `PointerEvent` synthétiques échouent, faire de vrais clics. Pas de `navigator.share` :
+  le partage passe par la copie, qui écrit dans le presse-papiers de l'utilisateur.
+- Ne pas déclencher le son dans le vrai navigateur pendant les tests (rallumer le son joue
+  un cri) : analyser le cri avec un `OfflineAudioContext` (recette dans `docs/05`).
 - Vite renvoie `index.html` pour un fichier absent : un JSON « illisible » = fichier manquant.
 - Les fiches de `.claude/skills/` (dépôt `arjun988/blender-skills`) sont des conseils, pas
   des modèles. Ne pas citer de noms de skills sans avoir listé le dépôt.
@@ -96,8 +124,10 @@ Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la co
 
 ## Préférences de travail
 
-- Commiter et mettre la doc à jour au fil de l'eau (`docs/` d'abord, puis ce fichier s'il
-  change de l'état ou des pièges).
+- Commiter et pousser au fil de l'eau ; mettre la doc à jour à chaque changement
+  (`docs/` d'abord, puis ce fichier s'il change l'état, les fichiers ou les pièges).
 - Quand le code contredit la spec (`docs/superpowers/specs/`), corriger la spec et
   journaliser l'écart dans son journal des révisions.
+- Vérifier dans le navigateur ce qui se voit (captures à taille de téléphone, 390 px) avant
+  d'annoncer qu'une modification d'interface est faite.
 - Répondre en français.

@@ -253,3 +253,18 @@ La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
   - Version de scène 3 (les sauvegardes précédentes sont ignorées).
   - Côté app : découpage par zones des modèles très répétés. Budget de triangles encore
     dépassé (voir CLAUDE.md), non mesuré sur iPad.
+- 2026-11-21 : révision 5, publication et finitions. Écarts et ajouts par rapport à la
+  conception initiale :
+  - publication sur GitHub Pages (https://theomaraval.github.io/jeu-canard-3d/), redéployée
+    à chaque envoi sur `main` ;
+  - temps, taps et précision affichés **en direct** (la conception ne les montrait qu'à la fin) ;
+  - écran d'accueil pour choisir sa ville (l'écran de choix était hors périmètre v1) ;
+  - partage du score et invitation (natif sur téléphone, copie sinon), liens directs
+    `?ville=` ;
+  - interface refaite en style « autocollant de BD » ; titre affiché « Où sont les canards ? » ;
+  - son : un « coinnn » synthétisé à chaque canard trouvé (les sons étaient hors périmètre v1),
+    avec un bouton pour le couper ;
+  - générateur : validation des thèmes, valeurs par défaut complètes, clés de thème
+    `ordre`, `embleme`, `couleur` ;
+  - documentation d'usage dans `docs/01` à `docs/06`, qui fait désormais référence ; cette
+    spec reste l'historique de la conception.

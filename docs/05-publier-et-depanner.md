@@ -72,6 +72,62 @@ Ouvrir la console du navigateur (F12 sur ordinateur) sur la page du jeu :
 Pour remettre une ville à zéro : console, puis
 `localStorage.removeItem('jeu-canard-3d:paris:v3')` et recharger.
 
+## Tester dans le navigateur (sans téléphone)
+
+Recettes utilisées pour vérifier les changements, par exemple dans le navigateur intégré de
+Claude. Toujours tester à **taille de téléphone (390 × 800)** en plus de l'ordinateur.
+
+**Préparer une sauvegarde** (une ville à moitié faite, une ville terminée). Le faire depuis
+une page **sans jeu**, sinon le jeu réécrit sa propre sauvegarde en quittant la page :
+
+```js
+// sur http://localhost:5173/scenes.json, dans la console
+const ids = (n) => Array.from({ length: n }, (_, i) => 'canard-' + String(i + 1).padStart(2, '0'));
+localStorage.setItem('jeu-canard-3d:paris:v3', JSON.stringify({ trouves: ids(12), taps: 20, ecouleMs: 187000 }));
+localStorage.setItem('jeu-canard-3d:lille:v3', JSON.stringify({ trouves: ids(30), taps: 41, ecouleMs: 754000 }));
+```
+
+Puis ouvrir `/` (accueil avec les progressions) ou `/?ville=lille` (écran de fin).
+Effacer ensuite ces sauvegardes, toujours depuis `/scenes.json`.
+
+**Zoomer sur un canard pour le trouver** (dans une partie, console) :
+
+```js
+const cv = document.getElementById('scene');
+const cible = jeu.canards.find((c) => !jeu.partie().trouves.includes(c.id));
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const pos = () => { const v = jeu.vue(); return {
+  x: cv.clientWidth / 2 + (dot(cible.centre, jeu.axes.droite) - v.u) * v.ppm,
+  y: cv.clientHeight / 2 - (dot(cible.centre, jeu.axes.haut) - v.v) * v.ppm }; };
+for (let k = 0; k < 13; k++) {
+  const p = pos();
+  cv.dispatchEvent(new WheelEvent('wheel', { deltaY: -200, clientX: p.x, clientY: p.y, bubbles: true, cancelable: true }));
+}
+pos(); // coordonnées du canard à l'écran : taper (vrai clic) à cet endroit
+```
+
+Le canard n'est « révélé » (bec visible, tap accepté) qu'à partir de `jeu.vue().ppm` ≥ 80.
+
+**Analyser le « coinnn » sans le jouer** (on ne peut pas l'écouter depuis un script) :
+
+```js
+const { creerSon } = await import('/src/son.js');
+let ctx;
+class HorsLigne extends OfflineAudioContext {
+  constructor() { super(1, 44100 * 0.8, 44100); ctx = this; }
+  resume() { return Promise.resolve(); }
+}
+creerSon({ getItem: () => null, setItem() {} }, HorsLigne).coin();
+const d = (await ctx.startRendering()).getChannelData(0); // échantillons : volume, durée, hauteur…
+```
+
+Repères actuels : environ 0,45 s audible, hauteur de ~350 Hz retombant vers ~225 Hz, pic
+vers 0,55 (pas de saturation).
+
+**Partage** : sans partage natif (ordinateur), le bouton copie le message et le lien dans
+le presse-papiers. Pour simuler le partage d'un téléphone :
+`Object.defineProperty(navigator, 'share', { configurable: true, value: async (d) => console.log(d) })`.
+
 ## Si c'est lent sur téléphone
 
 Rien n'a encore été mesuré sur téléphone. Les scènes affichent 400 000 à 570 000 triangles

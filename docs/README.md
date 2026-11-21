@@ -1,4 +1,4 @@
-# Documentation de Jeu Canard 3D
+# Documentation de « Où sont les canards ? » (jeu-canard-3D)
 
 Le jeu en ligne : **https://theomaraval.github.io/jeu-canard-3d/**
 
@@ -10,7 +10,7 @@ Le jeu en ligne : **https://theomaraval.github.io/jeu-canard-3d/**
 | **Créer une nouvelle ville** | [02 — Ajouter une ville](02-ajouter-une-ville.md) |
 | Rendre le jeu plus facile ou plus dur | [03 — Régler la difficulté](03-regler-la-difficulte.md) |
 | Ajouter un modèle, une saynète, une place, un type de toit, un leurre | [04 — Étendre le générateur](04-etendre-le-generateur.md) |
-| Mettre à jour le site, lancer en local, résoudre un problème | [05 — Publier et dépanner](05-publier-et-depanner.md) |
+| Lancer en local, tester dans le navigateur, mettre à jour le site, résoudre un problème | [05 — Publier et dépanner](05-publier-et-depanner.md) |
 | Idées pour la suite : niveaux, modes « cacher mes canards », « créer mon monde » | [06 — Pistes d'amélioration](06-pistes-d-amelioration.md) |
 
 ## En une minute
@@ -19,7 +19,7 @@ Le jeu en ligne : **https://theomaraval.github.io/jeu-canard-3d/**
 - Un **générateur** (Python + Blender) en tire un quartier 3D, y cache 30 canards et
   270 leurres jaunes, et écrit le résultat dans `assets/`.
 - L'**application** (`app/`, Three.js) affiche ce résultat dans le navigateur et gère le
-  jeu : zoom, taps, compteurs, sauvegarde.
+  jeu : accueil et choix de la ville, zoom, taps, compteurs, « coinnn », partage, sauvegarde.
 - Chaque envoi sur la branche `main` de GitHub **republie le site automatiquement**.
 
 ## Reprendre avec Claude après un « clear »
