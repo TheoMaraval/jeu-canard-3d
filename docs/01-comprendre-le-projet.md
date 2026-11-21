@@ -217,8 +217,9 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 - Les 41 tests du générateur et les 38 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
-- **Pas encore mesuré sur téléphone** : la fluidité. Les scènes sont lourdes (480 000 à
-  830 000 triangles par image selon la ville et le zoom). L'outil existe : `&debug` dans
-  l'adresse, voir [05](05-publier-et-depanner.md).
+- **Fluidité** : mesurée sur un iPhone récent (Delhi, la ville la plus lourde) : 59 images/s
+  sans saccade, 4 à 7 ms par image, malgré 590 000 à 810 000 triangles. Pas encore mesurée
+  sur un Android d'entrée de gamme ou un vieux téléphone. Outil : `&debug` dans l'adresse,
+  voir [05](05-publier-et-depanner.md).
 - **Pas joué** : aucune partie complète n'a servi à régler la difficulté. Tous les
   réglages sont des valeurs de départ.

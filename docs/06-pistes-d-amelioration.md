@@ -9,8 +9,9 @@ Les idées sont classées par thème, avec une estimation de l'effort :
 
 Ces estimations supposent le code actuel ; elles n'ont pas été vérifiées en le faisant.
 
-**Ordre conseillé** : d'abord mesurer la fluidité sur téléphone (sans ça, tout ajout de
-contenu est un pari), puis le mode « Cacher mes canards » (le meilleur rapport plaisir /
+**Ordre conseillé** : la fluidité est mesurée sur un iPhone récent (bonne marge, voir
+[05](05-publier-et-depanner.md)) ; vérifier aussi un téléphone modeste avant d'ajouter
+beaucoup de contenu. Ensuite le mode « Cacher mes canards » (le meilleur rapport plaisir /
 effort, il réutilise presque tout), puis les niveaux de difficulté.
 
 ---
@@ -162,7 +163,7 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 
 | Idée | Pourquoi | Effort |
 |---|---|---|
-| **Mesurer la fluidité sur téléphone** | L'outil existe (`&debug`, voir docs/05) ; reste à le lancer sur plusieurs vrais téléphones, dont un ancien | S |
+| **Mesurer la fluidité sur d'autres téléphones** | Fluide sur un iPhone récent (59 images/s, docs/05) ; reste un Android d'entrée de gamme et un téléphone ancien, avec `&debug` | S |
 | **Compresser les modèles** (Meshopt ou Draco) | Le site pèse environ 16 Mo : long en 4G | S à M |
 | **Niveaux de détail** | Passants et arbres simplifiés en vue d'ensemble | M |
 | **Application installable, hors ligne** (PWA) | Icône sur l'écran d'accueil, jeu sans réseau | S |

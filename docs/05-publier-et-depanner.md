@@ -186,18 +186,28 @@ Le panneau donne aussi la puce graphique, la taille de l'écran et la durée du 
 de la ville (fichiers déjà en cache ou non). « Trop peu d'images pour conclure » : l'écran
 s'est éteint ou l'onglet est passé en arrière-plan pendant la mesure ; recommencer.
 
-**Repères mesurés sur ordinateur** (21/11/2026, puce graphique intégrée AMD Radeon,
-fenêtre de 390 × 800 en densité ×2) :
+**Mesures faites** (21/11/2026) :
 
-| Ville | images/s | image calculée | triangles par image |
-|---|---|---|---|
-| Paris | (navigateur caché, non fiable) | 8 à 11 ms | 480 k à 630 k |
-| Delhi | 60, aucune saccade | 8,3 à 9,2 ms | 590 k à 830 k |
+| Appareil | Ville | images/s | saccades | image calculée | triangles par image |
+|---|---|---|---|---|---|
+| iPhone récent (« Apple GPU », écran 402 × 714 ×2, site publié) | Delhi | 59 aux trois zooms | 0 | 4 à 7 ms | 590 k à 810 k |
+| Ordinateur, puce graphique intégrée AMD Radeon (390 × 800 ×2) | Delhi | 60 | 0 | 8 à 9 ms | 590 k à 830 k |
+| Ordinateur, idem | Paris | (navigateur caché, non fiable) | — | 8 à 11 ms | 480 k à 630 k |
 
-Un téléphone milieu de gamme a une puce graphique deux à quatre fois moins rapide :
-s'attendre à 20–40 ms par image, donc 25 à 50 images/s. **À confirmer** avec le panneau
-sur de vrais téléphones. Le navigateur intégré de Claude, masqué, ne dessine presque plus
-d'images : seul « image calculée » y est fiable.
+Conclusion : sur un iPhone récent le jeu est fluide, avec une marge de 2 à 4 fois (7 ms
+au pire pour 16,7 ms disponibles). Le budget de triangles n'est donc pas un problème sur
+ce type d'appareil. **Pas encore mesuré** : un Android d'entrée de gamme ou un téléphone de
+plus de 4 ans, qui peuvent être 5 à 10 fois plus lents.
+
+Lecture des chiffres :
+- Safari arrondit le chronomètre à la milliseconde : « image calculée » y tombe en
+  nombres entiers.
+- Safari limite les animations à 60 images/s même sur un écran à 120 Hz : 59-60 est le
+  maximum.
+- « Chargement » compte les fichiers déjà en cache : la toute première visite est plus
+  longue (environ 4,5 Mo à télécharger pour une ville).
+- Le navigateur intégré de Claude, masqué, ne dessine presque plus d'images : seul
+  « image calculée » y est fiable.
 
 ## Si c'est lent sur téléphone
 

@@ -90,11 +90,12 @@ le navigateur ».
     trouve un canard, musique enregistrée quand on a tout trouvé, bouton pour couper le son ;
     record (meilleur temps) par ville, gardé quand on rejoue ; aide qui s'efface après 5 s ;
     panneau de mesure de fluidité (`&debug`). « Rejouer » corrigé.
-- **Jamais mesuré ni vérifié** : fluidité sur téléphone (480 000 à 830 000 triangles par
-  image ; sur ordinateur 8 à 11 ms par image, 60 images/s ; outil prêt : `&debug`, `docs/05`) ; rendu réel sur téléphone ; les sons
+- Mesuré : fluidité sur un iPhone récent, Delhi (la plus lourde) : 59 images/s sans
+  saccade, 4 à 7 ms par image, 590 000 à 810 000 triangles (`&debug`, `docs/05`).
+- **Jamais mesuré ni vérifié** : fluidité sur un Android modeste ou un vieux téléphone ; rendu réel sur téléphone ; les sons
   sur téléphone (seulement analysés dans le navigateur) ; une partie complète jouée pour régler la
   difficulté.
-- Prochaine étape conseillée : lancer `&debug` sur de vrais téléphones, puis le mode « Cacher mes
+- Prochaine étape conseillée : lancer `&debug` sur un téléphone modeste, puis le mode « Cacher mes
   canards » (conception dans `docs/06`).
 
 ## Pièges pour Claude
