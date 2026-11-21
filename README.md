@@ -12,6 +12,12 @@ Quatre villes : Paris, New York, Lille, Delhi.
 - Touche un canard pour le trouver. Pas de pénalité pour un tap raté.
 - La progression est sauvegardée sur l'appareil, ville par ville.
 
+## Documentation
+
+Tout est dans [docs/](docs/README.md) : comprendre le projet, **ajouter une ville**, régler la
+difficulté, étendre le générateur, publier, et les pistes pour la suite (mode « cacher ses
+canards », création de mondes).
+
 ## Développement
 
 ```bash
