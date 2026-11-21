@@ -20,6 +20,7 @@ ROOT = (os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "blender"))
 
 from citygen.geo import Builder, register, xf  # noqa: E402
+from citygen.placement import LEURRES  # noqa: E402
 
 GABARIT = 0.50  # m — côté du cube englobant la partie jaune
 TOL = 0.005
@@ -281,6 +282,9 @@ def taille_jaune(obj):
 
 
 def main():
+    noms = {fn().name for fn in ASSETS}
+    assert noms - {"Canard", "Canard_Loin"} == LEURRES, (
+        f"citygen/placement.py:LEURRES n'est pas à jour : {sorted(noms ^ (LEURRES | {'Canard', 'Canard_Loin'}))}")
     if bpy.app.background:  # pas de cube/caméra par défaut dans props.blend
         bpy.ops.wm.read_factory_settings(use_empty=True)
     old =bpy.data.collections.get(COLLECTION)

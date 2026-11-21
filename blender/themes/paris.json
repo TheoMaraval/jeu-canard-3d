@@ -1,6 +1,7 @@
 {
   "id": "paris",
   "nom": "Paris — Grands Boulevards",
+  "ordre": 0,
   "graine": 20261116,
   "style": {
     "square": "paris",

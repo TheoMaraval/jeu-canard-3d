@@ -97,6 +97,17 @@
     ]
   },
   "style": {
+    "square": "paris",
+    "murs": [
+      "pierre",
+      "trottoir",
+      "paves"
+    ],
+    "auvents": [
+      "v_rouge",
+      "v_vert",
+      "v_marine"
+    ],
     "hauteur_etage": 3.0,
     "rdc": 4.0,
     "etages": [

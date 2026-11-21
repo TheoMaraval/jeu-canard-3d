@@ -9,6 +9,12 @@ la conversion glTF est faite par place_objets.py.
 import random
 
 CANARD = "Canard"
+# Leurres jaunes modélisés par build_assets.py (qui vérifie que la liste est à jour).
+LEURRES = {"Leurre_Plot", "Leurre_BorneIncendie", "Leurre_Parasol", "Leurre_Taxi", "Leurre_BoiteAuxLettres",
+           "Leurre_Jardiniere", "Leurre_CasqueChantier", "Leurre_Arrosoir", "Leurre_Botte", "Leurre_Ballon",
+           "Leurre_Banane", "Leurre_Citron", "Leurre_Fromage", "Leurre_SousMarin", "Leurre_BusScolaire",
+           "Leurre_Seau", "Leurre_Eponge", "Leurre_Smiley", "Leurre_Tournesol", "Leurre_Valise",
+           "Leurre_Parapluie", "Leurre_Panneau"}
 VIS_MIN_ABSOLUE = 0.15  # en dessous, un canard serait introuvable : jamais accepté
 
 

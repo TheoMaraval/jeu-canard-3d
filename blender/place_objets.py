@@ -145,9 +145,8 @@ def main():
     index = os.path.join(ROOT, "assets", "scenes.json")
     scenes = json.load(open(index, encoding="utf8")) if os.path.exists(index) else []
     scenes = [s for s in scenes if s["id"] != ville]
-    scenes.append({"id": ville, "nom": theme["nom"], "version": theme["version"],
-                   "ordre": ["paris", "new_york", "lille", "delhi"].index(ville) if ville in
-                   ["paris", "new_york", "lille", "delhi"] else 99})
+    # "ordre" (facultatif dans le thème) fixe la place dans le menu de l'app ; sinon : à la fin
+    scenes.append({"id": ville, "nom": theme["nom"], "version": theme["version"], "ordre": theme.get("ordre", 99)})
     with open(index, "w", encoding="utf8") as f:
         json.dump(sorted(scenes, key=lambda s: (s.get("ordre", 99), s["id"])), f, ensure_ascii=False, indent=1)
 

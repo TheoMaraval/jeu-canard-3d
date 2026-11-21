@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from citygen.layout import KIT, charger_theme, make_layout, villes
+from citygen.layout import KIT, ThemeInvalide, charger_theme, fusionner, make_layout, valider_theme, villes
 from citygen.placement import cellule
 
 VILLES = villes()
@@ -16,8 +16,36 @@ class TestLayout(unittest.TestCase):
     def pour_chaque_ville(self):
         return [(v, charger_theme(v), PLANS[v]) for v in VILLES]
 
-    def test_les_quatre_villes(self):
-        self.assertEqual(VILLES, ["delhi", "lille", "new_york", "paris"])
+    def test_une_ville_minimale_se_genere(self):
+        # Promesse de docs/02-ajouter-une-ville.md : id, nom et graine suffisent, tout le
+        # reste a une valeur par défaut dans _commun.json.
+        theme = fusionner({"id": "mini", "nom": "Mini", "graine": 7})
+        plan = make_layout(theme)
+        self.assertGreaterEqual(len(plan["slots"]), 2000)
+        cols, rangs = theme["grille"]
+        self.assertEqual(len({cellule(s["pos"], theme) for s in plan["slots"]}), cols * rangs)
+        for p in plan["prims"]:
+            self.assertIn(p["mat"], theme["palette"])
+        for i in plan["insts"]:
+            for couleur in i["c"].values():
+                self.assertIn(couleur, theme["palette"])
+
+    def test_les_themes_existants_sont_valides(self):
+        for v in VILLES:
+            valider_theme(charger_theme(v))
+
+    def test_un_theme_faux_donne_un_message_clair(self):
+        theme = fusionner({"id": "faux", "nom": "Faux", "graine": 1, "canards": 25, "palette": {"mur_x": "bleu"},
+                           "style": {"toit": "coupole", "saynetes_place": ["chantier"], "murs": ["mur_inconnu"]}})
+        with self.assertRaises(ThemeInvalide) as ctx:
+            make_layout(theme)
+        message = str(ctx.exception)
+        for attendu in ("coupole", "chantier", "mur_inconnu", "palette.mur_x", "un canard par case"):
+            self.assertIn(attendu, message)
+
+    def test_les_villes_de_base_sont_la(self):
+        # d'autres villes peuvent s'ajouter : ce test ne doit pas obliger à le modifier
+        self.assertLessEqual({"delhi", "lille", "new_york", "paris"}, set(VILLES))
 
     def test_deterministe(self):
         for v, theme, plan in self.pour_chaque_ville():

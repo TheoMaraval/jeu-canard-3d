@@ -73,13 +73,84 @@ def villes():
     return sorted(f[:-5] for f in os.listdir(DOSSIER_THEMES) if f.endswith(".json") and not f.startswith("_"))
 
 
+def fusionner(theme):
+    """Complète le thème d'une ville avec _commun.json : palette et style héritent clé par clé."""
+    commun = _lire("_commun")
+    complet = {**{k: v for k, v in commun.items() if k not in ("palette", "style")}, **theme}
+    complet["palette"] = {**commun["palette"], **theme.get("palette", {})}
+    complet["style"] = {**commun["style"], **theme.get("style", {})}
+    return complet
+
+
 def charger_theme(ville):
-    """Thème d'une ville ; palette et style héritent de _commun.json."""
-    commun, theme = _lire("_commun"), _lire(ville)
-    theme = {**{k: v for k, v in commun.items() if k not in ("palette", "style")}, **theme}
-    theme["palette"] = {**commun["palette"], **theme.get("palette", {})}
-    theme["style"] = {**commun["style"], **theme.get("style", {})}
-    return theme
+    """Thème d'une ville (themes/<ville>.json), complété par _commun.json."""
+    return fusionner(_lire(ville))
+
+
+SAYNETES_RUE_SEULEMENT = {"peintre", "demenagement", "panne", "geyser", "chantier"}  # besoin d'un mur et d'une chaussée
+TOITS = {"mansarde", "plat", "pignon"}
+BALCONS = {"filants", "secours", "jharokha", "aucun"}
+EXTRAS_TOIT = {"cheminee", "chateau_eau", "clim", "citerne", "cabanon", "dome", "linge", "transat", "jardin",
+               "pigeons", "singe", "chat", "vache"}
+
+
+class ThemeInvalide(ValueError):
+    pass
+
+
+def valider_theme(theme):
+    """Vérifie un thème complet et lève ThemeInvalide avec la liste de toutes les fautes.
+
+    Appelée au début de chaque génération : une faute de frappe dans un thème donne un
+    message clair au lieu d'une erreur Python obscure en plein milieu de la génération.
+    """
+    from .placement import LEURRES  # import local : placement n'a pas besoin de layout
+
+    s, pal, fautes = theme["style"], theme["palette"], []
+    saynetes = {n[2:] for n in dir(Plan) if n.startswith("s_")}
+    places = {n[7:] for n in dir(Plan) if n.startswith("square_")}
+
+    def verifier(cle, valeurs, permis, quoi):
+        for v in valeurs:
+            if v not in permis:
+                fautes.append(f"style.{cle} : « {v} » n'est pas {quoi} (possibles : {', '.join(sorted(permis))})")
+
+    verifier("square", [s["square"]], places, "une place connue")
+    verifier("toit", [s["toit"]], TOITS, "un type de toit")
+    verifier("balcons", [s["balcons"]], BALCONS, "un type de balcon")
+    verifier("toit_extras", s["toit_extras"], EXTRAS_TOIT, "un élément de toit")
+    verifier("vehicules", s["vehicules"], VEHICULES, "un véhicule")
+    verifier("saynetes_rue", s["saynetes_rue"], saynetes, "une saynète")
+    verifier("saynetes_place", s["saynetes_place"], saynetes - SAYNETES_RUE_SEULEMENT,
+             "une saynète possible sur une place")
+    verifier("betes", s["betes"], KIT, "un modèle du kit")
+    verifier("arbres_modeles", s["arbres_modeles"], KIT, "un modèle du kit")
+    for lieu, types in theme["leurres_par_lieu"].items():
+        verifier(f"leurres_par_lieu.{lieu}", types, LEURRES, "un leurre")
+    couleurs = ["murs", "auvents", "voitures", "bus", "couleurs", "vetements", "pantalons", "peaux", "cheveux",
+                "rayures", "fleurs", "linge", "accents", "poils", "tags_couleurs", "feuillages", "toits", "volets"]
+    for cle in couleurs:
+        verifier(cle, s.get(cle) or [], pal, "une couleur de la palette")
+    verifier("bandeaux", s.get("bandeaux") or [], pal, "une couleur de la palette")
+    for nom, h in pal.items():
+        if not (isinstance(h, str) and len(h) == 7 and h.startswith("#")):
+            fautes.append(f"palette.{nom} : « {h} » n'est pas une couleur #RRGGBB")
+    cols, rangs = theme["grille"]
+    if cols * rangs != theme["canards"]:
+        fautes.append(f"grille {cols} x {rangs} = {cols * rangs} cases, mais canards = {theme['canards']} "
+                      "(il faut exactement un canard par case)")
+    n = theme["ilots"]
+    bloc = (theme["taille"] - n * theme["rue"]) / n
+    mini = 2 * (theme["trottoir"] + s["profondeur"]) + 4
+    if bloc < mini:
+        fautes.append(f"îlots de {bloc:.1f} m trop petits pour des immeubles de {s['profondeur']} m de profondeur "
+                      f"(au moins {mini:.0f} m) : baisser ilots, rue ou style.profondeur, ou augmenter taille")
+    i, j = theme["square"]
+    if not (0 <= i < n and 0 <= j < n):
+        fautes.append(f"square {theme['square']} hors de la grille d'îlots {n} x {n} (indices de 0 à {n - 1})")
+    if fautes:
+        liste = "".join(f"\n  - {f}" for f in fautes)
+        raise ThemeInvalide(f"thème « {theme.get('id', '?')} » invalide :{liste}")
 
 
 class Plan:
@@ -91,6 +162,8 @@ class Plan:
         self.lots, self.blocs, self.herbes, self.emprises = [], [], [], []
 
     def choix(self, cle):
+        if not self.s.get(cle):
+            raise KeyError(f"style.{cle} : liste absente ou vide dans le thème et dans _commun.json")
         return self.rng.choice(self.s[cle])
 
     # ---- primitives -------------------------------------------------------
@@ -1048,4 +1121,5 @@ class Plan:
 
 
 def make_layout(theme):
+    valider_theme(theme)
     return Plan(theme).construire()
