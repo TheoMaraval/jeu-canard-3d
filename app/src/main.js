@@ -5,7 +5,7 @@
 import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
-import { charger, effacer, enregistrer } from './sauvegarde.js';
+import { charger, chargerRecord, effacer, enregistrer, meilleur, retenirRecord } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { creerSon } from './son.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
@@ -15,11 +15,11 @@ import '@fontsource/nunito/400.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';
 import {
-  TEXTE_INVITATION, decouperNom, lienJeu, partager, progression, resumeVille, texteScore, titreFin,
+  TEXTE_INVITATION, decouperNom, lienJeu, partager, progression, resumeVille, texteRecord, texteScore, titreFin,
 } from './partage.js';
 import {
   afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
-  afficherMessage, afficherSon, afficherStats, celebrer,
+  afficherMessage, afficherSon, afficherStats, celebrer, chrono,
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
@@ -49,6 +49,9 @@ function accueil(scenes) {
   const villes = scenes.map((s) => {
     const total = s.canards ?? 30;
     const sauvegarde = charger(localStorage, s.id, s.version);
+    const fini = Boolean(sauvegarde && sauvegarde.trouves.length >= total);
+    // une partie finie avant l'arrivée des records compte aussi
+    const record = meilleur(chargerRecord(localStorage, s.id, s.version), fini ? sauvegarde : null);
     return {
       id: s.id,
       embleme: s.embleme ?? '🏙️',
@@ -56,7 +59,8 @@ function accueil(scenes) {
       ...decouperNom(s.nom),
       etat: resumeVille(sauvegarde, total),
       avance: progression(sauvegarde, total),
-      fini: Boolean(sauvegarde && sauvegarde.trouves.length >= total),
+      fini,
+      record: record ? chrono(record.ecouleMs) : null,
     };
   });
   afficherAccueil(villes, {
@@ -117,7 +121,9 @@ async function jouer(info) {
   const finir = () => {
     clearInterval(minuteur);
     majStats(); // dernière valeur exacte, figée
-    afficherFin(resume(), titreFin(precision(partie)), {
+    // le record survit à « Rejouer », qui n'efface que la partie
+    const { ancien } = retenirRecord(localStorage, info.id, info.version, resume());
+    afficherFin(resume(), titreFin(precision(partie)), texteRecord(resume(), ancien), {
       rejouer: () => {
         // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
         // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.

@@ -33,7 +33,7 @@ npm run dev        # http://localhost:5173
 
 ```bash
 python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 42 tests de l'app
+cd app && npm test                                        # 47 tests de l'app
 ```
 
 ## Publier
@@ -88,7 +88,9 @@ localStorage.setItem('jeu-canard-3d:lille:v3', JSON.stringify({ trouves: ids(30)
 ```
 
 Puis ouvrir `/` (accueil avec les progressions) ou `/?ville=lille` (écran de fin).
-Effacer ensuite ces sauvegardes, toujours depuis `/scenes.json`.
+Pour un record : `localStorage.setItem('jeu-canard-3d:paris:v3:record', JSON.stringify({ ecouleMs: 492000, taps: 44 }))`.
+Une sauvegarde à 29/30 plus rapide que le record, puis le dernier canard trouvé, montre
+« Nouveau record ! ». Effacer ensuite ces sauvegardes et records, toujours depuis `/scenes.json`.
 
 **Zoomer sur un canard pour le trouver** (dans une partie, console) :
 

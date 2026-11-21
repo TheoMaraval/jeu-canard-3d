@@ -145,7 +145,6 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 | **Niveaux de difficulté** (facile, normal, expert) | Côté app : seuil de révélation `PX_REVELATION`, nombre de canards à trouver (15 / 30), tolérance du tap. Côté génération : une variante par niveau (taille des objets, nombre de leurres, visibilité) | S (app) à M (génération) |
 | **Contre-la-montre** | Temps limité affiché à rebours ; fin de partie au temps écoulé | S |
 | **Taps limités** | Un nombre de taps maximal : chaque tap raté compte vraiment | S |
-| **Meilleurs temps** | Record par ville gardé sur l'appareil, affiché sur l'écran de fin et sur l'accueil | S |
 | **Image de partage** | Une vignette de la ville dans les aperçus de lien (balises Open Graph) et une image du score à partager | S à M |
 | **Indices** | Après un certain temps, montrer la case de la grille où reste un canard (`zone` est déjà dans `placements.json`) | S |
 | **Canard doré** | Un canard rare et très bien caché, qui donne un bonus | S à M |

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  decouperNom, lienJeu, partager, progression, resumeVille, texteScore, titreFin,
+  decouperNom, lienJeu, partager, progression, resumeVille, texteRecord, texteScore, titreFin,
 } from '../src/partage.js';
 
 describe('partage', () => {
@@ -32,6 +32,16 @@ describe('partage', () => {
     expect(resumeVille({ trouves: [], taps: 0, ecouleMs: 4000 }, 30)).toBe('Nouvelle partie');
     expect(resumeVille({ trouves: ['a', 'b'], taps: 5, ecouleMs: 187000 }, 30)).toBe('2 / 30 trouvés · 3:07');
     expect(resumeVille({ trouves: Array(30).fill('x'), taps: 40, ecouleMs: 754000 }, 30)).toBe('✓ Terminée en 12:34');
+  });
+
+  it('compare la partie au record pour l’écran de fin', () => {
+    const record = { ecouleMs: 400000, taps: 50 };
+    expect(texteRecord({ ecouleMs: 300000, taps: 60 }, null)).toBeNull(); // première partie finie
+    expect(texteRecord({ ecouleMs: 300000, taps: 60 }, record))
+      .toEqual({ texte: 'Nouveau record ! L’ancien : 6:40', nouveau: true });
+    expect(texteRecord({ ecouleMs: 500000, taps: 40 }, record))
+      .toEqual({ texte: 'Ton record : 6:40', nouveau: false });
+    expect(texteRecord({ ...record }, record)).toBeNull(); // partie finie rouverte : c'est le record
   });
 
   it('calcule la progression d’une ville', () => {

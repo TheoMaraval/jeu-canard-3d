@@ -68,7 +68,7 @@ Ces règles sont garanties par le code. Si l'une casse, le jeu devient trop faci
  │  entrees.js   doigts, souris, molette                                          │
  │  picking.js   quel canard est sous le doigt                (pur, testé)        │
  │  partie.js    trouvés, taps, temps                         (pur, testé)        │
- │  sauvegarde.js progression par ville                       (pur, testé)        │
+ │  sauvegarde.js progression et record par ville             (pur, testé)        │
  │  hud.js       accueil, compteur, chrono, précision, écran de fin               │
  │  partage.js   messages de score et d'invitation, partage   (pur, testé)        │
  │  son.js       « coin coin » et musique de fin, bouton son  (testé)             │
@@ -91,7 +91,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
-| `app/` | L'application ; `app/tests/` : 42 tests |
+| `app/` | L'application ; `app/tests/` : 47 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -192,6 +192,21 @@ La progression est gardée dans le navigateur du joueur (`localStorage`), sous l
 `jeu-canard-3d:<ville>:v<version>`. Quand une ville est régénérée et que ses canards
 changent de place, **augmenter sa `version`** (dans son thème) : les anciennes sauvegardes,
 devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés » ailleurs.
+
+**Le record** (meilleur résultat d'une ville terminée) est gardé à part, sous
+`jeu-canard-3d:<ville>:v<version>:record` (`{ ecouleMs, taps }`) :
+
+- le meilleur est le **plus rapide** ; à temps égal, celui qui a **le moins de taps**
+  (`meilleur()` dans `sauvegarde.js`) ;
+- il est noté à chaque fin de partie (`retenirRecord()`), et « Rejouer » n'efface que la
+  partie, jamais le record ;
+- l'écran de fin compare la partie au record d'avant : « Nouveau record ! L'ancien : 12:34 »
+  (pastille jaune) ou « Ton record : 8:12 » ; rien à la première partie finie
+  (`texteRecord()` dans `partage.js`) ;
+- l'accueil affiche le record en pastille ★ dans le bandeau du ticket de la ville. Une
+  partie finie avant l'arrivée des records compte comme record ;
+- augmenter la `version` d'une ville efface aussi ses records : ses canards ont changé,
+  les anciens temps ne se comparent plus.
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 

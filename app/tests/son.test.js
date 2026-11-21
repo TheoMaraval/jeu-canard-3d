@@ -131,6 +131,21 @@ describe('son', () => {
     expect(sansMusique.journal.demarrages).toBe(0); // pas de remplaçant synthétisé pour la musique
   });
 
+  it('ne casse jamais la partie, même si le navigateur refuse de jouer', async () => {
+    const { Ctx } = fauxContexte();
+    class Casse extends Ctx {
+      createOscillator() { throw new Error('InvalidStateError'); }
+      createBufferSource() { throw new Error('InvalidStateError'); }
+    }
+    const synthese = creerSon(faussStockage(), Casse, sansFichier);
+    expect(() => synthese.coin()).not.toThrow();
+    const enregistre = creerSon(faussStockage(), Casse, (c) => Promise.resolve(c));
+    enregistre.deverrouiller();
+    await attendre();
+    expect(() => enregistre.coin()).not.toThrow();
+    expect(() => enregistre.fanfare(1)).not.toThrow();
+  });
+
   it('fait varier la vitesse du cri de ±6 % au plus', () => {
     expect(vitesseCri(() => 0)).toBeCloseTo(0.94);
     expect(vitesseCri(() => 0.5)).toBeCloseTo(1);

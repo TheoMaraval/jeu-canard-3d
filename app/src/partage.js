@@ -1,6 +1,7 @@
 // Partage du score, invitations et résumés de progression. Fonctions pures, sauf `partager`
 // qui reçoit le navigateur en paramètre (testable avec un faux).
 import { chrono } from './hud.js';
+import { meilleur } from './sauvegarde.js';
 
 /** « Paris — Grands Boulevards » → { ville: « Paris », quartier: « Grands Boulevards » }. */
 export function decouperNom(nom) {
@@ -37,6 +38,19 @@ export function resumeVille(sauvegarde, total) {
   const n = sauvegarde.trouves.length;
   if (n >= total) return `✓ Terminée en ${chrono(sauvegarde.ecouleMs)}`;
   return `${n} / ${total} trouvé${n > 1 ? 's' : ''} · ${chrono(sauvegarde.ecouleMs)}`;
+}
+
+/**
+ * Ligne « record » de l'écran de fin : la partie comparée au record d'avant.
+ * `null` s'il n'y a rien à dire (première partie finie, ou partie finie rouverte).
+ */
+export function texteRecord(partie, ancien) {
+  if (!ancien) return null;
+  if (partie.ecouleMs === ancien.ecouleMs && partie.taps === ancien.taps) return null;
+  if (meilleur(ancien, partie) === partie) {
+    return { texte: `Nouveau record ! L’ancien : ${chrono(ancien.ecouleMs)}`, nouveau: true };
+  }
+  return { texte: `Ton record : ${chrono(ancien.ecouleMs)}`, nouveau: false };
 }
 
 /** Part des canards trouvés dans une ville, entre 0 et 1 (barre de progression de l'accueil). */

@@ -36,12 +36,12 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 | `src/vue.js` | Position, zoom, seuil de révélation, projection écran | oui |
 | `src/picking.js` | Quel canard est sous le doigt | oui |
 | `src/partie.js` | Trouvés, taps, temps | oui |
-| `src/sauvegarde.js` | Progression par ville (`localStorage`) | oui |
+| `src/sauvegarde.js` | Progression et record (meilleur temps) par ville (`localStorage`) | oui |
 | `src/hud.js` | Affichage : accueil, compteur, chrono, aide, toasts, fin, confettis | formats |
 | `src/partage.js` | Textes de score et d'invitation, partage natif ou copie, titre de fin | oui |
 | `src/son.js` | « coin coin » et musique de fin enregistrés (`assets/sons/`), cri synthétisé en secours, bouton son | oui |
 
-Tests : `app/tests/` (42). Polices Fredoka et Nunito embarquées via `@fontsource`.
+Tests : `app/tests/` (47). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -56,7 +56,7 @@ Tests : `app/tests/` (42). Polices Fredoka et Nunito embarquées via `@fontsourc
 - Sans `?ville=` dans l'adresse (ou avec une ville inconnue) : écran d'accueil. Changer de
   ville recharge la page : une seule scène 3D par page.
 - Sauvegarde par ville et par `version` : augmenter la `version` d'une ville quand ses
-  canards changent de place.
+  canards changent de place (les records de cette ville repartent alors de zéro).
 
 ## Commandes
 
@@ -68,7 +68,7 @@ python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blend
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
-cd app && npm test                                        # 42 tests
+cd app && npm test                                        # 47 tests
 ```
 
 Le serveur de dev se lance avec la configuration `canard-3d` de `.claude/launch.json` (la
@@ -86,7 +86,8 @@ le navigateur ».
     (id, nom, graine) se génère, garanti par un test ;
   - app : écran d'accueil (tickets de ville avec progression) ; compteurs en direct ;
     partage du score et invitation ; interface « autocollant de BD » ; « coin coin » enregistré quand on
-    trouve un canard, musique enregistrée quand on a tout trouvé, bouton pour couper le son ; « Rejouer » corrigé.
+    trouve un canard, musique enregistrée quand on a tout trouvé, bouton pour couper le son ;
+    record (meilleur temps) par ville, gardé quand on rejoue ; « Rejouer » corrigé.
 - **Jamais mesuré ni vérifié** : fluidité sur téléphone (400 000 à 570 000 triangles de
   décor, au-dessus de la cible de 500 000) ; rendu réel sur téléphone ; les sons
   sur téléphone (seulement analysés dans le navigateur) ; une partie complète jouée pour régler la

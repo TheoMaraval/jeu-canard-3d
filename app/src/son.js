@@ -92,16 +92,25 @@ export function creerSon(
     source.start(ctx.currentTime + 0.01 + delai);
   }
 
+  // Un son ne doit jamais casser la partie : une erreur audio est ignorée.
   function coin() {
-    if (!actif || !deverrouiller()) return;
-    if (tampons.coin) jouer('coin', { vitesse: vitesseCri() });
-    else coinSynthetise();
+    try {
+      if (!actif || !deverrouiller()) return;
+      if (tampons.coin) jouer('coin', { vitesse: vitesseCri() });
+      else coinSynthetise();
+    } catch {
+      // navigateur sans son utilisable : la partie continue
+    }
   }
 
   /** Musique de fin, après `delai` secondes (pour laisser finir le dernier « coin coin »). */
   function fanfare(delai = 0) {
-    if (!actif || !deverrouiller() || !tampons.fin) return;
-    jouer('fin', { delai });
+    try {
+      if (!actif || !deverrouiller() || !tampons.fin) return;
+      jouer('fin', { delai });
+    } catch {
+      // idem
+    }
   }
 
   function coinSynthetise() {

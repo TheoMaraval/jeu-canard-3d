@@ -88,7 +88,7 @@ export function afficherSon(actif) {
 
 /**
  * Écran d'accueil : un ticket par ville.
- * @param villes [{id, embleme, couleur, ville, quartier, etat, avance (0–1), fini}]
+ * @param villes [{id, embleme, couleur, ville, quartier, etat, avance (0–1), fini, record (« 8:12 » ou null)}]
  */
 export function afficherAccueil(villes, { choisir, inviter }) {
   $('villes').replaceChildren(...villes.map((v) => {
@@ -96,7 +96,13 @@ export function afficherAccueil(villes, { choisir, inviter }) {
     b.type = 'button';
     b.dataset.ville = v.id;
     b.style.setProperty('--couleur', v.couleur);
-    b.setAttribute('aria-label', `${v.ville}, ${v.quartier} : ${v.etat}`);
+    b.setAttribute('aria-label', `${v.ville}, ${v.quartier} : ${v.etat}${v.record ? `, record ${v.record}` : ''}`);
+    if (v.record) {
+      const record = element('span', 'record');
+      record.append(icone('i-etoile'), element('span', '', v.record));
+      record.title = 'Ton record';
+      b.append(record);
+    }
 
     const texte = element('span', 'texte');
     texte.append(element('span', 'nom', v.ville), element('span', 'quartier', v.quartier));
@@ -160,8 +166,13 @@ function lancerConfettis() {
 /**
  * @param stats {ecouleMs, taps, precision}
  * @param medaille {titre, etoiles} (voir titreFin dans partage.js)
+ * @param record {texte, nouveau} ou null (voir texteRecord dans partage.js)
  */
-export function afficherFin({ ecouleMs, taps, precision }, medaille, { rejouer, partager, autreVille }) {
+export function afficherFin({ ecouleMs, taps, precision }, medaille, record, { rejouer, partager, autreVille }) {
+  const r = $('fin-record');
+  r.textContent = record?.texte ?? '';
+  r.classList.toggle('nouveau', Boolean(record?.nouveau));
+  r.hidden = !record;
   $('fin-titre').textContent = medaille.titre;
   $('fin-etoiles').replaceChildren(...[1, 2, 3].map((n) => icone('i-etoile', n <= medaille.etoiles ? 'ico pleine' : 'ico')));
   $('fin-temps').textContent = chrono(ecouleMs);
