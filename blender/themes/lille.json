@@ -1,6 +1,7 @@
 {
   "id": "lille",
   "nom": "Lille — Vieux-Lille",
+  "embleme": "🧇",
   "ordre": 2,
   "graine": 59000,
   "rue": 9,

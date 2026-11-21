@@ -34,6 +34,8 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 - Un canard par case d'une grille 6 × 5 ; visibilité 30–80 % (jamais < 15 %), bec et un
   œil tournés vers la caméra ; « derrière une vitre » vérifié par lancer de rayons.
 - Pas de pénalité pour un tap raté. Temps, taps et précision affichés en direct.
+- Sans `?ville=` dans l'adresse (ou avec une ville inconnue) : écran d'accueil. Changer de
+  ville recharge la page : une seule scène 3D par page.
 - Sauvegarde par ville et par `version` : augmenter la `version` d'une ville quand ses
   canards changent de place.
 
@@ -47,7 +49,7 @@ python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blend
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173/?ville=lille
-cd app && npm test                                        # 24 tests
+cd app && npm test                                        # 32 tests
 ```
 
 Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la configuration
@@ -58,7 +60,9 @@ Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la co
 - Fait : quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ; kit de
   81 modèles (passants, véhicules, animaux, tags, végétation, saynètes) ; 18 saynètes ;
   22 leurres ; menu des villes ; compteurs en direct ; « Rejouer » corrigé ; validation
-  des thèmes avec messages clairs ; ville minimale (id, nom, graine) garantie par un test.
+  des thèmes avec messages clairs ; ville minimale (id, nom, graine) garantie par un test ;
+  écran d'accueil (choix de la ville, progression) ; partage du score et invitation
+  (`app/src/partage.js` : partage natif sur téléphone, copie sinon).
 - **Jamais mesuré** : fluidité sur téléphone (400 000 à 570 000 triangles de décor, au-dessus
   de la cible de 500 000), et aucune partie complète jouée pour régler la difficulté.
 - Prochaine étape conseillée : mesurer la fluidité sur téléphone, puis le mode « Cacher mes

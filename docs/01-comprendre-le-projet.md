@@ -2,6 +2,14 @@
 
 ## Le jeu en bref
 
+L'arrivée sur le site ouvre un **écran d'accueil** : une carte par ville, avec sa
+progression (« Nouvelle partie », « 12 / 30 trouvés », « Terminée en 12:34 »). Un lien
+du type `…/?ville=lille` ouvre directement la ville ; c'est ce que contiennent les liens
+partagés. Pendant la partie, le bouton « Villes » ramène à l'accueil et le bouton
+« Partager » envoie sa progression ; à la fin, « Partager mon score ». Sur téléphone, le
+partage ouvre le menu natif (SMS, messageries) ; sur ordinateur, le message et le lien
+sont copiés.
+
 Le joueur cherche **30 canards en plastique jaunes** cachés dans un quartier dessiné, dense,
 plein de passants et de situations loufoques. Quatre villes : Paris, New York, Lille, Delhi.
 
@@ -61,7 +69,8 @@ Ces règles sont garanties par le code. Si l'une casse, le jeu devient trop faci
  │  picking.js   quel canard est sous le doigt                (pur, testé)        │
  │  partie.js    trouvés, taps, temps                         (pur, testé)        │
  │  sauvegarde.js progression par ville                       (pur, testé)        │
- │  hud.js       compteur, chrono, précision, écran de fin                        │
+ │  hud.js       accueil, compteur, chrono, précision, écran de fin               │
+ │  partage.js   messages de score et d'invitation, partage   (pur, testé)        │
  └─────────────────────────────────────────────────────────────────────────────────┘
             │  GitHub Actions à chaque envoi sur main
             ▼
@@ -81,7 +90,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/` |
-| `app/` | L'application ; `app/tests/` : 24 tests |
+| `app/` | L'application ; `app/tests/` : 32 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -103,10 +112,13 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 ### `assets/scenes.json` — la liste des villes
 
 ```json
-[ { "id": "paris", "nom": "Paris — Grands Boulevards", "version": 3, "ordre": 0 }, … ]
+[ { "id": "paris", "nom": "Paris — Grands Boulevards", "version": 3, "ordre": 0,
+    "embleme": "🥐", "canards": 30 }, … ]
 ```
 
-`ordre` fixe la place dans le menu ; `version` sert à la sauvegarde (voir plus bas).
+`ordre` fixe la place sur l'écran d'accueil, `embleme` l'icône de la ville, `canards` le
+total affiché dans la progression ; `version` sert à la sauvegarde (voir plus bas).
+Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands Boulevards » dessous.
 
 ### `assets/scenes/<ville>/placements.json` — canards et leurres
 
@@ -148,7 +160,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 41 tests du générateur et les 24 de l'app passent, et sont relancés par GitHub à
+- Les 41 tests du générateur et les 32 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
 - **Pas mesuré** : la fluidité sur téléphone et tablette. Les scènes sont lourdes

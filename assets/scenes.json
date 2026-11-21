@@ -3,24 +3,32 @@
   "id": "paris",
   "nom": "Paris — Grands Boulevards",
   "version": 3,
-  "ordre": 0
+  "ordre": 0,
+  "embleme": "🥐",
+  "canards": 30
  },
  {
   "id": "new_york",
   "nom": "New York — Greenwich Village",
   "version": 3,
-  "ordre": 1
+  "ordre": 1,
+  "embleme": "🗽",
+  "canards": 30
  },
  {
   "id": "lille",
   "nom": "Lille — Vieux-Lille",
   "version": 3,
-  "ordre": 2
+  "ordre": 2,
+  "embleme": "🧇",
+  "canards": 30
  },
  {
   "id": "delhi",
   "nom": "Delhi — Chandni Chowk",
   "version": 3,
-  "ordre": 3
+  "ordre": 3,
+  "embleme": "🐘",
+  "canards": 30
  }
 ]

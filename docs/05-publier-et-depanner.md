@@ -20,7 +20,10 @@ npm install        # la première fois
 npm run dev        # http://localhost:5173
 ```
 
-- Une ville précise : `http://localhost:5173/?ville=lille`.
+- L'accueil : `http://localhost:5173/` ; une ville précise : `http://localhost:5173/?ville=lille`.
+- Le partage natif n'existe que sur téléphone (et sur certains navigateurs d'ordinateur) ;
+  ailleurs, le bouton copie le message et le lien. En local, les liens partagés pointent
+  vers `localhost` : seuls ceux du site publié sont utilisables par d'autres.
 - **Sur un téléphone du même Wi-Fi** : utiliser l'adresse « Network » affichée par
   `npm run dev` (par exemple `http://192.168.1.20:5173`).
 - Dans une session Claude ouverte depuis `jeuFind`, le serveur se lance avec la
@@ -30,7 +33,7 @@ npm run dev        # http://localhost:5173
 
 ```bash
 python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 24 tests de l'app
+cd app && npm test                                        # 32 tests de l'app
 ```
 
 ## Publier

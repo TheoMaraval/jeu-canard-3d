@@ -50,7 +50,7 @@ html, body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-#ville {
+.pastille {
   pointer-events: auto;
   font: inherit;
   font-weight: 600;
@@ -58,10 +58,75 @@ html, body {
   border: 0;
   border-radius: 999px;
   padding: 8px 12px;
+  min-height: 36px;
   background: var(--papier);
   color: var(--encre);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
+
+#hud[hidden], #accueil[hidden] { display: none; }
+
+/* ---- écran d'accueil ---- */
+#accueil {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #f3ead6;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.accueil {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.accueil h1 { font-size: 34px; margin: 8px 0 10px; }
+.accueil h2 { font-size: 18px; margin: 22px 0 10px; }
+.accroche { font-size: 16px; line-height: 1.45; margin: 0 0 12px; }
+
+.regles {
+  margin: 0;
+  padding: 12px 16px 12px 34px;
+  background: var(--papier);
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.villes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.carte-ville {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 14px;
+  align-items: center;
+  text-align: left;
+  font: inherit;
+  color: var(--encre);
+  background: #fff;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.carte-ville:hover, .carte-ville:focus-visible { border-color: var(--jaune); outline: none; }
+.carte-ville .embleme { grid-row: 1 / 4; font-size: 40px; line-height: 1; }
+.carte-ville .nom { font-size: 20px; font-weight: 700; }
+.carte-ville .quartier { font-size: 14px; opacity: 0.75; }
+.carte-ville .etat { font-size: 13px; font-weight: 600; margin-top: 4px; }
+.carte-ville .etat.fini { color: #1f8a3e; }
+
+.accueil #inviter { margin-top: 18px; width: 100%; }
 
 #stats {
   display: flex;
@@ -130,9 +195,12 @@ html, body {
 
 .carte dd { margin: 0; font-weight: 700; text-align: right; }
 
-#rejouer {
+.actions { display: grid; gap: 10px; }
+
+.bouton {
   font: inherit;
   font-weight: 700;
+  font-size: 16px;
   border: 0;
   border-radius: 999px;
   padding: 12px 26px;
@@ -141,6 +209,9 @@ html, body {
   cursor: pointer;
 }
 
+.bouton.secondaire { background: #ece6d8; }
+
 @media (max-width: 520px) {
   #aide { display: none; }
+  .pastille .etiquette { display: none; } /* sur téléphone, les boutons du haut gardent leur icône */
 }

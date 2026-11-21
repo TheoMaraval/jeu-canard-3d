@@ -1,0 +1,65 @@
+// Partage du score, invitations et résumés de progression. Fonctions pures, sauf `partager`
+// qui reçoit le navigateur en paramètre (testable avec un faux).
+import { chrono } from './hud.js';
+
+/** « Paris — Grands Boulevards » → { ville: « Paris », quartier: « Grands Boulevards » }. */
+export function decouperNom(nom) {
+  const [ville, ...reste] = nom.split(' — ');
+  return { ville, quartier: reste.join(' — ') };
+}
+
+/** Lien vers le jeu, ou vers une ville précise : sans paramètres ni ancre parasites. */
+export function lienJeu(adresse, ville = null) {
+  const url = new URL(adresse);
+  url.search = '';
+  url.hash = '';
+  if (ville) url.searchParams.set('ville', ville);
+  return url.toString();
+}
+
+export function texteScore({ nom, trouves, total, ecouleMs, taps, precision }) {
+  const { ville } = decouperNom(nom);
+  if (trouves >= total) {
+    return `🦆 J'ai trouvé les ${total} canards cachés à ${ville} en ${chrono(ecouleMs)} `
+      + `(${taps} taps, ${Math.round(precision * 100)} % de précision). Tu fais mieux ?`;
+  }
+  if (trouves === 0) return `🦆 Je cherche ${total} canards cachés à ${ville}. Tu m'aides ?`;
+  return `🦆 J'ai déjà trouvé ${trouves} canard${trouves > 1 ? 's' : ''} sur ${total} à ${ville} `
+    + `(${chrono(ecouleMs)}). Viens chercher les autres !`;
+}
+
+export const TEXTE_INVITATION = '🦆 30 canards en plastique se cachent dans une ville pleine de monde. '
+  + 'Zoome, cherche le bec orange et l\'œil noir… Tu les trouves ? Gratuit, sur téléphone ou ordinateur.';
+
+/** Ligne d'état d'une ville sur l'écran d'accueil, d'après sa sauvegarde. */
+export function resumeVille(sauvegarde, total) {
+  if (!sauvegarde || (!sauvegarde.trouves.length && !sauvegarde.taps)) return 'Nouvelle partie';
+  const n = sauvegarde.trouves.length;
+  if (n >= total) return `✓ Terminée en ${chrono(sauvegarde.ecouleMs)}`;
+  return `${n} / ${total} trouvé${n > 1 ? 's' : ''} · ${chrono(sauvegarde.ecouleMs)}`;
+}
+
+/**
+ * Partage natif (téléphone) ou copie dans le presse-papiers (ordinateur).
+ * @returns {'partage'|'copie'|'annule'|'impossible'}
+ */
+export async function partager({ titre, texte, url }, nav = globalThis.navigator) {
+  if (nav?.share) {
+    try {
+      await nav.share({ title: titre, text: texte, url });
+      return 'partage';
+    } catch (e) {
+      if (e?.name === 'AbortError') return 'annule'; // le joueur a fermé la feuille de partage
+      // autre échec (permission refusée…) : on tente la copie
+    }
+  }
+  if (nav?.clipboard?.writeText) {
+    try {
+      await nav.clipboard.writeText(`${texte}\n${url}`);
+      return 'copie';
+    } catch {
+      return 'impossible';
+    }
+  }
+  return 'impossible';
+}

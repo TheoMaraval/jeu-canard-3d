@@ -15,13 +15,16 @@ sans espace ni accent) :
 {
   "id": "marseille",
   "nom": "Marseille — Le Panier",
+  "embleme": "⛵",
   "ordre": 4,
   "graine": 13002
 }
 ```
 
-- `nom` : ce qu'affiche le menu.
-- `ordre` : la place dans le menu (Paris 0, New York 1, Lille 2, Delhi 3).
+- `nom` : ce qu'affiche l'accueil. Le tiret long « — » sépare la ville (en gros) du
+  quartier (en dessous).
+- `embleme` : un émoji qui illustre la ville sur l'accueil (facultatif, 🏙️ par défaut).
+- `ordre` : la place sur l'accueil (Paris 0, New York 1, Lille 2, Delhi 3).
 - `graine` : n'importe quel nombre. Même graine = même ville ; autre graine = autre ville.
 
 Avec ces seules lignes, la ville ressemble à Paris en plus neutre. On la personnalise
@@ -135,7 +138,7 @@ au mauvais endroit.
 
 | Clé | Défaut | Effet |
 |---|---|---|
-| `id`, `nom`, `ordre`, `graine` | — | Voir l'étape 1 |
+| `id`, `nom`, `embleme`, `ordre`, `graine` | — | Voir l'étape 1 |
 | `version` | 3 | Version de la scène, pour la sauvegarde |
 | `taille` | 120 | Côté de la carte, en mètres |
 | `ilots` | 3 | Nombre d'îlots par côté (3 → 9 îlots, dont une place) |

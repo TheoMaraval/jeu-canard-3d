@@ -1,4 +1,4 @@
-// Interface par-dessus la scène : compteur, aide, messages, écran de fin.
+// Interface par-dessus la scène : accueil, compteur, chrono, aide, messages, écran de fin.
 
 const $ = (id) => document.getElementById(id);
 
@@ -39,18 +39,37 @@ export function afficherAide(revele) {
     : 'Zoomez sur un point jaune pour voir si c’est un canard.';
 }
 
-/** Menu des villes disponibles (scenes.json). */
-export function afficherVilles(scenes, courante, choisir) {
-  const menu = $('ville');
-  menu.replaceChildren(...scenes.map((s) => {
-    const o = document.createElement('option');
-    o.value = s.id;
-    o.textContent = s.nom;
-    o.selected = s.id === courante;
-    return o;
+/**
+ * Écran d'accueil : une carte par ville.
+ * @param villes [{id, embleme, ville, quartier, etat, fini}]
+ */
+export function afficherAccueil(villes, { choisir, inviter }) {
+  $('villes').replaceChildren(...villes.map((v) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'carte-ville';
+    b.dataset.ville = v.id;
+    const morceau = (classe, texte) => {
+      const s = document.createElement('span');
+      s.className = classe;
+      s.textContent = texte;
+      return s;
+    };
+    b.append(morceau('embleme', v.embleme), morceau('nom', v.ville), morceau('quartier', v.quartier),
+      morceau(v.fini ? 'etat fini' : 'etat', v.etat));
+    b.onclick = () => choisir(v.id);
+    return b;
   }));
-  menu.hidden = scenes.length < 2;
-  menu.onchange = () => choisir(menu.value);
+  $('inviter').onclick = inviter;
+  $('accueil').hidden = false;
+  $('hud').hidden = true;
+}
+
+/** Barre du haut pendant la partie. */
+export function afficherHud({ menu, partager }) {
+  $('menu').onclick = menu;
+  $('partager').onclick = partager;
+  $('hud').hidden = false;
 }
 
 export function afficherMessage(texte) {
@@ -58,10 +77,20 @@ export function afficherMessage(texte) {
   $('message').hidden = !texte;
 }
 
-export function afficherFin({ ecouleMs, taps, precision }, rejouer) {
+let minuterieBref = null;
+/** Message qui s'efface tout seul (« lien copié »…). */
+export function afficherBref(texte, ms = 2600) {
+  afficherMessage(texte);
+  clearTimeout(minuterieBref);
+  minuterieBref = setTimeout(() => afficherMessage(''), ms);
+}
+
+export function afficherFin({ ecouleMs, taps, precision }, { rejouer, partager, autreVille }) {
   $('fin-temps').textContent = duree(ecouleMs);
   $('fin-taps').textContent = String(taps);
   $('fin-precision').textContent = pourcent(precision, taps);
   $('fin').hidden = false;
   $('rejouer').onclick = rejouer;
+  $('partager-score').onclick = partager;
+  $('autre-ville').onclick = autreVille;
 }

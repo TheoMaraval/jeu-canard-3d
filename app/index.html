@@ -4,20 +4,41 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="30 canards en plastique se cachent dans une ville pleine de monde. Sauras-tu tous les trouver ?">
   <title>Jeu Canard 3D</title>
   <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
   <canvas id="scene"></canvas>
 
-  <header id="hud">
+  <!-- Écran d'accueil : affiché quand l'adresse ne désigne pas de ville -->
+  <section id="accueil" hidden>
+    <div class="accueil">
+      <h1>🦆 Jeu Canard</h1>
+      <p class="accroche">
+        Dans chaque ville, <b>30 canards en plastique jaunes</b> se cachent parmi la foule,
+        sur les toits, derrière les vitres… et au milieu de plein d'autres objets jaunes.
+      </p>
+      <ol class="regles">
+        <li>Déplace la vue d'un doigt, zoome en pinçant.</li>
+        <li>Zoome sur un point jaune : seul le canard a un <b>bec orange</b> et un <b>œil noir</b>.</li>
+        <li>Touche-le pour le trouver. Pas de pénalité si tu te trompes.</li>
+      </ol>
+      <h2>Choisis ta ville</h2>
+      <div id="villes" class="villes"></div>
+      <button id="inviter" class="bouton secondaire" type="button">📤 Inviter quelqu'un à jouer</button>
+    </div>
+  </section>
+
+  <header id="hud" hidden>
     <div id="compteur" aria-label="Canards trouvés">0 / 30</div>
-    <select id="ville" aria-label="Choisir la ville" hidden></select>
     <div id="stats" aria-label="Temps, taps et précision">
       <span title="Temps de jeu">⏱ <b id="stat-temps">0:00</b></span>
       <span title="Taps">👆 <b id="stat-taps">0</b></span>
       <span title="Précision : canards trouvés / taps">🎯 <b id="stat-precision">—</b></span>
     </div>
+    <button id="menu" class="pastille" type="button" title="Choisir une autre ville">🏙️<span class="etiquette"> Villes</span></button>
+    <button id="partager" class="pastille" type="button" title="Partager ma partie">📤<span class="etiquette"> Partager</span></button>
     <div id="aide"></div>
   </header>
 
@@ -31,7 +52,11 @@
         <dt>Taps</dt><dd id="fin-taps"></dd>
         <dt>Précision</dt><dd id="fin-precision"></dd>
       </dl>
-      <button id="rejouer" type="button">Rejouer</button>
+      <div class="actions">
+        <button id="partager-score" class="bouton" type="button">📤 Partager mon score</button>
+        <button id="rejouer" class="bouton secondaire" type="button">Rejouer</button>
+        <button id="autre-ville" class="bouton secondaire" type="button">Autre ville</button>
+      </div>
     </div>
   </section>
 

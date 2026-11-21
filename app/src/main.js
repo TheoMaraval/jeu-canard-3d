@@ -1,4 +1,7 @@
-// Assemble la scène, la vue, les gestes, la partie et la sauvegarde.
+// Assemble l'accueil, la scène, la vue, les gestes, la partie, la sauvegarde et le partage.
+//
+// Sans `?ville=` dans l'adresse : écran d'accueil (choix de la ville). Avec : la partie.
+// Passer de l'un à l'autre recharge la page : une seule scène 3D par page, rien à nettoyer.
 import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
@@ -6,12 +9,17 @@ import { charger, effacer, enregistrer } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
 import {
-  afficherAide, afficherCompteur, afficherFin, afficherMessage, afficherStats, afficherVilles,
+  TEXTE_INVITATION, decouperNom, lienJeu, partager, resumeVille, texteScore,
+} from './partage.js';
+import {
+  afficherAccueil, afficherAide, afficherBref, afficherCompteur, afficherFin, afficherHud, afficherMessage,
+  afficherStats,
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
+const TITRE = 'Jeu Canard 3D';
 
-async function choisirVille() {
+async function chargerIndex() {
   const r = await fetch('scenes.json');
   if (!r.ok) throw new Error('scenes.json introuvable : lancer le pipeline Blender.');
   // Vite renvoie index.html pour un fichier absent : un JSON illisible veut dire « pas d'index »
@@ -19,17 +27,38 @@ async function choisirVille() {
     throw new Error('scenes.json est absent : lancer blender/tout_generer.sh.');
   });
   if (!scenes.length) throw new Error('scenes.json ne liste aucune ville.');
-  const demandee = new URLSearchParams(location.search).get('ville');
-  const info = scenes.find((s) => s.id === demandee) ?? scenes[0];
-  afficherVilles(scenes, info.id, (id) => {
-    location.search = `?ville=${encodeURIComponent(id)}`;
-  });
-  return info;
+  return scenes;
 }
 
-async function demarrer() {
+const allerA = (ville) => { location.href = lienJeu(location.href, ville); };
+
+/** Partage, avec un retour visible quand le lien a été copié plutôt que partagé. */
+async function partagerAvecRetour(contenu) {
+  const issue = await partager({ titre: TITRE, ...contenu });
+  if (issue === 'copie') afficherBref('Message et lien copiés : colle-les dans un SMS ou une messagerie.');
+  if (issue === 'impossible') afficherBref(`Copie impossible ici. Le lien : ${contenu.url}`, 6000);
+}
+
+function accueil(scenes) {
+  const villes = scenes.map((s) => {
+    const total = s.canards ?? 30;
+    const sauvegarde = charger(localStorage, s.id, s.version);
+    return {
+      id: s.id,
+      embleme: s.embleme ?? '🏙️',
+      ...decouperNom(s.nom),
+      etat: resumeVille(sauvegarde, total),
+      fini: Boolean(sauvegarde && sauvegarde.trouves.length >= total),
+    };
+  });
+  afficherAccueil(villes, {
+    choisir: allerA,
+    inviter: () => partagerAvecRetour({ texte: TEXTE_INVITATION, url: lienJeu(location.href) }),
+  });
+}
+
+async function jouer(info) {
   afficherMessage('Chargement du quartier…');
-  const info = await choisirVille();
   const scene = await chargerScene(canvas, info);
   afficherMessage('');
 
@@ -52,10 +81,11 @@ async function demarrer() {
     if (!document.hidden && !terminee(partie)) partie = { ...partie, ecouleMs: partie.ecouleMs + (t - repere) };
     repere = t;
   };
+  const resume = () => ({ ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) });
   // temps, taps et précision en direct : le chrono avance deux fois par seconde
   const majStats = () => {
     horloge();
-    afficherStats({ ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) });
+    afficherStats(resume());
   };
   const minuteur = setInterval(majStats, 500);
 
@@ -68,20 +98,31 @@ async function demarrer() {
   document.addEventListener('visibilitychange', sauver);
   window.addEventListener('pagehide', sauver);
 
+  const partagerPartie = () => {
+    horloge();
+    partagerAvecRetour({
+      texte: texteScore({ nom: info.nom, trouves: partie.trouves.size, total: partie.ids.length, ...resume() }),
+      url: lienJeu(location.href, info.id),
+    });
+  };
+
   const finir = () => {
     clearInterval(minuteur);
     majStats(); // dernière valeur exacte, figée
-    afficherFin(
-      { ecouleMs: partie.ecouleMs, taps: partie.taps, precision: precision(partie) },
-      () => {
+    afficherFin(resume(), {
+      rejouer: () => {
         // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
         // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
         rejoue = true;
         effacer(localStorage, info.id, info.version);
         location.reload();
       },
-    );
+      partager: partagerPartie,
+      autreVille: () => allerA(null),
+    });
   };
+
+  afficherHud({ menu: () => allerA(null), partager: partagerPartie });
 
   ecouterEntrees(canvas, {
     deplacer: (dx, dy) => {
@@ -118,6 +159,15 @@ async function demarrer() {
 
   // pour le diagnostic depuis la console : window.jeu.stats()
   window.jeu = { stats: scene.stats, vue: () => vue, partie: () => serialiser(partie), canards: scene.canards, axes: scene.axes };
+}
+
+async function demarrer() {
+  const scenes = await chargerIndex();
+  const demandee = new URLSearchParams(location.search).get('ville');
+  const info = scenes.find((s) => s.id === demandee);
+  // pas de ville, ou une ville inconnue (vieux lien) : on montre l'accueil
+  if (info) await jouer(info);
+  else accueil(scenes);
 }
 
 demarrer().catch((erreur) => {
