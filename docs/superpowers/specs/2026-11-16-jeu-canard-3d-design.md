@@ -268,3 +268,7 @@ La version de scène passe à 2 : les sauvegardes de la v1 sont ignorées.
     `ordre`, `embleme`, `couleur` ;
   - documentation d'usage dans `docs/01` à `docs/06`, qui fait désormais référence ; cette
     spec reste l'historique de la conception.
+- 2026-11-21 : révision 6, sons enregistrés. Le « coinnn » synthétisé est remplacé par un
+  « coin coin » enregistré à la voix (`assets/sons/coin.mp3`), gardé en secours si le
+  fichier manque ; une musique enregistrée (`assets/sons/fin.mp3`) est jouée quand on trouve
+  le dernier canard.

@@ -71,7 +71,7 @@ Ces règles sont garanties par le code. Si l'une casse, le jeu devient trop faci
  │  sauvegarde.js progression par ville                       (pur, testé)        │
  │  hud.js       accueil, compteur, chrono, précision, écran de fin               │
  │  partage.js   messages de score et d'invitation, partage   (pur, testé)        │
- │  son.js       le « coinnn » synthétisé, bouton son         (testé)             │
+ │  son.js       « coin coin » et musique de fin, bouton son  (testé)             │
  └─────────────────────────────────────────────────────────────────────────────────┘
             │  GitHub Actions à chaque envoi sur main
             ▼
@@ -90,8 +90,8 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/tests/` | 41 tests du générateur, lancés sans Blender |
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
-| `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/` |
-| `app/` | L'application ; `app/tests/` : 38 tests |
+| `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
+| `app/` | L'application ; `app/tests/` : 42 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -110,13 +110,22 @@ décalées nettes, boutons qui s'enfoncent à l'appui, fond papier tramé. Tout 
 - Mascotte : un canard dessiné en SVG (`<symbol id="canard">`), sur l'accueil, le
   chargement, l'écran de fin et le compteur.
 - Retours de jeu : le compteur saute, un « +1 » jaillit, le téléphone vibre et un canard
-  fait « coinnn » quand on en trouve un ; confettis, étoiles et titre selon la précision à la fin
+  fait « coin coin » quand on en trouve un ; une petite musique, confettis, étoiles et titre selon la précision à la fin
   (`titreFin` : 70 % et plus « Œil de lynx », 40 % « Fin limier », sinon « Chasseur tenace »).
-- Son (`app/src/son.js`) : le « coinnn » est **synthétisé** avec Web Audio (voix grinçante
-  dont la hauteur retombe, filtres nasaux), sans fichier son ; chaque cri varie un peu.
-  Le bouton haut-parleur le coupe, et le choix est gardé sur l'appareil. Sur iPhone, le
+- Son (`app/src/son.js`) : deux **enregistrements** faits à la voix par l'auteur du jeu,
+  dans `assets/sons/`, joués avec Web Audio :
+  - `coin.mp3` (1,25 s, 16 Ko, deux « coin ») quand on trouve un canard ; chaque cri est
+    joué un peu plus vite ou plus lentement (±6 %, `vitesseCri()`) pour varier ;
+  - `fin.mp3` (1,8 s, 22 Ko) quand on trouve le dernier canard, une seconde après son
+    « coin coin » (`fanfare(1)` dans `main.js`). Pas de musique en rouvrant une partie
+    déjà finie.
+
+  Les fichiers sont téléchargés au lancement de la partie et décodés au premier contact.
+  Tant que le « coin coin » n'est pas prêt, ou s'il manque, un cri **synthétisé** le
+  remplace (`parametresCoin()`) ; la musique, elle, n'a pas de remplaçant.
+  Le bouton haut-parleur coupe tout, et le choix est gardé sur l'appareil. Sur iPhone, le
   son est débloqué au premier contact avec la ville ; le bouton silencieux du téléphone
-  le coupe aussi. Pour changer le cri : `parametresCoin()` (hauteur, chute, durée, nasal).
+  le coupe aussi. Pour changer un son, remplacer le fichier (voir [05](05-publier-et-depanner.md)).
 - Accessibilité : cibles tactiles de 44 px au moins, contour orange au clavier, animations
   coupées si le système demande moins de mouvement.
 

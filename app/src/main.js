@@ -165,7 +165,10 @@ async function jouer(info) {
       }
       sauver();
       majStats(); // le tap compte tout de suite, sans attendre le prochain tic du chrono
-      if (terminee(partie)) finir();
+      if (terminee(partie)) {
+        son.fanfare(1); // la musique de fin, une fois le dernier « coin coin » fini
+        finir();
+      }
     },
   });
 

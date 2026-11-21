@@ -33,7 +33,7 @@ npm run dev        # http://localhost:5173
 
 ```bash
 python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 38 tests de l'app
+cd app && npm test                                        # 42 tests de l'app
 ```
 
 ## Publier
@@ -108,21 +108,53 @@ pos(); // coordonnées du canard à l'écran : taper (vrai clic) à cet endroit
 
 Le canard n'est « révélé » (bec visible, tap accepté) qu'à partir de `jeu.vue().ppm` ≥ 80.
 
-**Analyser le « coinnn » sans le jouer** (on ne peut pas l'écouter depuis un script) :
+**Analyser les sons sans les jouer** (on ne peut pas les écouter depuis un script) :
 
 ```js
 const { creerSon } = await import('/src/son.js');
 let ctx;
 class HorsLigne extends OfflineAudioContext {
-  constructor() { super(1, 44100 * 0.8, 44100); ctx = this; }
+  constructor() { super(1, 44100 * 3, 44100); ctx = this; }
   resume() { return Promise.resolve(); }
 }
-creerSon({ getItem: () => null, setItem() {} }, HorsLigne).coin();
-const d = (await ctx.startRendering()).getChannelData(0); // échantillons : volume, durée, hauteur…
+const son = creerSon({ getItem: () => null, setItem() {} }, HorsLigne);
+son.deverrouiller();
+await new Promise((r) => setTimeout(r, 800)); // téléchargement et décodage des fichiers
+son.coin(); // ou son.fanfare()
+const d = (await ctx.startRendering()).getChannelData(0); // échantillons : volume, durée…
 ```
 
-Repères actuels : environ 0,45 s audible, hauteur de ~350 Hz retombant vers ~225 Hz, pic
-vers 0,55 (pas de saturation).
+Repères actuels du « coin coin » : environ 0,9 s audible (deux « coin »), pic vers 0,75
+(pas de saturation). Sans attendre le décodage, c'est le cri synthétisé qui est rendu
+(~0,45 s).
+
+**Vérifier les sons pendant une vraie partie, sans bruit** (console de la partie, avant
+de taper) : remplacer la lecture par un journal.
+
+```js
+window.journalSon = [];
+AudioBufferSourceNode.prototype.start = function (quand) {
+  journalSon.push({ duree: this.buffer.duration, dans: quand - this.context.currentTime });
+};
+OscillatorNode.prototype.start = function () { journalSon.push('synthèse'); };
+```
+
+Toucher la ville une première fois (déblocage du son), attendre une seconde, puis trouver
+le dernier canard d'une sauvegarde à 29/30 : le journal montre le « coin coin » (1,25 s,
+tout de suite) puis la musique (1,78 s, une seconde après).
+
+**Changer un son** : enregistrer (par exemple avec l'Enregistreur Windows), puis découper
+et convertir en MP3 avec ffmpeg (installé par `winget install Gyan.FFmpeg`). Repérer
+d'abord où commence et finit le son (filtre `silencedetect`), puis :
+
+```bash
+ffmpeg -i enregistrement.m4a -af "atrim=start=1.07:end=2.32,asetpts=PTS-STARTPTS,aformat=channel_layouts=mono,volume=5dB,afade=t=in:d=0.005,afade=t=out:st=1.20:d=0.05" -ar 44100 -c:a libmp3lame -b:a 96k assets/sons/coin.mp3
+ffmpeg -i assets/sons/coin.mp3 -af volumedetect -f null -   # max_volume doit rester sous 0 dB
+```
+
+(`fin.mp3` : `atrim=start=0.80`, `volume=4dB`, fondu de sortie à 1,70 s.) MP3 parce que
+tous les navigateurs le décodent (Safari ne lit pas toujours l'Ogg). Un son pris sur
+Internet doit avoir une licence claire : pas de son tiré de YouTube.
 
 **Partage** : sans partage natif (ordinateur), le bouton copie le message et le lien dans
 le presse-papiers. Pour simuler le partage d'un téléphone :

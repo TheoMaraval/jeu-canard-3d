@@ -10,7 +10,7 @@ Quatre villes : Paris, New York, Lille, Delhi.
 - Déplace la vue avec un doigt, zoome en pinçant (molette sur ordinateur).
 - À zoom moyen, canards et leurres jaunes se ressemblent tous. Zoome : seul le canard a un
   bec orange et un œil noir. Certains sont derrière des vitres.
-- Touche un canard pour le trouver : « coinnn ! ». Pas de pénalité pour un tap raté.
+- Touche un canard pour le trouver : « coin coin ! », et une musique quand on les a tous. Pas de pénalité pour un tap raté.
 - Temps, taps et précision s'affichent en direct ; partage ton score ou invite quelqu'un.
 - La progression est sauvegardée sur l'appareil, ville par ville. Pas de compte, pas de pub.
 

@@ -1,10 +1,29 @@
-// Le « coin » d'un canard, synthétisé avec Web Audio : aucun fichier son à charger.
+// Les sons du jeu, deux enregistrements joués avec Web Audio :
+// - `assets/sons/coin.mp3` (16 Ko) : le « coin coin » d'un canard trouvé. Chaque cri varie
+//   un peu de hauteur et de vitesse ;
+// - `assets/sons/fin.mp3` (22 Ko) : la musique quand les 30 canards sont trouvés.
 //
-// Recette d'un cancan : une voix grinçante (dent de scie + carré) dont la hauteur monte un
-// peu puis retombe, passée dans deux filtres « nasaux » (formants vers 1,1 et 2,6 kHz),
-// avec une attaque sèche et une queue qui traîne : « coinnn ». Chaque cri varie un peu.
+// Tant que le « coin coin » n'est pas prêt (ou s'il manque), un cri synthétisé prend le
+// relais : une voix grinçante (dent de scie + carré) dont la hauteur monte un peu puis
+// retombe, passée dans deux filtres « nasaux » (formants vers 1,1 et 2,6 kHz).
 
 const CLE = 'jeu-canard-3d:son';
+export const FICHIERS = { coin: 'sons/coin.mp3', fin: 'sons/fin.mp3' };
+const VOLUME = 0.8;
+
+/** Vitesse de lecture du cri : ±6 % autour de 1 (plus vite = plus aigu). */
+export function vitesseCri(alea = Math.random) {
+  return 1 + (alea() * 2 - 1) * 0.06;
+}
+
+/** Télécharge un enregistrement ; `null` s'il est absent. */
+function telechargerSon(chemin) {
+  if (!globalThis.fetch) return Promise.resolve(null);
+  // Vite renvoie index.html pour un fichier absent : une réponse HTML veut dire « pas de son »
+  return fetch(chemin)
+    .then((r) => (r.ok && !(r.headers.get('content-type') ?? '').includes('html') ? r.arrayBuffer() : null))
+    .catch(() => null);
+}
 
 /** Paramètres d'un cri, tirés autour d'une base. `alea` : fonction qui renvoie [0, 1[. */
 export function parametresCoin(alea = Math.random) {
@@ -29,21 +48,63 @@ function lire(stockage) {
 /**
  * @param stockage objet de type localStorage (le choix du joueur y est gardé)
  * @param Contexte constructeur AudioContext (remplaçable pour les tests)
+ * @param telecharger (chemin) → promesse des octets de l'enregistrement, ou de `null`
  */
-export function creerSon(stockage = globalThis.localStorage, Contexte = globalThis.AudioContext ?? globalThis.webkitAudioContext) {
+export function creerSon(
+  stockage = globalThis.localStorage,
+  Contexte = globalThis.AudioContext ?? globalThis.webkitAudioContext,
+  telecharger = telechargerSon,
+) {
   let actif = lire(stockage);
   let ctx = null;
+  const tampons = {}; // enregistrements décodés, prêts à jouer : { coin, fin }
+  // téléchargés tout de suite (sans contexte audio), décodés dès que le contexte existe
+  const octets = {};
+  if (Contexte) {
+    for (const [nom, chemin] of Object.entries(FICHIERS)) {
+      octets[nom] = Promise.resolve(chemin).then(telecharger).catch(() => null);
+    }
+  }
 
   /** iOS n'autorise le son qu'après un geste : à appeler dans un gestionnaire de toucher. */
   function deverrouiller() {
     if (!Contexte) return null;
-    ctx ??= new Contexte();
+    if (!ctx) {
+      ctx = new Contexte();
+      for (const [nom, promesse] of Object.entries(octets)) {
+        promesse
+          .then((b) => (b ? ctx.decodeAudioData(b) : null))
+          .then((t) => { tampons[nom] = t; })
+          .catch(() => {}); // format illisible : pas de ce son (le cri synthétisé reste)
+      }
+    }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
 
+  function jouer(nom, { vitesse = 1, delai = 0 } = {}) {
+    const source = ctx.createBufferSource();
+    source.buffer = tampons[nom];
+    source.playbackRate.value = vitesse;
+    const volume = ctx.createGain();
+    volume.gain.value = VOLUME;
+    source.connect(volume).connect(ctx.destination);
+    source.start(ctx.currentTime + 0.01 + delai);
+  }
+
   function coin() {
     if (!actif || !deverrouiller()) return;
+    if (tampons.coin) jouer('coin', { vitesse: vitesseCri() });
+    else coinSynthetise();
+  }
+
+  /** Musique de fin, après `delai` secondes (pour laisser finir le dernier « coin coin »). */
+  function fanfare(delai = 0) {
+    if (!actif || !deverrouiller() || !tampons.fin) return;
+    jouer('fin', { delai });
+  }
+
+  function coinSynthetise() {
     const p = parametresCoin();
     const t0 = ctx.currentTime + 0.01;
     const fin = t0 + p.duree;
@@ -116,5 +177,5 @@ export function creerSon(stockage = globalThis.localStorage, Contexte = globalTh
     return actif;
   }
 
-  return { coin, deverrouiller, basculer, actif: () => actif };
+  return { coin, fanfare, deverrouiller, basculer, actif: () => actif };
 }
