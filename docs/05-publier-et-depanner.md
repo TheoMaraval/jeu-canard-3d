@@ -33,7 +33,7 @@ npm run dev        # http://localhost:5173
 
 ```bash
 python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 32 tests de l'app
+cd app && npm test                                        # 34 tests de l'app
 ```
 
 ## Publier

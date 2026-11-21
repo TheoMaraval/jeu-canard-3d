@@ -4,58 +4,126 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#f6ecd4">
   <meta name="description" content="30 canards en plastique se cachent dans une ville pleine de monde. Sauras-tu tous les trouver ?">
-  <title>Jeu Canard 3D</title>
+  <title>Où sont les canards ?</title>
   <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
-  <canvas id="scene"></canvas>
+  <!-- Icônes (tracés au trait, 24 × 24) et mascotte, réutilisées avec <use> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-partager" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
+      <symbol id="i-carte" viewBox="0 0 24 24"><path d="M3 6.5l6-3 6 3 6-3v14l-6 3-6-3-6 3z"/><path d="M9 3.5v14M15 6.5v14"/></symbol>
+      <symbol id="i-chrono" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></symbol>
+      <symbol id="i-tap" viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-4.9-2.6L4 15.2a1.6 1.6 0 0 1 2.6-1.9L9 16"/></symbol>
+      <symbol id="i-cible" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3"/></symbol>
+      <symbol id="i-rejouer" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5"/></symbol>
+      <symbol id="i-fleche" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-deplacer" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></symbol>
+      <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+      <symbol id="i-etoile" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2 6.4 20.2l1.1-6.3L2.9 9.5l6.3-.9z"/></symbol>
+      <!-- Mascotte : canard en plastique (dessin original) -->
+      <symbol id="canard" viewBox="0 0 120 100">
+        <path d="M18 58c-9-2-13-14-8-17 4 7 10 7 15 4" fill="#FFD21E" stroke="#1c1b22" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M20 60c0-17 16-26 38-26 9 0 15 2 20 6 14 1 26 9 26 21 0 17-19 27-44 27-23 0-40-10-40-28z" fill="#FFD21E" stroke="#1c1b22" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M38 62c8 8 22 9 32 3" fill="none" stroke="#1c1b22" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="76" cy="30" r="20" fill="#FFD21E" stroke="#1c1b22" stroke-width="4"/>
+        <path d="M93 30c8-2 17 0 19 4-3 5-12 7-20 4z" fill="#FF7A00" stroke="#1c1b22" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="82" cy="25" r="4.2" fill="#1c1b22"/>
+        <circle cx="83.4" cy="23.6" r="1.3" fill="#fff"/>
+        <path d="M66 18c3-3 8-4 12-2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+      </symbol>
+    </defs>
+  </svg>
 
-  <!-- Écran d'accueil : affiché quand l'adresse ne désigne pas de ville -->
-  <section id="accueil" hidden>
+  <canvas id="scene" aria-label="La ville où se cachent les canards"></canvas>
+
+  <!-- ÉCRAN D'ACCUEIL : affiché quand l'adresse ne désigne pas de ville -->
+  <main id="accueil" hidden>
     <div class="accueil">
-      <h1>🦆 Jeu Canard</h1>
+      <header class="titre">
+        <svg class="mascotte" aria-hidden="true"><use href="#canard"/></svg>
+        <h1><span class="petit">Où sont les</span> <span class="gros">canards ?</span></h1>
+      </header>
       <p class="accroche">
-        Dans chaque ville, <b>30 canards en plastique jaunes</b> se cachent parmi la foule,
-        sur les toits, derrière les vitres… et au milieu de plein d'autres objets jaunes.
+        Dans chaque ville, <b>30 canards en plastique</b> se cachent parmi la foule, sur les
+        toits, derrière les vitres… et au milieu de plein d'autres objets jaunes.
       </p>
-      <ol class="regles">
-        <li>Déplace la vue d'un doigt, zoome en pinçant.</li>
-        <li>Zoome sur un point jaune : seul le canard a un <b>bec orange</b> et un <b>œil noir</b>.</li>
-        <li>Touche-le pour le trouver. Pas de pénalité si tu te trompes.</li>
+
+      <ol class="etapes">
+        <li><svg class="ico" aria-hidden="true"><use href="#i-deplacer"/></svg><span>Glisse pour<br>te promener</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-loupe"/></svg><span>Pince pour<br>zoomer</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-tap"/></svg><span>Touche le canard :<br><b>bec orange, œil noir</b></span></li>
       </ol>
+
       <h2>Choisis ta ville</h2>
       <div id="villes" class="villes"></div>
-      <button id="inviter" class="bouton secondaire" type="button">📤 Inviter quelqu'un à jouer</button>
-    </div>
-  </section>
 
-  <header id="hud" hidden>
-    <div id="compteur" aria-label="Canards trouvés">0 / 30</div>
-    <div id="stats" aria-label="Temps, taps et précision">
-      <span title="Temps de jeu">⏱ <b id="stat-temps">0:00</b></span>
-      <span title="Taps">👆 <b id="stat-taps">0</b></span>
-      <span title="Précision : canards trouvés / taps">🎯 <b id="stat-precision">—</b></span>
+      <button id="inviter" class="bouton secondaire large" type="button">
+        <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg> Inviter quelqu'un à jouer
+      </button>
+      <p class="pied">Ta progression est gardée sur cet appareil. Pas de compte, pas de pub.</p>
     </div>
-    <button id="menu" class="pastille" type="button" title="Choisir une autre ville">🏙️<span class="etiquette"> Villes</span></button>
-    <button id="partager" class="pastille" type="button" title="Partager ma partie">📤<span class="etiquette"> Partager</span></button>
-    <div id="aide"></div>
+  </main>
+
+  <!-- BARRE DE JEU -->
+  <header id="hud" hidden>
+    <div id="compteur" class="badge-compteur" aria-label="Canards trouvés">
+      <svg class="mini-canard" aria-hidden="true"><use href="#canard"/></svg>
+      <span id="compteur-texte">0 / 30</span>
+      <span class="barre" aria-hidden="true"><span id="compteur-barre"></span></span>
+    </div>
+    <div id="stats" class="pastille-stats" aria-label="Temps, taps et précision">
+      <span title="Temps de jeu"><svg class="ico" aria-hidden="true"><use href="#i-chrono"/></svg><b id="stat-temps">0:00</b></span>
+      <span title="Taps"><svg class="ico" aria-hidden="true"><use href="#i-tap"/></svg><b id="stat-taps">0</b></span>
+      <span title="Précision : canards trouvés / taps"><svg class="ico" aria-hidden="true"><use href="#i-cible"/></svg><b id="stat-precision">—</b></span>
+    </div>
+    <div class="boutons-hud">
+      <button id="menu" class="rond" type="button" aria-label="Choisir une autre ville" title="Villes">
+        <svg class="ico" aria-hidden="true"><use href="#i-carte"/></svg>
+      </button>
+      <button id="partager" class="rond" type="button" aria-label="Partager ma partie" title="Partager">
+        <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg>
+      </button>
+    </div>
   </header>
 
-  <div id="message" role="status" hidden></div>
+  <div id="aide" class="aide" hidden></div>
+  <div id="bravo" class="bravo" aria-hidden="true">+1</div>
 
-  <section id="fin" hidden>
-    <div class="carte">
-      <h1>30 canards trouvés !</h1>
-      <dl>
-        <dt>Temps</dt><dd id="fin-temps"></dd>
-        <dt>Taps</dt><dd id="fin-taps"></dd>
-        <dt>Précision</dt><dd id="fin-precision"></dd>
-      </dl>
+  <!-- CHARGEMENT ET MESSAGES -->
+  <div id="chargement" class="chargement" hidden>
+    <svg class="mascotte flotte" aria-hidden="true"><use href="#canard"/></svg>
+    <p id="chargement-texte">Chargement du quartier…</p>
+  </div>
+  <div id="message" class="toast" role="status" hidden></div>
+
+  <!-- ÉCRAN DE FIN -->
+  <section id="fin" class="voile" hidden>
+    <div id="confettis" class="confettis" aria-hidden="true"></div>
+    <div class="carte-fin" role="dialog" aria-labelledby="fin-titre">
+      <svg class="mascotte fin" aria-hidden="true"><use href="#canard"/></svg>
+      <div id="fin-etoiles" class="etoiles" aria-hidden="true"></div>
+      <h2 id="fin-titre">Bravo !</h2>
+      <p class="sous-titre">Les 30 canards sont trouvés</p>
+      <div class="tuiles">
+        <div class="tuile"><svg class="ico" aria-hidden="true"><use href="#i-chrono"/></svg><b id="fin-temps"></b><span>temps</span></div>
+        <div class="tuile"><svg class="ico" aria-hidden="true"><use href="#i-tap"/></svg><b id="fin-taps"></b><span>taps</span></div>
+        <div class="tuile"><svg class="ico" aria-hidden="true"><use href="#i-cible"/></svg><b id="fin-precision"></b><span>précision</span></div>
+      </div>
       <div class="actions">
-        <button id="partager-score" class="bouton" type="button">📤 Partager mon score</button>
-        <button id="rejouer" class="bouton secondaire" type="button">Rejouer</button>
-        <button id="autre-ville" class="bouton secondaire" type="button">Autre ville</button>
+        <button id="partager-score" class="bouton large" type="button">
+          <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg> Partager mon score
+        </button>
+        <div class="actions-2">
+          <button id="rejouer" class="bouton secondaire" type="button">
+            <svg class="ico" aria-hidden="true"><use href="#i-rejouer"/></svg> Rejouer
+          </button>
+          <button id="autre-ville" class="bouton secondaire" type="button">
+            <svg class="ico" aria-hidden="true"><use href="#i-carte"/></svg> Autre ville
+          </button>
+        </div>
       </div>
     </div>
   </section>

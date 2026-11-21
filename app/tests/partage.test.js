@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { decouperNom, lienJeu, partager, resumeVille, texteScore } from '../src/partage.js';
+import {
+  decouperNom, lienJeu, partager, progression, resumeVille, texteScore, titreFin,
+} from '../src/partage.js';
 
 describe('partage', () => {
   it('découpe le nom affiché en ville et quartier', () => {
@@ -30,6 +32,20 @@ describe('partage', () => {
     expect(resumeVille({ trouves: [], taps: 0, ecouleMs: 4000 }, 30)).toBe('Nouvelle partie');
     expect(resumeVille({ trouves: ['a', 'b'], taps: 5, ecouleMs: 187000 }, 30)).toBe('2 / 30 trouvés · 3:07');
     expect(resumeVille({ trouves: Array(30).fill('x'), taps: 40, ecouleMs: 754000 }, 30)).toBe('✓ Terminée en 12:34');
+  });
+
+  it('calcule la progression d’une ville', () => {
+    expect(progression(null, 30)).toBe(0);
+    expect(progression({ trouves: ['a', 'b', 'c'] }, 30)).toBeCloseTo(0.1);
+    expect(progression({ trouves: Array(31).fill('x') }, 30)).toBe(1);
+    expect(progression({ trouves: ['a'] }, 0)).toBe(0);
+  });
+
+  it('donne un titre de fin selon la précision', () => {
+    expect(titreFin(0.73)).toEqual({ titre: 'Œil de lynx !', etoiles: 3 });
+    expect(titreFin(0.7)).toEqual({ titre: 'Œil de lynx !', etoiles: 3 });
+    expect(titreFin(0.5).etoiles).toBe(2);
+    expect(titreFin(0.39).etoiles).toBe(1);
   });
 
   it('utilise le partage natif quand il existe', async () => {

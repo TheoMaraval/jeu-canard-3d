@@ -2,6 +2,7 @@
   "id": "paris",
   "nom": "Paris — Grands Boulevards",
   "embleme": "🥐",
+  "couleur": "#3F6FD8",
   "ordre": 0,
   "graine": 20261116,
   "style": {

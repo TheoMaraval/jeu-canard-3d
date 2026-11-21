@@ -90,10 +90,29 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/` |
-| `app/` | L'application ; `app/tests/` : 32 tests |
+| `app/` | L'application ; `app/tests/` : 34 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
+
+## L'interface
+
+Style « autocollant de BD », assorti au rendu de la ville : contours d'encre épais, ombres
+décalées nettes, boutons qui s'enfoncent à l'appui, fond papier tramé. Tout est dans
+`app/src/style.css`, réglé par des variables en tête de fichier (`--encre`, `--jaune`,
+`--orange`, `--papier`…).
+
+- Polices : Fredoka (titres) et Nunito (texte), **embarquées dans le site** (paquets
+  `@fontsource`), pas chargées chez Google : aucune adresse de joueur n'est transmise.
+- Icônes : tracés SVG dans `index.html` (`<symbol id="i-…">`), réutilisés avec `<use>`.
+  Les émojis ne servent qu'aux emblèmes des villes.
+- Mascotte : un canard dessiné en SVG (`<symbol id="canard">`), sur l'accueil, le
+  chargement, l'écran de fin et le compteur.
+- Retours de jeu : le compteur saute, un « +1 » jaillit et le téléphone vibre quand on
+  trouve un canard ; confettis, étoiles et titre selon la précision à la fin
+  (`titreFin` : 70 % et plus « Œil de lynx », 40 % « Fin limier », sinon « Chasseur tenace »).
+- Accessibilité : cibles tactiles de 44 px au moins, contour orange au clavier, animations
+  coupées si le système demande moins de mouvement.
 
 ## Repères et caméra
 
@@ -113,10 +132,11 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 
 ```json
 [ { "id": "paris", "nom": "Paris — Grands Boulevards", "version": 3, "ordre": 0,
-    "embleme": "🥐", "canards": 30 }, … ]
+    "embleme": "🥐", "couleur": "#3F6FD8", "canards": 30 }, … ]
 ```
 
-`ordre` fixe la place sur l'écran d'accueil, `embleme` l'icône de la ville, `canards` le
+`ordre` fixe la place sur l'écran d'accueil, `embleme` l'icône de la ville, `couleur` le
+bandeau de sa carte, `canards` le
 total affiché dans la progression ; `version` sert à la sauvegarde (voir plus bas).
 Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands Boulevards » dessous.
 
@@ -160,7 +180,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 41 tests du générateur et les 32 de l'app passent, et sont relancés par GitHub à
+- Les 41 tests du générateur et les 34 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
 - **Pas mesuré** : la fluidité sur téléphone et tablette. Les scènes sont lourdes

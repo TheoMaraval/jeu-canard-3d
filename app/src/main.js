@@ -8,16 +8,21 @@ import { creerPartie, precision, serialiser, taper, terminee } from './partie.js
 import { charger, effacer, enregistrer } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
+import '@fontsource/fredoka/600.css';
+import '@fontsource/fredoka/700.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/700.css';
+import '@fontsource/nunito/800.css';
 import {
-  TEXTE_INVITATION, decouperNom, lienJeu, partager, resumeVille, texteScore,
+  TEXTE_INVITATION, decouperNom, lienJeu, partager, progression, resumeVille, texteScore, titreFin,
 } from './partage.js';
 import {
-  afficherAccueil, afficherAide, afficherBref, afficherCompteur, afficherFin, afficherHud, afficherMessage,
-  afficherStats,
+  afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
+  afficherMessage, afficherStats, celebrer,
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
-const TITRE = 'Jeu Canard 3D';
+const TITRE = 'Où sont les canards ?';
 
 async function chargerIndex() {
   const r = await fetch('scenes.json');
@@ -46,8 +51,10 @@ function accueil(scenes) {
     return {
       id: s.id,
       embleme: s.embleme ?? '🏙️',
+      couleur: s.couleur ?? '#3f6fd8',
       ...decouperNom(s.nom),
       etat: resumeVille(sauvegarde, total),
+      avance: progression(sauvegarde, total),
       fini: Boolean(sauvegarde && sauvegarde.trouves.length >= total),
     };
   });
@@ -58,9 +65,9 @@ function accueil(scenes) {
 }
 
 async function jouer(info) {
-  afficherMessage('Chargement du quartier…');
+  afficherChargement(true, `Chargement de ${decouperNom(info.nom).ville}…`);
   const scene = await chargerScene(canvas, info);
-  afficherMessage('');
+  afficherChargement(false);
 
   let partie = creerPartie(scene.canards.map((c) => c.id), charger(localStorage, info.id, info.version));
   for (const id of partie.trouves) scene.marquerTrouve(id);
@@ -109,7 +116,7 @@ async function jouer(info) {
   const finir = () => {
     clearInterval(minuteur);
     majStats(); // dernière valeur exacte, figée
-    afficherFin(resume(), {
+    afficherFin(resume(), titreFin(precision(partie)), {
       rejouer: () => {
         // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
         // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
@@ -144,6 +151,7 @@ async function jouer(info) {
       if (resultat.trouve) {
         scene.marquerTrouve([...partie.trouves].at(-1), true);
         afficherCompteur(partie.trouves.size, partie.ids.length);
+        celebrer();
       }
       sauver();
       majStats(); // le tap compte tout de suite, sans attendre le prochain tic du chrono
@@ -172,5 +180,6 @@ async function demarrer() {
 
 demarrer().catch((erreur) => {
   console.error(erreur);
-  afficherMessage(`Impossible de lancer le jeu : ${erreur.message}`);
+  afficherChargement(false);
+  afficherMessage(`Impossible de lancer le jeu : ${erreur.message}`, { erreur: true });
 });

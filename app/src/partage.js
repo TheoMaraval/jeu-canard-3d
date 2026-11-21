@@ -39,6 +39,19 @@ export function resumeVille(sauvegarde, total) {
   return `${n} / ${total} trouvé${n > 1 ? 's' : ''} · ${chrono(sauvegarde.ecouleMs)}`;
 }
 
+/** Part des canards trouvés dans une ville, entre 0 et 1 (barre de progression de l'accueil). */
+export function progression(sauvegarde, total) {
+  if (!sauvegarde || !total) return 0;
+  return Math.min(1, sauvegarde.trouves.length / total);
+}
+
+/** Titre de l'écran de fin selon la précision (canards trouvés / taps). */
+export function titreFin(precision) {
+  if (precision >= 0.7) return { titre: 'Œil de lynx !', etoiles: 3 };
+  if (precision >= 0.4) return { titre: 'Fin limier !', etoiles: 2 };
+  return { titre: 'Chasseur tenace !', etoiles: 1 };
+}
+
 /**
  * Partage natif (téléphone) ou copie dans le presse-papiers (ordinateur).
  * @returns {'partage'|'copie'|'annule'|'impossible'}

@@ -49,7 +49,7 @@ python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blend
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173/?ville=lille
-cd app && npm test                                        # 32 tests
+cd app && npm test                                        # 34 tests
 ```
 
 Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la configuration
@@ -62,7 +62,8 @@ Dans une session ouverte depuis `jeuFind`, le serveur de dev se lance avec la co
   22 leurres ; menu des villes ; compteurs en direct ; « Rejouer » corrigé ; validation
   des thèmes avec messages clairs ; ville minimale (id, nom, graine) garantie par un test ;
   écran d'accueil (choix de la ville, progression) ; partage du score et invitation
-  (`app/src/partage.js` : partage natif sur téléphone, copie sinon).
+  (`app/src/partage.js` : partage natif sur téléphone, copie sinon) ; interface en style
+  « autocollant de BD » (charte dans `docs/01`, section « L'interface »).
 - **Jamais mesuré** : fluidité sur téléphone (400 000 à 570 000 triangles de décor, au-dessus
   de la cible de 500 000), et aucune partie complète jouée pour régler la difficulté.
 - Prochaine étape conseillée : mesurer la fluidité sur téléphone, puis le mode « Cacher mes

@@ -1,11 +1,8 @@
-// Interface par-dessus la scène : accueil, compteur, chrono, aide, messages, écran de fin.
+// Interface par-dessus la scène : accueil, barre de jeu, aide, chargement, messages, fin.
+// Les fonctions de format (`chrono`, `pourcent`) sont pures et testées.
 
 const $ = (id) => document.getElementById(id);
-
-export function duree(ms) {
-  const s = Math.round(ms / 1000);
-  return `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s`;
-}
+const SVG = 'http://www.w3.org/2000/svg';
 
 /** Chronomètre : « 3:07 », ou « 1:02:09 » au-delà d'une heure. */
 export function chrono(ms) {
@@ -21,8 +18,40 @@ export function pourcent(precision, taps) {
   return taps ? `${Math.round(precision * 100)} %` : '—';
 }
 
+/** Icône du jeu d'icônes de index.html (`<symbol id="i-…">`). */
+function icone(nom, classe = 'ico') {
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('class', classe);
+  svg.setAttribute('aria-hidden', 'true');
+  const use = document.createElementNS(SVG, 'use');
+  use.setAttribute('href', `#${nom}`);
+  svg.append(use);
+  return svg;
+}
+
+function element(balise, classe, texte) {
+  const e = document.createElement(balise);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+}
+
+// ------------------------------------------------------------------ barre de jeu
+
 export function afficherCompteur(trouves, total) {
-  $('compteur').textContent = `${trouves} / ${total}`;
+  $('compteur-texte').textContent = `${trouves} / ${total}`;
+  $('compteur-barre').style.width = `${total ? (100 * trouves) / total : 0}%`;
+}
+
+/** Petite fête quand un canard est trouvé : le compteur saute, un « +1 » jaillit. */
+export function celebrer() {
+  for (const [id, classe] of [['compteur', 'saute'], ['bravo', 'actif']]) {
+    const e = $(id);
+    e.classList.remove(classe);
+    void e.offsetWidth; // relance l'animation même si elle vient de jouer
+    e.classList.add(classe);
+  }
+  navigator.vibrate?.(30);
 }
 
 /** Temps, taps et précision en direct. */
@@ -32,49 +61,68 @@ export function afficherStats({ ecouleMs, taps, precision }) {
   $('stat-precision').textContent = pourcent(precision, taps);
 }
 
-/** Aide contextuelle : dit quoi faire tant que la vue ne révèle pas les canards. */
+/** Aide contextuelle, en bas de l'écran. */
 export function afficherAide(revele) {
-  $('aide').textContent = revele
-    ? 'Touchez un canard : bec orange, œil noir. Regardez aussi derrière les vitres.'
-    : 'Zoomez sur un point jaune pour voir si c’est un canard.';
+  const aide = $('aide');
+  aide.textContent = revele
+    ? 'Touche le canard : bec orange, œil noir. Regarde aussi derrière les vitres !'
+    : 'Zoome sur un point jaune pour voir si c’est un canard.';
+  aide.hidden = false;
 }
 
-/**
- * Écran d'accueil : une carte par ville.
- * @param villes [{id, embleme, ville, quartier, etat, fini}]
- */
-export function afficherAccueil(villes, { choisir, inviter }) {
-  $('villes').replaceChildren(...villes.map((v) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'carte-ville';
-    b.dataset.ville = v.id;
-    const morceau = (classe, texte) => {
-      const s = document.createElement('span');
-      s.className = classe;
-      s.textContent = texte;
-      return s;
-    };
-    b.append(morceau('embleme', v.embleme), morceau('nom', v.ville), morceau('quartier', v.quartier),
-      morceau(v.fini ? 'etat fini' : 'etat', v.etat));
-    b.onclick = () => choisir(v.id);
-    return b;
-  }));
-  $('inviter').onclick = inviter;
-  $('accueil').hidden = false;
-  $('hud').hidden = true;
-}
-
-/** Barre du haut pendant la partie. */
 export function afficherHud({ menu, partager }) {
   $('menu').onclick = menu;
   $('partager').onclick = partager;
   $('hud').hidden = false;
 }
 
-export function afficherMessage(texte) {
-  $('message').textContent = texte;
-  $('message').hidden = !texte;
+// ----------------------------------------------------------------------- accueil
+
+/**
+ * Écran d'accueil : un ticket par ville.
+ * @param villes [{id, embleme, couleur, ville, quartier, etat, avance (0–1), fini}]
+ */
+export function afficherAccueil(villes, { choisir, inviter }) {
+  $('villes').replaceChildren(...villes.map((v) => {
+    const b = element('button', `carte-ville${v.fini ? ' fini' : ''}${v.avance ? '' : ' neuve'}`);
+    b.type = 'button';
+    b.dataset.ville = v.id;
+    b.style.setProperty('--couleur', v.couleur);
+    b.setAttribute('aria-label', `${v.ville}, ${v.quartier} : ${v.etat}`);
+
+    const texte = element('span', 'texte');
+    texte.append(element('span', 'nom', v.ville), element('span', 'quartier', v.quartier));
+    const go = element('span', 'go');
+    go.append(icone('i-fleche'));
+    const jauge = element('span', 'jauge');
+    const plein = element('span');
+    jauge.style.setProperty('--avance', String(v.avance));
+    jauge.append(plein);
+    const etat = element('span', 'etat');
+    etat.append(jauge, element('span', 'libelle', v.etat));
+
+    b.append(element('span', 'embleme', v.embleme), texte, go, etat);
+    b.onclick = () => choisir(v.id);
+    return b;
+  }));
+  $('inviter').onclick = inviter;
+  $('accueil').hidden = false;
+  $('hud').hidden = true;
+  $('aide').hidden = true;
+}
+
+// --------------------------------------------------------- chargement, messages
+
+export function afficherChargement(actif, texte = 'Chargement du quartier…') {
+  $('chargement-texte').textContent = texte;
+  $('chargement').hidden = !actif;
+}
+
+export function afficherMessage(texte, { erreur = false } = {}) {
+  const m = $('message');
+  m.textContent = texte;
+  m.classList.toggle('erreur', erreur);
+  m.hidden = !texte;
 }
 
 let minuterieBref = null;
@@ -85,12 +133,36 @@ export function afficherBref(texte, ms = 2600) {
   minuterieBref = setTimeout(() => afficherMessage(''), ms);
 }
 
-export function afficherFin({ ecouleMs, taps, precision }, { rejouer, partager, autreVille }) {
-  $('fin-temps').textContent = duree(ecouleMs);
+// -------------------------------------------------------------------------- fin
+
+function lancerConfettis() {
+  const couleurs = ['#ffd21e', '#ff7a00', '#2fb36a', '#3f6fd8', '#e0452f', '#c93f8e'];
+  const boite = $('confettis');
+  boite.replaceChildren(...Array.from({ length: 60 }, (_, i) => {
+    const c = element('i');
+    c.style.left = `${Math.random() * 100}%`;
+    c.style.background = couleurs[i % couleurs.length];
+    c.style.setProperty('--duree', `${1.8 + Math.random() * 1.6}s`);
+    c.style.setProperty('--delai', `${Math.random() * 0.6}s`);
+    c.style.setProperty('--tour', `${(Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 540)}deg`);
+    return c;
+  }));
+}
+
+/**
+ * @param stats {ecouleMs, taps, precision}
+ * @param medaille {titre, etoiles} (voir titreFin dans partage.js)
+ */
+export function afficherFin({ ecouleMs, taps, precision }, medaille, { rejouer, partager, autreVille }) {
+  $('fin-titre').textContent = medaille.titre;
+  $('fin-etoiles').replaceChildren(...[1, 2, 3].map((n) => icone('i-etoile', n <= medaille.etoiles ? 'ico pleine' : 'ico')));
+  $('fin-temps').textContent = chrono(ecouleMs);
   $('fin-taps').textContent = String(taps);
   $('fin-precision').textContent = pourcent(precision, taps);
+  $('aide').hidden = true;
   $('fin').hidden = false;
   $('rejouer').onclick = rejouer;
   $('partager-score').onclick = partager;
   $('autre-ville').onclick = autreVille;
+  lancerConfettis();
 }

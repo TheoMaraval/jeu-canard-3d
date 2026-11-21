@@ -159,7 +159,7 @@ export async function chargerScene(canvas, info) {
   const gabarit = placements.gabarit ?? 0.5;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#f3ead6'); // papier
+  scene.background = new THREE.Color('#f6ecd4'); // papier, comme --papier dans style.css
   const epaisseur = { value: 0.02 };
   const coque = materiauCoque(epaisseur);
   const teinte = materiauInstances();
