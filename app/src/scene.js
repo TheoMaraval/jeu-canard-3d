@@ -267,6 +267,11 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
       tints[j].setXYZ(i, c.r, c.g, c.b);
       tints[j].needsUpdate = true;
     };
+    /** Rend à un rôle sa teinte par défaut (celle du matériau) pour une instance. */
+    im.userData.reteindre = (i, role) => {
+      const j = roles.indexOf(role);
+      if (j >= 0) im.userData.teindre(i, role, defauts[j]);
+    };
     return im;
   }
 
@@ -284,6 +289,7 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
   const VIDE = { p: [0, -1000, 0], r: 0, s: 0 }; // emplacement libre : hors de vue, taille nulle
   let canards = fournis ?? placements.objets.filter((o) => o.type === TYPE_CANARD);
   const places = Math.max(capacite, canards.length);
+  if (places > SEUIL_DECOUPE) throw new Error(`${places} canards : ${SEUIL_DECOUPE} au plus`);
   const emplacements = Array.from({ length: places }, (_, i) => (canards[i] ? enInstance(canards[i]) : VIDE));
   const pres = instancier(props.scene, TYPE_CANARD, emplacements);
   const loin = instancier(props.scene, TYPE_CANARD_LOIN, emplacements);
@@ -339,11 +345,12 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
 
   /** Courte animation d'un canard (trouvé, ou posé en mode « Cacher »). */
   function rebondir(index) {
+    const cible = canards[index];
     const debut = performance.now();
     const pas = (t) => {
-      if (!canards[index]) return; // retiré entre-temps
+      if (canards[index] !== cible) return; // retiré ou remplacé entre-temps
       const a = Math.min(1, (t - debut) / 380);
-      const mat = matrice(enInstance(canards[index]), 1 + 0.7 * Math.sin(Math.PI * a));
+      const mat = matrice(enInstance(cible), 1 + 0.7 * Math.sin(Math.PI * a));
       for (const m of [pres, loin]) {
         m.setMatrixAt(index, mat);
         m.instanceMatrix.needsUpdate = true;
@@ -368,6 +375,7 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
     if (liste.length > places) throw new Error(`${liste.length} canards pour ${places} emplacements`);
     canards = liste;
     for (let i = 0; i < places; i += 1) {
+      for (const m of [pres, loin]) m.userData.reteindre(i, 'jaune'); // un emplacement réutilisé n'est plus vert
       const mat = matrice(canards[i] ? enInstance(canards[i]) : VIDE);
       for (const m of [pres, loin]) m.setMatrixAt(i, mat);
     }

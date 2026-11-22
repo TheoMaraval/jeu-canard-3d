@@ -6,7 +6,7 @@ import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
 import {
-  charger, chargerCle, chargerRecord, effacer, effacerCle, enregistrer, enregistrerCle, meilleur, retenirRecord,
+  chargerCle, chargerRecord, cle, effacerCle, enregistrerCle, meilleur, retenirRecord,
 } from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { creerSon } from './son.js';
@@ -74,26 +74,27 @@ function accueil(scenes) {
 
 /**
  * Lit le défi du lien et le vérifie contre les cachettes de la ville.
- * @returns {{code, defi, canards}} ou {{raison, contexte}}
+ * @returns {{ok: true, code, defi, canards} | {ok: false, raison, contexte}}
  */
 async function preparerDefi(info, code) {
   const { ville } = decouperNom(info.nom);
   const lu = decoderDefi(code);
-  if (!lu.ok) return { raison: lu.raison, contexte: { ville } };
+  if (!lu.ok) return { ok: false, raison: lu.raison, contexte: { ville } };
   const contexte = { ville, prenom: lu.defi.prenom };
   let lot;
   try {
     lot = await chargerCachettes(info.id);
   } catch {
-    return { raison: 'pas-pret', contexte };
+    return { ok: false, raison: 'pas-pret', contexte };
   }
   const raison = verifierDefi(lu.defi, { version: lot.version, empreinte: lot.empreinte, nombre: lot.cachettes.length });
-  if (raison) return { raison, contexte };
-  return { code, defi: lu.defi, canards: canardsDuDefi(lot.cachettes, lu.defi.numeros) };
+  if (raison) return { ok: false, raison, contexte };
+  return { ok: true, code, defi: lu.defi, canards: canardsDuDefi(lot.cachettes, lu.defi.numeros) };
 }
 
 /** Retour à l'accueil avec un message, quand un défi (ou le mode « Cacher ») est impossible. */
 function refuser(scenes, { raison, contexte }) {
+  afficherChargement(false);
   history.replaceState(null, '', lienJeu(location.href));
   accueil(scenes);
   afficherBref(messageRejet(raison, contexte), 8000);
@@ -101,25 +102,20 @@ function refuser(scenes, { raison, contexte }) {
 
 /**
  * Une partie : la ville normale, ou un défi reçu.
- * @param defi null, ou {code, defi: {prenom, numeros…}, canards} (voir preparerDefi)
+ * @param recu null, ou {code, defi: {prenom, numeros…}, canards} (voir preparerDefi)
  */
-async function jouer(info, defi = null) {
+async function jouer(info, recu = null) {
   const { ville } = decouperNom(info.nom);
-  afficherChargement(true, defi ? `${titreDefi(defi.defi.prenom)} · ${ville}…` : `Chargement de ${ville}…`);
+  afficherChargement(true, recu ? `${titreDefi(recu.defi.prenom)} · ${ville}…` : `Chargement de ${ville}…`);
   const t0 = performance.now();
-  const scene = await chargerScene(canvas, info, defi ? { canards: defi.canards } : {});
+  const scene = await chargerScene(canvas, info, recu ? { canards: recu.canards } : {});
   const chargementMs = performance.now() - t0;
   afficherChargement(false);
 
   // un défi a sa propre progression : la partie normale et le record de la ville n'y sont pour rien
-  const cleDefi = defi && cleDefiRecu(defi.code);
-  const lire = () => (defi ? chargerCle(localStorage, cleDefi) : charger(localStorage, info.id, info.version));
-  const ecrire = (donnees) => (defi
-    ? enregistrerCle(localStorage, cleDefi, donnees)
-    : enregistrer(localStorage, info.id, info.version, donnees));
-  const oublier = () => (defi ? effacerCle(localStorage, cleDefi) : effacer(localStorage, info.id, info.version));
+  const cleSauvegarde = recu ? cleDefiRecu(recu.code) : cle(info.id, info.version);
 
-  let partie = creerPartie(scene.canards.map((c) => c.id), lire());
+  let partie = creerPartie(scene.canards.map((c) => c.id), chargerCle(localStorage, cleSauvegarde));
   for (const id of partie.trouves) scene.marquerTrouve(id);
 
   const ecran = () => ({ w: canvas.clientWidth, h: canvas.clientHeight });
@@ -150,15 +146,15 @@ async function jouer(info, defi = null) {
   const sauver = () => {
     if (rejoue) return;
     horloge();
-    ecrire(serialiser(partie));
+    enregistrerCle(localStorage, cleSauvegarde, serialiser(partie));
   };
   document.addEventListener('visibilitychange', sauver);
   window.addEventListener('pagehide', sauver);
 
   const texteAPartager = () => {
     const n = partie.ids.length;
-    if (!defi) return texteScore({ nom: info.nom, trouves: partie.trouves.size, total: n, ...resume() });
-    const { prenom } = defi.defi;
+    if (!recu) return texteScore({ nom: info.nom, trouves: partie.trouves.size, total: n, ...resume() });
+    const { prenom } = recu.defi;
     return terminee(partie)
       ? texteTempsDefi({ prenom, n, ville, ecouleMs: partie.ecouleMs })
       : texteInvitationDefi({ prenom, n, ville }); // en cours : on fait suivre le même défi
@@ -167,7 +163,7 @@ async function jouer(info, defi = null) {
     horloge();
     partagerAvecRetour({
       texte: texteAPartager(),
-      url: defi ? lienDefi(location.href, info.id, defi.code) : lienJeu(location.href, info.id),
+      url: recu ? lienDefi(location.href, info.id, recu.code) : lienJeu(location.href, info.id),
     });
   };
 
@@ -180,18 +176,18 @@ async function jouer(info, defi = null) {
         // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
         // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
         rejoue = true;
-        oublier();
+        effacerCle(localStorage, cleSauvegarde);
         location.reload();
       },
       partager: partagerPartie,
       autreVille: () => allerA(null),
     };
     const sousTitre = sousTitreFin(partie.ids.length);
-    if (defi) {
-      afficherFin(resume(), { ...medaille, titre: titreFinDefi(defi.defi.prenom) }, null, {
+    if (recu) {
+      afficherFin(resume(), { ...medaille, titre: titreFinDefi(recu.defi.prenom) }, null, {
         ...actions,
         cacherAMonTour: () => { location.href = lienCacher(location.href, info.id); },
-      }, { sousTitre, libellePartager: libelleRenvoi(defi.defi.prenom) });
+      }, { sousTitre, libellePartager: libelleRenvoi(recu.defi.prenom) });
       return;
     }
     // le record survit à « Rejouer », qui n'efface que la partie
@@ -248,7 +244,7 @@ async function jouer(info, defi = null) {
   if (terminee(partie)) finir();
 
   // pour le diagnostic depuis la console : window.jeu.stats()
-  window.jeu = { stats: scene.stats, vue: () => vue, partie: () => serialiser(partie), canards: scene.canards, axes: scene.axes };
+  window.jeu = { stats: scene.stats, vue: () => vue, partie: () => serialiser(partie), get canards() { return scene.canards; }, axes: scene.axes };
 
   // `&debug` dans l'adresse : panneau de mesure de fluidité (voir docs/05)
   if (new URLSearchParams(location.search).has('debug')) {
@@ -280,8 +276,9 @@ async function demarrer() {
     await jouer(info);
     return;
   }
+  afficherChargement(true, 'Préparation du défi…');
   const prepare = await preparerDefi(info, params.get('defi'));
-  if (prepare.raison) refuser(scenes, prepare);
+  if (!prepare.ok) refuser(scenes, prepare);
   else await jouer(info, prepare);
 }
 
