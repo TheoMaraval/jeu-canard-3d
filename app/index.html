@@ -111,7 +111,7 @@
       <svg class="mascotte fin" aria-hidden="true"><use href="#canard"/></svg>
       <div id="fin-etoiles" class="etoiles" aria-hidden="true"></div>
       <h2 id="fin-titre">Bravo !</h2>
-      <p class="sous-titre">Les 30 canards sont trouvés</p>
+      <p id="fin-sous-titre" class="sous-titre"></p>
       <div class="tuiles">
         <div class="tuile"><svg class="ico" aria-hidden="true"><use href="#i-chrono"/></svg><b id="fin-temps"></b><span>temps</span></div>
         <div class="tuile"><svg class="ico" aria-hidden="true"><use href="#i-tap"/></svg><b id="fin-taps"></b><span>taps</span></div>
@@ -120,7 +120,10 @@
       <p id="fin-record" class="record-fin" hidden></p>
       <div class="actions">
         <button id="partager-score" class="bouton large" type="button">
-          <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg> Partager mon score
+          <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg> <span id="partager-score-texte">Partager mon score</span>
+        </button>
+        <button id="cacher-tour" class="bouton secondaire large" type="button" hidden>
+          <svg class="ico" aria-hidden="true"><use href="#i-tap"/></svg> Cacher mes canards à mon tour
         </button>
         <div class="actions-2">
           <button id="rejouer" class="bouton secondaire" type="button">

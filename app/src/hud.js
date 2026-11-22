@@ -177,8 +177,19 @@ function lancerConfettis() {
  * @param stats {ecouleMs, taps, precision}
  * @param medaille {titre, etoiles} (voir titreFin dans partage.js)
  * @param record {texte, nouveau} ou null (voir texteRecord dans partage.js)
+ * @param actions {rejouer, partager, autreVille, cacherAMonTour (défi seulement)}
+ * @param textes {sousTitre, libellePartager}
  */
-export function afficherFin({ ecouleMs, taps, precision }, medaille, record, { rejouer, partager, autreVille }) {
+export function afficherFin(
+  { ecouleMs, taps, precision }, medaille, record,
+  { rejouer, partager, autreVille, cacherAMonTour = null },
+  { sousTitre = '', libellePartager = 'Partager mon score' } = {},
+) {
+  $('fin-sous-titre').textContent = sousTitre;
+  $('partager-score-texte').textContent = libellePartager;
+  const tour = $('cacher-tour');
+  tour.hidden = !cacherAMonTour;
+  tour.onclick = cacherAMonTour;
   const r = $('fin-record');
   r.textContent = record?.texte ?? '';
   r.classList.toggle('nouveau', Boolean(record?.nouveau));

@@ -5,9 +5,17 @@
 import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
-import { charger, chargerRecord, effacer, enregistrer, meilleur, retenirRecord } from './sauvegarde.js';
+import {
+  charger, chargerCle, chargerRecord, effacer, effacerCle, enregistrer, enregistrerCle, meilleur, retenirRecord,
+} from './sauvegarde.js';
 import { choisirCanard } from './picking.js';
 import { creerSon } from './son.js';
+import { canardsDuDefi, chargerCachettes } from './cachettes.js';
+import {
+  decoderDefi, libelleRenvoi, lienCacher, lienDefi, messageRejet, texteInvitationDefi, texteTempsDefi, titreDefi,
+  titreFinDefi, verifierDefi,
+} from './defi.js';
+import { cleDefiRecu } from './mesdefis.js';
 import {
   borner, creerVue, deplacer, estRevele, ppmMini, ppmRevelation, projeter, zoomer,
 } from './vue.js';
@@ -17,7 +25,8 @@ import '@fontsource/nunito/400.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';
 import {
-  TEXTE_INVITATION, decouperNom, lienJeu, partagerAvecRetour, progression, resumeVille, texteRecord, texteScore, titreFin,
+  TEXTE_INVITATION, decouperNom, lienJeu, partagerAvecRetour, progression, resumeVille, sousTitreFin, texteRecord,
+  texteScore, titreFin,
 } from './partage.js';
 import {
   afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
@@ -63,14 +72,54 @@ function accueil(scenes) {
   });
 }
 
-async function jouer(info) {
-  afficherChargement(true, `Chargement de ${decouperNom(info.nom).ville}…`);
+/**
+ * Lit le défi du lien et le vérifie contre les cachettes de la ville.
+ * @returns {{code, defi, canards}} ou {{raison, contexte}}
+ */
+async function preparerDefi(info, code) {
+  const { ville } = decouperNom(info.nom);
+  const lu = decoderDefi(code);
+  if (!lu.ok) return { raison: lu.raison, contexte: { ville } };
+  const contexte = { ville, prenom: lu.defi.prenom };
+  let lot;
+  try {
+    lot = await chargerCachettes(info.id);
+  } catch {
+    return { raison: 'pas-pret', contexte };
+  }
+  const raison = verifierDefi(lu.defi, { version: lot.version, empreinte: lot.empreinte, nombre: lot.cachettes.length });
+  if (raison) return { raison, contexte };
+  return { code, defi: lu.defi, canards: canardsDuDefi(lot.cachettes, lu.defi.numeros) };
+}
+
+/** Retour à l'accueil avec un message, quand un défi (ou le mode « Cacher ») est impossible. */
+function refuser(scenes, { raison, contexte }) {
+  history.replaceState(null, '', lienJeu(location.href));
+  accueil(scenes);
+  afficherBref(messageRejet(raison, contexte), 8000);
+}
+
+/**
+ * Une partie : la ville normale, ou un défi reçu.
+ * @param defi null, ou {code, defi: {prenom, numeros…}, canards} (voir preparerDefi)
+ */
+async function jouer(info, defi = null) {
+  const { ville } = decouperNom(info.nom);
+  afficherChargement(true, defi ? `${titreDefi(defi.defi.prenom)} · ${ville}…` : `Chargement de ${ville}…`);
   const t0 = performance.now();
-  const scene = await chargerScene(canvas, info);
+  const scene = await chargerScene(canvas, info, defi ? { canards: defi.canards } : {});
   const chargementMs = performance.now() - t0;
   afficherChargement(false);
 
-  let partie = creerPartie(scene.canards.map((c) => c.id), charger(localStorage, info.id, info.version));
+  // un défi a sa propre progression : la partie normale et le record de la ville n'y sont pour rien
+  const cleDefi = defi && cleDefiRecu(defi.code);
+  const lire = () => (defi ? chargerCle(localStorage, cleDefi) : charger(localStorage, info.id, info.version));
+  const ecrire = (donnees) => (defi
+    ? enregistrerCle(localStorage, cleDefi, donnees)
+    : enregistrer(localStorage, info.id, info.version, donnees));
+  const oublier = () => (defi ? effacerCle(localStorage, cleDefi) : effacer(localStorage, info.id, info.version));
+
+  let partie = creerPartie(scene.canards.map((c) => c.id), lire());
   for (const id of partie.trouves) scene.marquerTrouve(id);
 
   const ecran = () => ({ w: canvas.clientWidth, h: canvas.clientHeight });
@@ -101,35 +150,53 @@ async function jouer(info) {
   const sauver = () => {
     if (rejoue) return;
     horloge();
-    enregistrer(localStorage, info.id, info.version, serialiser(partie));
+    ecrire(serialiser(partie));
   };
   document.addEventListener('visibilitychange', sauver);
   window.addEventListener('pagehide', sauver);
 
+  const texteAPartager = () => {
+    const n = partie.ids.length;
+    if (!defi) return texteScore({ nom: info.nom, trouves: partie.trouves.size, total: n, ...resume() });
+    const { prenom } = defi.defi;
+    return terminee(partie)
+      ? texteTempsDefi({ prenom, n, ville, ecouleMs: partie.ecouleMs })
+      : texteInvitationDefi({ prenom, n, ville }); // en cours : on fait suivre le même défi
+  };
   const partagerPartie = () => {
     horloge();
     partagerAvecRetour({
-      texte: texteScore({ nom: info.nom, trouves: partie.trouves.size, total: partie.ids.length, ...resume() }),
-      url: lienJeu(location.href, info.id),
+      texte: texteAPartager(),
+      url: defi ? lienDefi(location.href, info.id, defi.code) : lienJeu(location.href, info.id),
     });
   };
 
   const finir = () => {
     clearInterval(minuteur);
     majStats(); // dernière valeur exacte, figée
-    // le record survit à « Rejouer », qui n'efface que la partie
-    const { ancien } = retenirRecord(localStorage, info.id, info.version, resume());
-    afficherFin(resume(), titreFin(precision(partie)), texteRecord(resume(), ancien), {
+    const medaille = titreFin(precision(partie));
+    const actions = {
       rejouer: () => {
         // location.reload() déclenche `pagehide`, donc `sauver` : sans ce drapeau, la partie
         // terminée serait réenregistrée juste après l'effacement et l'écran de fin reviendrait.
         rejoue = true;
-        effacer(localStorage, info.id, info.version);
+        oublier();
         location.reload();
       },
       partager: partagerPartie,
       autreVille: () => allerA(null),
-    });
+    };
+    const sousTitre = sousTitreFin(partie.ids.length);
+    if (defi) {
+      afficherFin(resume(), { ...medaille, titre: titreFinDefi(defi.defi.prenom) }, null, {
+        ...actions,
+        cacherAMonTour: () => { location.href = lienCacher(location.href, info.id); },
+      }, { sousTitre, libellePartager: libelleRenvoi(defi.defi.prenom) });
+      return;
+    }
+    // le record survit à « Rejouer », qui n'efface que la partie
+    const { ancien } = retenirRecord(localStorage, info.id, info.version, resume());
+    afficherFin(resume(), medaille, texteRecord(resume(), ancien), actions, { sousTitre });
   };
 
   const son = creerSon();
@@ -202,11 +269,20 @@ async function jouer(info) {
 
 async function demarrer() {
   const scenes = await chargerIndex();
-  const demandee = new URLSearchParams(location.search).get('ville');
-  const info = scenes.find((s) => s.id === demandee);
+  const params = new URLSearchParams(location.search);
+  const info = scenes.find((s) => s.id === params.get('ville'));
   // pas de ville, ou une ville inconnue (vieux lien) : on montre l'accueil
-  if (info) await jouer(info);
-  else accueil(scenes);
+  if (!info) {
+    accueil(scenes);
+    return;
+  }
+  if (!params.has('defi')) {
+    await jouer(info);
+    return;
+  }
+  const prepare = await preparerDefi(info, params.get('defi'));
+  if (prepare.raison) refuser(scenes, prepare);
+  else await jouer(info, prepare);
 }
 
 demarrer().catch((erreur) => {
