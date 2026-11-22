@@ -5,8 +5,9 @@
   "version": 3,
   "ordre": 0,
   "embleme": "🥐",
+  "couleur": "#3F6FD8",
   "canards": 30,
-  "couleur": "#3F6FD8"
+  "empreinte": "aegt"
  },
  {
   "id": "new_york",
@@ -14,8 +15,9 @@
   "version": 3,
   "ordre": 1,
   "embleme": "🗽",
+  "couleur": "#E0452F",
   "canards": 30,
-  "couleur": "#E0452F"
+  "empreinte": "a3je"
  },
  {
   "id": "lille",
@@ -23,8 +25,9 @@
   "version": 3,
   "ordre": 2,
   "embleme": "🧇",
+  "couleur": "#E07A1F",
   "canards": 30,
-  "couleur": "#E07A1F"
+  "empreinte": "m4nz"
  },
  {
   "id": "delhi",
@@ -32,7 +35,8 @@
   "version": 3,
   "ordre": 3,
   "embleme": "🐘",
+  "couleur": "#C93F8E",
   "canards": 30,
-  "couleur": "#C93F8E"
+  "empreinte": "83tp"
  }
 ]

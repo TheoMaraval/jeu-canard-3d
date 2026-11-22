@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.join(ROOT, "blender"))
 
 from citygen.layout import AZIMUT, ELEVATION, charger_theme, make_layout  # noqa: E402
 from citygen.placement import CANARD, PlacementImpossible, cellule, choisir  # noqa: E402
+from citygen.cachettes import cachettes_valables, empreinte, en_gltf  # noqa: E402
 
 EL, AZ = math.radians(ELEVATION), math.radians(AZIMUT)
 VERS_CAMERA = Vector((math.cos(EL) * math.sin(AZ), -math.cos(EL) * math.cos(AZ), math.sin(EL)))
@@ -142,13 +143,26 @@ def main():
             "objets": [gltf(o) for o in objets],
         }, f, ensure_ascii=False, indent=1)
 
+    # Mode « Cacher mes canards » : toutes les cachettes où un canard reste trouvable.
+    # Aucun tirage aléatoire ici : canards et leurres ne bougent pas.
+    leurres = [o for o in objets if o["type"] != CANARD]
+    cachettes = [en_gltf(s) for s in cachettes_valables(slots, leurres, theme)]
+    emp = empreinte(cachettes)
+    entete = {"ville": ville, "version": theme["version"], "empreinte": emp, "echelle": k,
+              "gabarit": round(0.5 * k, 3), "distance_min_canards": theme["distance_min_canards"]}
+    with open(os.path.join(dossier, "cachettes.json"), "w", encoding="utf8") as f:
+        # une cachette par ligne : fichier lisible et diff git utile
+        f.write(json.dumps(entete, ensure_ascii=False)[:-1] + ', "cachettes": [\n')
+        f.write(",\n".join(json.dumps(c, ensure_ascii=False) for c in cachettes))
+        f.write("\n]}\n")
+
     index = os.path.join(ROOT, "assets", "scenes.json")
     scenes = json.load(open(index, encoding="utf8")) if os.path.exists(index) else []
     scenes = [s for s in scenes if s["id"] != ville]
     # "ordre" (facultatif dans le thème) fixe la place dans le menu de l'app ; sinon : à la fin
     scenes.append({"id": ville, "nom": theme["nom"], "version": theme["version"], "ordre": theme.get("ordre", 99),
                    "embleme": theme.get("embleme", "🏙️"), "couleur": theme.get("couleur", "#3F6FD8"),
-                   "canards": theme["canards"]})
+                   "canards": theme["canards"], "empreinte": emp})
     with open(index, "w", encoding="utf8") as f:
         json.dump(sorted(scenes, key=lambda s: (s.get("ordre", 99), s["id"])), f, ensure_ascii=False, indent=1)
 
@@ -160,7 +174,7 @@ def main():
         histo[k] = histo.get(k, 0) + 1
     par = lambda objs, cle: {v: sum(1 for o in objs if o[cle] == v) for v in sorted({o[cle] for o in objs})}
     return {
-        "slots_utilisables": len(slots), "histogramme_visibilite": dict(sorted(histo.items())),
+        "slots_utilisables": len(slots), "cachettes_defi": len(cachettes), "histogramme_visibilite": dict(sorted(histo.items())),
         "candidats_canard": sum(1 for s in slots if lo <= s["vis"] <= hi),
         "canards_par_lieu": par(canards, "lieu"),
         "leurres_par_lieu": par([o for o in objets if o["type"] != CANARD], "lieu"),
