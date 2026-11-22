@@ -134,7 +134,12 @@ function fusionnerModele(racine, nom) {
   return { geometrie, roles, defauts };
 }
 
-export async function chargerScene(canvas, info) {
+/**
+ * @param options.canards canards à afficher à la place de ceux de placements.json
+ *        ([{id, position, rotation, lieu}], comme les objets de placements.json)
+ * @param options.capacite emplacements de canards à prévoir (mode « Cacher » : 30)
+ */
+export async function chargerScene(canvas, info, { canards: fournis = null, capacite = 0 } = {}) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -276,9 +281,17 @@ export async function chargerScene(canvas, info) {
   for (const [type, instances] of parType(decor.instances)) instancier(kit.scene, type, instances);
 
   const enInstance = (o) => ({ p: o.position, r: o.rotation, s: k });
-  const canards = placements.objets.filter((o) => o.type === TYPE_CANARD);
-  const pres = instancier(props.scene, TYPE_CANARD, canards.map(enInstance));
-  const loin = instancier(props.scene, TYPE_CANARD_LOIN, canards.map(enInstance));
+  const VIDE = { p: [0, -1000, 0], r: 0, s: 0 }; // emplacement libre : hors de vue, taille nulle
+  let canards = fournis ?? placements.objets.filter((o) => o.type === TYPE_CANARD);
+  const places = Math.max(capacite, canards.length);
+  const emplacements = Array.from({ length: places }, (_, i) => (canards[i] ? enInstance(canards[i]) : VIDE));
+  const pres = instancier(props.scene, TYPE_CANARD, emplacements);
+  const loin = instancier(props.scene, TYPE_CANARD_LOIN, emplacements);
+  // les canards bougent en mode « Cacher » : leur sphère englobante calculée au départ serait fausse
+  for (const m of [pres, loin]) {
+    m.frustumCulled = false;
+    for (const c of m.children) c.frustumCulled = false;
+  }
   for (const [type, objets] of parType(placements.objets.filter((o) => o.type !== TYPE_CANARD))) {
     instancier(props.scene, type, objets.map(enInstance));
   }
@@ -324,17 +337,11 @@ export async function chargerScene(canvas, info) {
     demanderRendu();
   }
 
-  /** Passe un canard en vert ; `rebond` joue une courte animation. */
-  function marquerTrouve(id, rebond = false) {
-    const index = canards.findIndex((c) => c.id === id);
-    if (index < 0) return;
-    for (const m of [pres, loin]) m.userData.teindre(index, 'jaune', VERT_TROUVE);
-    if (!rebond) {
-      demanderRendu();
-      return;
-    }
+  /** Courte animation d'un canard (trouvé, ou posé en mode « Cacher »). */
+  function rebondir(index) {
     const debut = performance.now();
     const pas = (t) => {
+      if (!canards[index]) return; // retiré entre-temps
       const a = Math.min(1, (t - debut) / 380);
       const mat = matrice(enInstance(canards[index]), 1 + 0.7 * Math.sin(Math.PI * a));
       for (const m of [pres, loin]) {
@@ -347,6 +354,28 @@ export async function chargerScene(canvas, info) {
     requestAnimationFrame(pas);
   }
 
+  /** Passe un canard en vert ; `rebond` joue une courte animation. */
+  function marquerTrouve(id, rebond = false) {
+    const index = canards.findIndex((c) => c.id === id);
+    if (index < 0) return;
+    for (const m of [pres, loin]) m.userData.teindre(index, 'jaune', VERT_TROUVE);
+    if (rebond) rebondir(index);
+    else demanderRendu();
+  }
+
+  /** Mode « Cacher » : remplace les canards affichés ; les emplacements en trop sont vidés. */
+  function placerCanards(liste) {
+    if (liste.length > places) throw new Error(`${liste.length} canards pour ${places} emplacements`);
+    canards = liste;
+    for (let i = 0; i < places; i += 1) {
+      const mat = matrice(canards[i] ? enInstance(canards[i]) : VIDE);
+      for (const m of [pres, loin]) m.setMatrixAt(i, mat);
+    }
+    for (const m of [pres, loin]) m.instanceMatrix.needsUpdate = true;
+    renderer.shadowMap.needsUpdate = true; // les ombres suivent les canards
+    demanderRendu();
+  }
+
   renderer.shadowMap.needsUpdate = true;
 
   return {
@@ -356,11 +385,15 @@ export async function chargerScene(canvas, info) {
     gabarit,
     appliquerVue,
     marquerTrouve,
+    placerCanards,
+    rebondir,
     demanderRendu,
     /** Centres des canards dans le repère du monde, pour le picking. */
-    canards: canards.map((c) => ({
-      id: c.id, lieu: c.lieu, centre: [c.position[0], c.position[1] + HAUTEUR_CENTRE * k, c.position[2]],
-    })),
+    get canards() {
+      return canards.map((c) => ({
+        id: c.id, lieu: c.lieu, centre: [c.position[0], c.position[1] + HAUTEUR_CENTRE * k, c.position[2]],
+      }));
+    },
     stats: () => ({ ...renderer.info.render, objets: placements.objets.length, decor: decor.instances.length }),
     contexte: renderer.getContext(), // pour la mesure de fluidité (nom de la puce graphique)
     /**
