@@ -21,7 +21,8 @@ villes est fait : ne pas le relancer.
 | Corrections de relecture | fait | `482863b` |
 | 8-9 scène + jouer un défi reçu | fait, vérifié dans le navigateur, relu (qualité) | `ebaa108`, `77952dc` |
 | Corrections de relecture 8-9 (clé de sauvegarde unique, « Préparation du défi… », `rebondir` sur l'objet, teintes remises à zéro, `recu`, `{ok}`) | fait | `30f0af5` |
-| 10 écran « Cacher » | à faire | |
+| 10 écran « Cacher » | fait, vérifié dans le navigateur (390 px, cachettes 150, 0, 300 de Lille), relu (spec + qualité) | `eda11fc` |
+| Corrections de relecture 10 (id du brouillon dans l'adresse, champ prénom sélectionnable sur iOS, panneau `role=dialog` + Échap + retour du focus, double tap bloqué 400 ms, brouillon abîmé ou périmé → nouveau défi avec message, erreur d'encodage affichée, chargement avant `cachettes.json`) | fait, revérifié | `8e8ccfa` |
 | 11 accueil « Mes défis » | à faire | |
 | 12 doc | à faire | |
 
@@ -39,6 +40,13 @@ villes est fait : ne pas le relancer.
   `defi.js` (dépendance inversée), constante `HAUTEUR_CENTRE` en double (`scene.js`,
   `cachettes.js`), pas de plafond ni de ménage des clés `jeu-canard-3d:defi:*` (à noter
   dans `docs/06` à la tâche 12).
+- À noter dans le journal de la spec (tâche 12) : compteur « 7 / 30 » sans le mot « cachés »
+  (place à 390 px) ; le dernier prénom est retenu dès la validation du panneau, même si le
+  partage est ensuite annulé ; un brouillon périmé ouvert par `cacher=<id>` démarre un
+  nouveau défi avec un message. À noter dans `docs/06` : `localStorage` bloqué fait encore
+  échouer le lancement (défaut antérieur, aussi dans `jouer`) ; panneau prénom sans piège à
+  focus (un `<dialog>` serait mieux, comme pour l'écran de fin) ; champ prénom à essayer sur
+  un vrai iPhone.
 - Vérifications navigateur : sauvegardes à lister puis restaurer depuis `/scenes.json` ;
   couper le son (`jeu-canard-3d:son` = `non`) et neutraliser `start`/`stop` avant tout tap.
 
