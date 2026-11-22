@@ -684,3 +684,25 @@ html, body {
 }
 .mesure pre { margin: 0; white-space: pre-wrap; font: inherit; font-variant-numeric: tabular-nums; }
 .mesure .bouton { font-size: 15px; padding: 8px 12px; }
+
+/* ------------------------------------------------------- mode « Cacher mes canards » */
+
+.rond:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+
+.panneau { padding-top: 22px; }
+.panneau h2 { margin: 0 0 14px; font-family: var(--titre); font-size: 26px; }
+.champ { display: block; margin-bottom: 6px; text-align: left; font-weight: 800; }
+.champ span { color: var(--doux); font-weight: 600; }
+.champ-texte {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 18px; /* 16 px au moins : iOS ne zoome pas sur le champ */
+  color: var(--encre);
+  background: #fff;
+  border: var(--trait) solid var(--encre);
+  border-radius: 14px;
+}
+.champ-texte:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.panneau .pied { margin: 8px 0 16px; text-align: left; }

@@ -64,15 +64,22 @@ export function afficherStats({ ecouleMs, taps, precision }) {
 export const DUREE_AIDE_MS = 5000;
 let minuterieAide = null;
 
+export const AIDE_JEU = {
+  loin: 'Zoome sur un point jaune pour voir si c’est un canard.',
+  pres: 'Touche le canard : bec orange, œil noir. Regarde aussi derrière les vitres !',
+};
+export const AIDE_CACHER = {
+  loin: 'Zoome, puis tape là où cacher un canard.',
+  pres: 'Tape pour cacher un canard ; tape un canard posé pour le retirer.',
+};
+
 /**
  * Aide contextuelle, en bas de l'écran. Chaque message reste 5 s puis disparaît ; il ne
  * revient que lorsque le message change (passage du zoom de révélation, dans un sens ou l'autre).
  */
-export function afficherAide(revele) {
+export function afficherAide(revele, textes = AIDE_JEU) {
   const aide = $('aide');
-  const texte = revele
-    ? 'Touche le canard : bec orange, œil noir. Regarde aussi derrière les vitres !'
-    : 'Zoome sur un point jaune pour voir si c’est un canard.';
+  const texte = revele ? textes.pres : textes.loin;
   if (aide.textContent === texte) return; // déjà montré (ou déjà effacé) : on ne le relance pas
   aide.textContent = texte;
   aide.hidden = false;
@@ -92,6 +99,47 @@ export function afficherSon(actif) {
   $('son-icone').setAttribute('href', actif ? '#i-son' : '#i-muet');
   $('son').setAttribute('aria-pressed', String(actif));
   $('son').setAttribute('aria-label', actif ? 'Couper le son' : 'Remettre le son');
+}
+
+/** Barre du mode « Cacher » : compteur de canards posés, menu et partage ; ni chrono ni son. */
+export function afficherHudCacher({ menu, partager }) {
+  $('menu').onclick = menu;
+  $('partager').onclick = partager;
+  $('partager').setAttribute('aria-label', 'Envoyer mon défi');
+  $('compteur').setAttribute('aria-label', 'Canards cachés');
+  $('stats').hidden = true;
+  $('son').hidden = true;
+  $('hud').hidden = false;
+}
+
+/** Le bouton de partage n'a de sens qu'à partir d'un canard caché. */
+export function activerPartage(actif) {
+  $('partager').disabled = !actif;
+}
+
+/**
+ * Panneau « Envoyer le défi » : demande le prénom (facultatif).
+ * @returns {Promise<string|null>} le prénom saisi, ou null si le joueur annule
+ */
+export function demanderPrenom(initial) {
+  const panneau = $('panneau-defi');
+  const champ = $('prenom');
+  champ.value = initial;
+  panneau.hidden = false;
+  champ.focus();
+  return new Promise((resoudre) => {
+    const fermer = (valeur) => {
+      panneau.hidden = true;
+      $('panneau-form').onsubmit = null;
+      $('panneau-annuler').onclick = null;
+      resoudre(valeur);
+    };
+    $('panneau-form').onsubmit = (e) => {
+      e.preventDefault();
+      fermer(champ.value);
+    };
+    $('panneau-annuler').onclick = () => fermer(null);
+  });
 }
 
 // ----------------------------------------------------------------------- accueil

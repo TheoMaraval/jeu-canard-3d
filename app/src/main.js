@@ -3,6 +3,7 @@
 // Sans `?ville=` dans l'adresse : écran d'accueil (choix de la ville). Avec : la partie.
 // Passer de l'un à l'autre recharge la page : une seule scène 3D par page, rien à nettoyer.
 import { chargerScene } from './scene.js';
+import { cacher } from './cacher.js';
 import { ecouterEntrees } from './entrees.js';
 import { creerPartie, precision, serialiser, taper, terminee } from './partie.js';
 import {
@@ -270,6 +271,11 @@ async function demarrer() {
   // pas de ville, ou une ville inconnue (vieux lien) : on montre l'accueil
   if (!info) {
     accueil(scenes);
+    return;
+  }
+  if (params.has('cacher')) {
+    const refus = await cacher(canvas, info, params.get('cacher'));
+    if (refus) refuser(scenes, refus);
     return;
   }
   if (!params.has('defi')) {
