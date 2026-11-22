@@ -19,7 +19,8 @@ villes est fait : ne pas le relancer.
 | 1-2 générateur, `cachettes.json` (paris 1123, new_york 1038, lille **408**, delhi 827 cachettes) | fait, relu | `e244deb`, `81ae7bb` |
 | 3-7 modules purs | fait, relu (qualité) | `6b4aba3` … `24939c6` |
 | Corrections de relecture | fait | `482863b` |
-| 8-9 scène + jouer un défi reçu | fait, vérifié dans le navigateur ; **relecture qualité pas encore faite** | `ebaa108`, `77952dc` |
+| 8-9 scène + jouer un défi reçu | fait, vérifié dans le navigateur, relu (qualité) | `ebaa108`, `77952dc` |
+| Corrections de relecture 8-9 (clé de sauvegarde unique, « Préparation du défi… », `rebondir` sur l'objet, teintes remises à zéro, `recu`, `{ok}`) | fait | `30f0af5` |
 | 10 écran « Cacher » | à faire | |
 | 11 accueil « Mes défis » | à faire | |
 | 12 doc | à faire | |
