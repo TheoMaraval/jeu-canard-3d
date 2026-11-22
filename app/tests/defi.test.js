@@ -66,6 +66,30 @@ describe('code de défi', () => {
     expect(nettoyerPrenom('👨‍👩‍👧')).toBe('👨‍👩‍👧');
   });
 
+  it('retire aussi les invisibles du prénom, et un prénom vide reste anonyme', () => {
+    const invisibles = '؜​‌‎‏  ﻿';
+    expect(nettoyerPrenom(`a${invisibles}b`)).toBe('ab');
+    expect(nettoyerPrenom(` ${invisibles} `)).toBe('');
+    expect(decoderDefi(encoderDefi({ ...DEFI, prenom: invisibles })).defi.prenom).toBe('');
+  });
+
+  it('rejette un code de plus de 200 caractères', () => {
+    const code = encoderDefi(DEFI);
+    const maxi = { ...DEFI, numeros: Array.from({ length: 30 }, (_, i) => i), prenom: '🦆'.repeat(20) };
+    expect(encoderDefi(maxi).length).toBeLessThanOrEqual(200);
+    expect(decoderDefi(encoderDefi(maxi)).ok).toBe(true);
+    expect(decoderDefi(code + 'A'.repeat(201 - code.length))).toEqual({ ok: false, raison: 'abime' });
+    expect(decoderDefi(code + 'A'.repeat(5000))).toEqual({ ok: false, raison: 'abime' });
+  });
+
+  it('rejette une empreinte hors plage (plus de 4 caractères en base 36)', () => {
+    const e = 36 ** 4; // 5 caractères en base 36
+    expect(decoderDefi(codeBrut([1, 3, (e >> 16) & 255, (e >> 8) & 255, e & 255, 1, 0, 7])))
+      .toEqual({ ok: false, raison: 'abime' });
+    const max = 36 ** 4 - 1;
+    expect(decoderDefi(codeBrut([1, 3, (max >> 16) & 255, (max >> 8) & 255, max & 255, 1, 0, 7])).ok).toBe(true);
+  });
+
   it('rejette un format inconnu', () => {
     const code = encoderDefi(DEFI);
     expect(code.slice(0, 2)).toBe('AQ'); // premier octet = 1 (format)
@@ -79,6 +103,13 @@ describe('code de défi', () => {
     expect(verifierDefi(DEFI, { ...ville, version: 4 })).toBe('version');
     expect(verifierDefi(DEFI, { ...ville, empreinte: 'zzzz' })).toBe('empreinte');
     expect(verifierDefi(DEFI, { ...ville, nombre: 3499 })).toBe('abime');
+  });
+
+  it('un défi plus récent que les fichiers locaux demande de recharger', () => {
+    const ville = { version: 3, empreinte: 'k7f2', nombre: 3500 };
+    expect(verifierDefi({ ...DEFI, version: 4 }, ville)).toBe('format');
+    expect(verifierDefi({ ...DEFI, version: 4, empreinte: 'zzzz' }, ville)).toBe('format');
+    expect(verifierDefi({ ...DEFI, version: 2 }, ville)).toBe('version');
   });
 });
 

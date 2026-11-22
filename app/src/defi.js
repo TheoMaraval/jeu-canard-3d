@@ -10,6 +10,8 @@ export const FORMAT = 1;
 export const MAX_CANARDS = 30;
 export const MAX_PRENOM = 20;
 const ENTETE = 6;
+// 30 canards et 20 émoji de 4 octets font 195 caractères : au-delà, le lien n'est pas de nous
+const MAX_CODE = 200;
 
 function versBase64url(octets) {
   let binaire = '';
@@ -18,7 +20,7 @@ function versBase64url(octets) {
 }
 
 function depuisBase64url(texte) {
-  if (typeof texte !== 'string' || !/^[A-Za-z0-9_-]+$/.test(texte)) return null;
+  if (typeof texte !== 'string' || texte.length > MAX_CODE || !/^[A-Za-z0-9_-]+$/.test(texte)) return null;
   const b64 = texte.replace(/-/g, '+').replace(/_/g, '/');
   try {
     return Uint8Array.from(atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4)), (c) => c.charCodeAt(0));
@@ -27,9 +29,13 @@ function depuisBase64url(texte) {
   }
 }
 
-/** Prénom sans caractères de contrôle ni inversions de sens, sans espaces autour, 20 points de code au plus. */
+/**
+ * Prénom sans caractères de contrôle, inversions de sens ni invisibles, sans espaces autour, 20 points de code au plus.
+ * Le U+200D (liant des émoji composés) est gardé.
+ */
 export const nettoyerPrenom = (prenom) => [...String(prenom ?? '')
-  .replace(/[\p{Cc}\u202A-\u202E\u2066-\u2069]/gu, '').trim()].slice(0, MAX_PRENOM).join('');
+  .replace(/[\p{Cc}\u061C\u200B\u200C\u200E\u200F\u2028\u2029\u202A-\u202E\u2066-\u2069\uFEFF]/gu, '').trim()]
+  .slice(0, MAX_PRENOM).join('');
 
 /** @param defi {version, empreinte (4 caractères base 36), numeros, prenom} */
 export function encoderDefi({ version, empreinte, numeros, prenom = '' }) {
@@ -54,6 +60,8 @@ export function decoderDefi(code) {
   if (o[0] !== FORMAT) return { ok: false, raison: 'format' };
   const n = o[5];
   if (o.length < ENTETE || n < 1 || n > MAX_CANARDS || o.length < ENTETE + 2 * n) return { ok: false, raison: 'abime' };
+  const valeur = (o[2] << 16) | (o[3] << 8) | o[4];
+  if (valeur >= 36 ** 4) return { ok: false, raison: 'abime' }; // 5 caractères en base 36 : pas une empreinte de chez nous
   const numeros = [];
   for (let i = 0; i < n; i += 1) numeros.push((o[ENTETE + 2 * i] << 8) | o[ENTETE + 2 * i + 1]);
   if (new Set(numeros).size !== n) return { ok: false, raison: 'abime' };
@@ -63,16 +71,18 @@ export function decoderDefi(code) {
   } catch {
     return { ok: false, raison: 'abime' };
   }
-  const empreinte = ((o[2] << 16) | (o[3] << 8) | o[4]).toString(36).padStart(4, '0');
+  const empreinte = valeur.toString(36).padStart(4, '0');
   return { ok: true, defi: { version: o[1], empreinte, numeros, prenom: nettoyerPrenom(prenom) } };
 }
 
 /**
  * Le défi correspond-il aux cachettes chargées ?
  * @param ville {version, empreinte, nombre} (nombre = cachettes dans cachettes.json)
- * @returns null, ou la raison du rejet : 'version' | 'empreinte' | 'abime'
+ * @returns null, ou la raison du rejet : 'format' | 'version' | 'empreinte' | 'abime'
  */
 export function verifierDefi(defi, { version, empreinte, nombre }) {
+  // défi plus récent que nos fichiers (cache de Pages, vieil onglet) : recharger, pas « ancienne version »
+  if (defi.version > (version & 255)) return 'format';
   if (defi.version !== (version & 255)) return 'version';
   if (defi.empreinte !== empreinte) return 'empreinte';
   if (defi.numeros.some((n) => n >= nombre)) return 'abime';

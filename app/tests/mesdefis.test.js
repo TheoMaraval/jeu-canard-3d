@@ -48,6 +48,12 @@ describe('mes défis', () => {
     expect(listerDefis(s).map((d) => d.id)).toEqual(['a']);
   });
 
+  it('écarte un défi aux numéros négatifs', () => {
+    const s = fauxStockage();
+    s.setItem(CLE_DEFIS, JSON.stringify([defi('a'), defi('b', [3, -1])]));
+    expect(listerDefis(s).map((d) => d.id)).toEqual(['a']);
+  });
+
   it('survit à un stockage bloqué', () => {
     expect(listerDefis(STOCKAGE_BLOQUE)).toEqual([]);
     expect(() => enregistrerDefi(STOCKAGE_BLOQUE, defi('a'))).not.toThrow();

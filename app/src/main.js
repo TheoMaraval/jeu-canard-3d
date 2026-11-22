@@ -49,7 +49,12 @@ async function chargerIndex() {
 
 const allerA = (ville) => { location.href = lienJeu(location.href, ville); };
 
+// Retour arrière depuis la page de cachette (cache de navigation) : l'accueil est périmé.
+// Un seul écouteur, qui rouvre l'accueil avec les dernières `scenes` reçues.
+let scenesAccueil = null;
 function accueil(scenes) {
+  if (!scenesAccueil) addEventListener('pageshow', (e) => { if (e.persisted) accueil(scenesAccueil); });
+  scenesAccueil = scenes;
   const villes = scenes.map((s) => {
     const total = s.canards ?? 30;
     const sauvegarde = chargerCle(localStorage, cle(s.id, s.version));
@@ -320,8 +325,6 @@ async function demarrer() {
   // pas de ville, ou une ville inconnue (vieux lien) : on montre l'accueil
   if (!info) {
     accueil(scenes);
-    // retour arrière depuis la page de cachette (cache de navigation) : l'accueil est périmé
-    addEventListener('pageshow', (e) => { if (e.persisted) accueil(scenes); });
     return;
   }
   if (params.has('cacher')) {

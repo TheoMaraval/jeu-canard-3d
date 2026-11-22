@@ -11,7 +11,7 @@ export const cleDefiRecu = (code) => `jeu-canard-3d:defi:${code}`;
 
 const estDefi = (d) => Boolean(d) && typeof d.id === 'string' && typeof d.ville === 'string'
   && Number.isInteger(d.version) && typeof d.empreinte === 'string'
-  && Array.isArray(d.numeros) && d.numeros.every(Number.isInteger) && typeof d.cree === 'number';
+  && Array.isArray(d.numeros) && d.numeros.every((n) => Number.isInteger(n) && n >= 0) && typeof d.cree === 'number';
 
 export function listerDefis(stockage) {
   try {
