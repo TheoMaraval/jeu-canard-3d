@@ -95,12 +95,12 @@ html, body {
 .bouton.secondaire:hover { background-color: #fff; }
 
 /* appui : le bouton s'enfonce dans son ombre */
-.bouton:active, .rond:active, .carte-ville:active {
+.bouton:active, .rond:active, .carte-ville:active, .mini-bouton:active {
   transform: translate(3px, 3px);
   box-shadow: 1px 1px 0 var(--encre);
 }
 
-.bouton:focus-visible, .rond:focus-visible, .carte-ville:focus-visible {
+.bouton:focus-visible, .rond:focus-visible, .carte-ville:focus-visible, .mini-bouton:focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 3px;
 }
@@ -716,6 +716,10 @@ html, body {
 
 #cacher { margin-bottom: 12px; }
 .mode-cacher .carte-ville { outline: 3px dashed var(--orange); outline-offset: 3px; }
+/* sans cette règle, le contour pointillé ci-dessus masquerait le focus clavier */
+.mode-cacher .carte-ville:focus-visible { outline: 4px solid var(--orange); outline-offset: 3px; }
+/* la progression de la partie n'a pas de sens ici ; visibility garde la hauteur des tickets */
+.mode-cacher .carte-ville .etat, .mode-cacher .carte-ville .record { visibility: hidden; }
 
 .mes-defis { margin: 12px 0 24px; }
 .liste-defis { display: grid; gap: 12px; }
@@ -731,7 +735,11 @@ html, body {
   border-radius: var(--rayon);
   box-shadow: var(--ombre-petite);
 }
-.carte-defi.perime { opacity: 0.6; }
+.carte-defi.perime {
+  --couleur: #9a958c;
+  background: linear-gradient(var(--couleur), var(--couleur)) left / 10px 100% no-repeat, #ece9e2;
+}
+.carte-defi.perime .embleme { filter: grayscale(1); opacity: 0.6; }
 .carte-defi .embleme { font-size: 30px; line-height: 1; }
 .carte-defi .nom { display: block; font-family: var(--titre); font-size: 20px; font-weight: 700; }
 .carte-defi .detail { display: block; font-size: 14px; font-weight: 700; color: var(--doux); }
@@ -740,7 +748,7 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 14px;
   font-family: var(--titre);
   font-size: 15px;

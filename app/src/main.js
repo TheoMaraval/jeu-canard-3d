@@ -78,20 +78,24 @@ function accueil(scenes) {
 /** Section « Mes défis » : renvoyer, modifier ou supprimer un défi créé sur cet appareil. */
 function montrerMesDefis(scenes) {
   const parId = new Map(scenes.map((s) => [s.id, s]));
-  const nomVille = (id) => decouperNom(parId.get(id).nom).ville;
+  // une ville retirée de scenes.json : le défi reste visible (grisé) pour pouvoir le supprimer
+  const nomVille = (id) => { const s = parId.get(id); return s ? decouperNom(s.nom).ville : id; };
   // un brouillon sans canard n'a rien à envoyer (enregistrerDefi les retire déjà, mais on ne s'y fie pas)
-  const defis = listerDefis(localStorage).filter((d) => parId.has(d.ville) && d.numeros.length > 0);
-  afficherMesDefis(defis.map((d) => ({
-    id: d.id,
-    embleme: parId.get(d.ville).embleme ?? '🏙️',
-    couleur: parId.get(d.ville).couleur ?? '#3f6fd8',
-    ville: nomVille(d.ville),
-    detail: detailDefi(d),
-    valable: estValable(d, scenes),
-  })), {
+  const defis = listerDefis(localStorage).filter((d) => d.numeros.length > 0);
+  afficherMesDefis(defis.map((d) => {
+    const s = parId.get(d.ville);
+    return {
+      id: d.id,
+      embleme: s?.embleme ?? '🏙️',
+      couleur: s?.couleur ?? '#3f6fd8',
+      ville: nomVille(d.ville),
+      detail: detailDefi(d),
+      valable: Boolean(s) && estValable(d, scenes),
+    };
+  }), {
     envoyer: (id) => {
       const d = trouverDefi(localStorage, id);
-      if (!d) return;
+      if (!d) { montrerMesDefis(scenes); return; }
       let url;
       try {
         url = lienDefi(location.href, d.ville, encoderDefi(d));
@@ -104,11 +108,16 @@ function montrerMesDefis(scenes) {
     modifier: (id) => {
       const d = trouverDefi(localStorage, id);
       if (d) location.href = lienCacher(location.href, d.ville, id);
+      else montrerMesDefis(scenes);
     },
     supprimer: (id) => {
-      if (!window.confirm('Supprimer ce défi ? Les liens déjà envoyés continueront de marcher.')) return;
+      const d = trouverDefi(localStorage, id);
+      const ville = d ? nomVille(d.ville) : 'cette ville';
+      if (!window.confirm(`Supprimer le défi de ${ville} ? Les liens déjà envoyés continueront de marcher.`)) return;
       supprimerDefi(localStorage, id);
       montrerMesDefis(scenes);
+      // le bouton pressé a disparu : le focus revient dans la liste (ou sur « Cacher »)
+      (document.querySelector('#liste-defis .mini-bouton') ?? document.getElementById('cacher')).focus();
     },
   });
 }
@@ -311,6 +320,8 @@ async function demarrer() {
   // pas de ville, ou une ville inconnue (vieux lien) : on montre l'accueil
   if (!info) {
     accueil(scenes);
+    // retour arrière depuis la page de cachette (cache de navigation) : l'accueil est périmé
+    addEventListener('pageshow', (e) => { if (e.persisted) accueil(scenes); });
     return;
   }
   if (params.has('cacher')) {

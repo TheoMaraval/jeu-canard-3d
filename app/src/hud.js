@@ -160,19 +160,23 @@ export function afficherAccueil(villes, { choisir, inviter, cacher }) {
     $('cacher-texte').textContent = modeCacher ? 'Annuler' : 'Cacher mes canards';
     $('cacher').classList.toggle('secondaire', modeCacher);
     $('accueil').classList.toggle('mode-cacher', modeCacher);
+    // les tickets ne lancent plus la partie : l'annonce vocale doit le dire
+    for (const t of $('villes').children) {
+      t.setAttribute('aria-label', modeCacher ? `Cacher mes canards à ${t.querySelector('.nom').textContent}` : t.dataset.libelle);
+    }
   };
-  majMode(); // ré-appelée (après un défi refusé) : repart du mode normal
   $('cacher').onclick = () => {
     modeCacher = !modeCacher;
     majMode();
-    if (modeCacher) $('titre-villes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (modeCacher) $('titre-villes').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   };
   $('villes').replaceChildren(...villes.map((v) => {
     const b = element('button', `carte-ville${v.fini ? ' fini' : ''}${v.avance ? '' : ' neuve'}`);
     b.type = 'button';
     b.dataset.ville = v.id;
     b.style.setProperty('--couleur', v.couleur);
-    b.setAttribute('aria-label', `${v.ville}, ${v.quartier} : ${v.etat}${v.record ? `, record ${v.record}` : ''}`);
+    b.dataset.libelle = `${v.ville}, ${v.quartier} : ${v.etat}${v.record ? `, record ${v.record}` : ''}`;
+    b.setAttribute('aria-label', b.dataset.libelle);
     if (v.record) {
       const record = element('span', 'record');
       record.append(icone('i-etoile'), element('span', '', v.record));
@@ -195,6 +199,7 @@ export function afficherAccueil(villes, { choisir, inviter, cacher }) {
     b.onclick = () => (modeCacher ? cacher(v.id) : choisir(v.id));
     return b;
   }));
+  majMode(); // après les tickets (leurs libellés en dépendent) ; repart du mode normal
   $('inviter').onclick = inviter;
   $('accueil').hidden = false;
   $('hud').hidden = true;
