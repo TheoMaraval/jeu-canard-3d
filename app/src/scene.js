@@ -384,6 +384,66 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
     demanderRendu();
   }
 
+  // --- repères des cachettes libres (mode « Cacher » seulement, créés à la demande) ---
+  let reperes = null;
+  let reperesCentres = [];
+  const NB_ROND = 20;
+  const RAYON_REPERE = 0.14; // m : ~11 px au zoom de révélation
+  const DECALAGE_REPERE = 0.15; // m vers la caméra : évite le z-fighting avec la surface
+
+  /** Géométrie d'un repère : disque blanc cerclé d'encre, dans le plan XY (face à la caméra). */
+  function geometrieRepere() {
+    const disque = new THREE.CircleGeometry(RAYON_REPERE * 0.72, NB_ROND);
+    const anneau = new THREE.RingGeometry(RAYON_REPERE * 0.72, RAYON_REPERE, NB_ROND);
+    const teinte = (g, couleur) => {
+      const plat = g.toNonIndexed(); // mergeGeometries exige des géométries de même nature
+      const c = new THREE.Color(couleur);
+      const n = plat.attributes.position.count;
+      plat.setAttribute('color', new THREE.Float32BufferAttribute(Array.from({ length: n }, () => [c.r, c.g, c.b]).flat(), 3));
+      return plat;
+    };
+    return mergeGeometries([teinte(disque, '#ffffff'), teinte(anneau, ENCRE)]);
+  }
+
+  /** Crée un repère par centre (un seul maillage instancié) ; cachés tant que `majReperes` n'est pas appelé. */
+  function creerReperes(centres) {
+    if (reperes) { scene.remove(reperes); reperes.dispose(); }
+    reperesCentres = centres;
+    const materiau = new THREE.MeshBasicMaterial({ vertexColors: true, depthWrite: false });
+    reperes = new THREE.InstancedMesh(geometrieRepere(), materiau, Math.max(1, centres.length));
+    reperes.frustumCulled = false;
+    reperes.renderOrder = 10; // après le décor opaque
+    reperes.visible = false;
+    scene.add(reperes);
+    majReperes([]);
+  }
+
+  /** Affiche uniquement les repères des cachettes `libres` (numéros) ; les autres passent à l'échelle 0. */
+  function majReperes(libres) {
+    if (!reperes) return;
+    const ouverts = new Set(libres);
+    const q = camera.quaternion; // orientation fixe : les ronds font face à la caméra
+    const m = new THREE.Matrix4();
+    const decalage = new THREE.Vector3(...versCamera).normalize().multiplyScalar(DECALAGE_REPERE);
+    const p = new THREE.Vector3();
+    const echelle = new THREE.Vector3();
+    for (let i = 0; i < reperesCentres.length; i += 1) {
+      p.set(...reperesCentres[i]).add(decalage);
+      const s = ouverts.has(i) ? 1 : 0;
+      m.compose(p, q, echelle.set(s, s, s));
+      reperes.setMatrixAt(i, m);
+    }
+    reperes.instanceMatrix.needsUpdate = true;
+    demanderRendu();
+  }
+
+  /** Montre ou cache l'ensemble des repères (selon le zoom de révélation). */
+  function afficherReperes(visible) {
+    if (!reperes || reperes.visible === visible) return;
+    reperes.visible = visible;
+    demanderRendu();
+  }
+
   renderer.shadowMap.needsUpdate = true;
 
   return {
@@ -394,6 +454,9 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
     appliquerVue,
     marquerTrouve,
     placerCanards,
+    creerReperes,
+    majReperes,
+    afficherReperes,
     rebondir,
     demanderRendu,
     /** Centres des canards dans le repère du monde, pour le picking. */

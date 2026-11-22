@@ -3,7 +3,7 @@
 import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { choisirCanard } from './picking.js';
-import { aimanter, canardsDuDefi, chargerCachettes, idCachette } from './cachettes.js';
+import { aimanter, cachettesLibres, canardsDuDefi, chargerCachettes, idCachette } from './cachettes.js';
 import { MAX_CANARDS, encoderDefi, lienCacher, lienDefi, nettoyerPrenom, texteInvitationDefi } from './defi.js';
 import { dernierPrenom, enregistrerDefi, nouvelId, retenirPrenom, trouverDefi } from './mesdefis.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
@@ -15,7 +15,7 @@ import {
 
 const RAISONS = {
   zoom: 'Zoome davantage pour cacher un canard.',
-  aucune: 'Pas de cachette ici : essaie un rebord, un balcon, un toit…',
+  aucune: 'Pas de cachette ici : vise un des petits ronds.',
   'trop-pres': 'Trop près d’un autre canard.',
   plein: `${MAX_CANARDS} canards au maximum : retires-en un pour le déplacer.`,
 };
@@ -57,6 +57,7 @@ export async function cacher(canvas, info, idDefi) {
     canards: canardsDuDefi(lot.cachettes, defi.numeros), capacite: MAX_CANARDS,
   });
   afficherChargement(false);
+  scene.creerReperes(lot.cachettes.map((c) => c.centre));
   if (idDefi && existant && !valable) afficherBref(`Ce défi n’est plus valable pour ${ville} : on en commence un nouveau.`);
 
   const ecran = () => ({ w: canvas.clientWidth, h: canvas.clientHeight });
@@ -65,6 +66,7 @@ export async function cacher(canvas, info, idDefi) {
   const rafraichir = () => {
     vue = borner(vue, ecran(), scene.limites);
     scene.appliquerVue(vue, ecran(), revele());
+    scene.afficherReperes(revele());
     afficherAide(revele(), AIDE_CACHER);
   };
 
@@ -76,6 +78,7 @@ export async function cacher(canvas, info, idDefi) {
   const changer = (numeros) => {
     defi.numeros = numeros;
     scene.placerCanards(canardsDuDefi(lot.cachettes, numeros));
+    scene.majReperes(cachettesLibres(lot.cachettes, numeros, lot.distanceMin));
     enregistrerDefi(localStorage, defi);
     majCompteur();
   };
@@ -143,6 +146,7 @@ export async function cacher(canvas, info, idDefi) {
 
   window.addEventListener('resize', rafraichir);
   majCompteur();
+  scene.majReperes(cachettesLibres(lot.cachettes, defi.numeros, lot.distanceMin));
   rafraichir();
 
   // pour les vérifications depuis la console (voir docs/05)

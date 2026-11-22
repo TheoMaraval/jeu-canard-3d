@@ -70,7 +70,7 @@ export const AIDE_JEU = {
 };
 export const AIDE_CACHER = {
   loin: 'Zoome, puis tape là où cacher un canard.',
-  pres: 'Tape pour cacher un canard ; tape un canard posé pour le retirer.',
+  pres: 'Tape un petit rond pour cacher un canard ; tape un canard posé pour le retirer.',
 };
 
 /**

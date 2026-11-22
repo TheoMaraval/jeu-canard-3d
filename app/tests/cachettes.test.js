@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { aimanter, canardsDuDefi, chargerCachettes, idCachette } from '../src/cachettes.js';
+import { aimanter, cachettesLibres, canardsDuDefi, chargerCachettes, idCachette } from '../src/cachettes.js';
 
 const FICHIER = {
   ville: 'lille', version: 3, empreinte: 'k7f2', echelle: 0.7, gabarit: 0.35, distance_min_canards: 6,
@@ -72,5 +72,24 @@ describe('aimant', () => {
     // les numéros 100 à 129 n'existent pas dans `cachettes` exprès : le test « plein » rend avant de les lire
     const trente = Array.from({ length: 30 }, (_, i) => i + 100);
     expect(aimanter({ x: 125, y: 100 }, ecran, cachettes, trente, options)).toEqual({ raison: 'plein' });
+  });
+});
+
+describe('cachettes libres', () => {
+  const ligne = [0, 1, 10, 20].map((x) => ({ centre: [x, 0, 0] }));
+
+  it('toutes libres sans canard posé', () => {
+    expect(cachettesLibres(ligne, [], 6)).toEqual([0, 1, 2, 3]);
+  });
+
+  it('exclut les cachettes prises et celles trop près d’un canard posé', () => {
+    // canard sur la 0 : la 1 est à 1 m (trop près), la 2 à 10 m, la 3 à 20 m
+    expect(cachettesLibres(ligne, [0], 6)).toEqual([2, 3]);
+  });
+
+  it('rend une liste vide au maximum de canards', () => {
+    const posees = Array.from({ length: 30 }, (_, i) => i);
+    const toutes = Array.from({ length: 40 }, (_, i) => ({ centre: [i * 100, 0, 0] }));
+    expect(cachettesLibres(toutes, posees, 6)).toEqual([]);
   });
 });

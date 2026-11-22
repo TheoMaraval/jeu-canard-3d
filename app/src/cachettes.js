@@ -39,6 +39,24 @@ export const canardsDuDefi = (cachettes, numeros) => numeros.map((n) => ({
 
 const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
+/** Cette cachette est-elle libre : non occupée, et à `distanceMin` au moins de chaque canard posé ? */
+const estLibre = (cachettes, posees, prises, numero, distanceMin) => !prises.has(numero)
+  && posees.every((p) => distance(cachettes[numero].centre, cachettes[p].centre) >= distanceMin);
+
+/**
+ * Numéros des cachettes où un canard peut être posé (mêmes règles que `aimanter`),
+ * pour les repères du mode « Cacher ». Vide quand le maximum est atteint.
+ */
+export function cachettesLibres(cachettes, posees, distanceMin) {
+  if (posees.length >= MAX_CANARDS) return [];
+  const prises = new Set(posees);
+  const libres = [];
+  for (let i = 0; i < cachettes.length; i += 1) {
+    if (estLibre(cachettes, posees, prises, i, distanceMin)) libres.push(i);
+  }
+  return libres;
+}
+
 /**
  * Où poser un canard pour ce tap ?
  * @param tap {x, y} en px
@@ -56,8 +74,6 @@ export function aimanter(tap, ecran, cachettes, posees, { revele, distanceMin, r
     .filter((c) => c.d <= rayonPx && !prises.has(c.numero))
     .sort((a, b) => a.d - b.d);
   if (!proches.length) return { raison: 'aucune' };
-  const libre = proches.find((c) => posees.every(
-    (p) => distance(cachettes[c.numero].centre, cachettes[p].centre) >= distanceMin,
-  ));
+  const libre = proches.find((c) => estLibre(cachettes, posees, prises, c.numero, distanceMin));
   return libre ? { numero: libre.numero } : { raison: 'trop-pres' };
 }
