@@ -1,5 +1,6 @@
 // Partage du score, invitations et résumés de progression. Fonctions pures, sauf `partager`
-// qui reçoit le navigateur en paramètre (testable avec un faux).
+// qui reçoit le navigateur en paramètre (testable avec un faux), et `partagerAvecRetour`
+// qui affiche un toast via hud.js (non testée).
 import { afficherBref, chrono } from './hud.js';
 import { meilleur } from './sauvegarde.js';
 
@@ -28,6 +29,8 @@ export function texteScore({ nom, trouves, total, ecouleMs, taps, precision }) {
   return `🦆 J'ai déjà trouvé ${trouves} canard${trouves > 1 ? 's' : ''} sur ${total} à ${ville} `
     + `(${chrono(ecouleMs)}). Viens chercher les autres !`;
 }
+
+export const TITRE = 'Où sont les canards ?';
 
 export const TEXTE_INVITATION = '🦆 30 canards en plastique se cachent dans une ville pleine de monde. '
   + 'Zoome, cherche le bec orange et l\'œil noir… Tu les trouves ? Gratuit, sur téléphone ou ordinateur.';
@@ -90,8 +93,6 @@ export async function partager({ titre, texte, url }, nav = globalThis.navigator
   }
   return 'impossible';
 }
-
-export const TITRE = 'Où sont les canards ?';
 
 /** Partage, avec un retour visible quand le lien a été copié plutôt que partagé. */
 export async function partagerAvecRetour(contenu) {

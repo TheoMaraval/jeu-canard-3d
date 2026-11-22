@@ -27,11 +27,19 @@ function depuisBase64url(texte) {
   }
 }
 
-/** Prénom sans espaces autour, 20 caractères au plus (un émoji compte pour un). */
-export const nettoyerPrenom = (prenom) => [...String(prenom ?? '').trim()].slice(0, MAX_PRENOM).join('');
+/** Prénom sans caractères de contrôle ni inversions de sens, sans espaces autour, 20 points de code au plus. */
+export const nettoyerPrenom = (prenom) => [...String(prenom ?? '')
+  .replace(/[\p{Cc}\u202A-\u202E\u2066-\u2069]/gu, '').trim()].slice(0, MAX_PRENOM).join('');
 
 /** @param defi {version, empreinte (4 caractères base 36), numeros, prenom} */
 export function encoderDefi({ version, empreinte, numeros, prenom = '' }) {
+  if (typeof empreinte !== 'string' || !/^[0-9a-z]{4}$/.test(empreinte)) {
+    throw new Error(`empreinte invalide : ${empreinte}`);
+  }
+  if (!Array.isArray(numeros) || numeros.length < 1 || numeros.length > MAX_CANARDS
+    || !numeros.every((n) => Number.isInteger(n) && n >= 0 && n <= 65535)) {
+    throw new Error('numéros de cachettes invalides');
+  }
   const e = parseInt(empreinte, 36);
   const octets = [FORMAT, version & 255, (e >> 16) & 255, (e >> 8) & 255, e & 255, numeros.length];
   for (const n of numeros) octets.push((n >> 8) & 255, n & 255);

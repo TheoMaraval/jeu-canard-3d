@@ -1,9 +1,8 @@
 import unittest
 
 from citygen.cachettes import cachettes_valables, empreinte, en_gltf
-from citygen.layout import charger_theme
 
-THEME = charger_theme("paris")  # visibilite_canard [0.3, 0.8], distance_min 1.0
+THEME = {"visibilite_canard": [0.3, 0.8], "distance_min": 1.0}
 
 
 def slot(x, vis=0.5, rot_canard=1.0, lieu="sol"):

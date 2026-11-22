@@ -16,7 +16,7 @@ const bloque = () => { throw new Error('stockage bloqué'); };
 const STOCKAGE_BLOQUE = { getItem: bloque, setItem: bloque, removeItem: bloque };
 
 const defi = (id, numeros = [1, 2]) => ({
-  id, ville: 'lille', version: 3, empreinte: 'k7f2', prenom: 'Camille', numeros, cree: Date.UTC(2026, 10, 21, 12),
+  id, ville: 'lille', version: 3, empreinte: 'k7f2', prenom: 'Camille', numeros, cree: new Date(2026, 10, 21, 12).getTime(),
 });
 
 describe('mes défis', () => {

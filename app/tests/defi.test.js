@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   deQui, decoderDefi, encoderDefi, libelleRenvoi, lienCacher, lienDefi, messageRejet, texteInvitationDefi,
-  texteTempsDefi, titreDefi, titreFinDefi, verifierDefi,
+  nettoyerPrenom, texteTempsDefi, titreDefi, titreFinDefi, verifierDefi,
 } from '../src/defi.js';
 
 const DEFI = { version: 3, empreinte: 'k7f2', numeros: [0, 17, 3499], prenom: 'Camille' };
+
+// Code construit à la main, à partir d'octets bruts
+const codeBrut = (octets) => btoa(String.fromCharCode(...octets))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
 describe('code de défi', () => {
   it('fait l’aller-retour, en caractères sûrs pour une adresse', () => {
@@ -31,9 +35,35 @@ describe('code de défi', () => {
   it('rejette un code abîmé', () => {
     const code = encoderDefi(DEFI);
     for (const abime of ['', null, undefined, 'pas un code !', code.slice(0, 10),
-      encoderDefi({ ...DEFI, numeros: [5, 5] }), encoderDefi({ ...DEFI, numeros: [] })]) {
+      encoderDefi({ ...DEFI, numeros: [5, 5] }), codeBrut([1, 3, 0, 0, 0, 0])]) {
       expect(decoderDefi(abime)).toEqual({ ok: false, raison: 'abime' });
     }
+  });
+
+  it('refuse d’encoder des valeurs invalides', () => {
+    for (const empreinte of [undefined, 'k7f2x', 'K7F2']) {
+      expect(() => encoderDefi({ ...DEFI, empreinte })).toThrow('empreinte invalide');
+    }
+    for (const numeros of [[], [70000], Array.from({ length: 31 }, (_, i) => i)]) {
+      expect(() => encoderDefi({ ...DEFI, numeros })).toThrow('numéros de cachettes invalides');
+    }
+  });
+
+  it('fait l’aller-retour des empreintes limites', () => {
+    for (const empreinte of ['0000', '000a', 'zzzz']) {
+      expect(decoderDefi(encoderDefi({ ...DEFI, empreinte }))).toEqual({ ok: true, defi: { ...DEFI, empreinte } });
+    }
+  });
+
+  it('garde la version sur un octet', () => {
+    const { defi } = decoderDefi(encoderDefi({ ...DEFI, version: 300 }));
+    expect(defi.version).toBe(44);
+    expect(verifierDefi(defi, { version: 300, empreinte: DEFI.empreinte, nombre: 3500 })).toBeNull();
+  });
+
+  it('nettoie le prénom : contrôles et inversions de sens retirés, émoji composé gardé', () => {
+    expect(decoderDefi(encoderDefi({ ...DEFI, prenom: 'a\u202Eb\nc' })).defi.prenom).toBe('abc');
+    expect(nettoyerPrenom('👨‍👩‍👧')).toBe('👨‍👩‍👧');
   });
 
   it('rejette un format inconnu', () => {

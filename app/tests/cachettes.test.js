@@ -23,6 +23,9 @@ describe('chargement des cachettes', () => {
     await expect(chargerCachettes('lille', repondre(html))).rejects.toThrow('pas-pret');
     await expect(chargerCachettes('lille', repondre({ ok: false }))).rejects.toThrow('pas-pret');
     await expect(chargerCachettes('lille', async () => { throw new TypeError('réseau'); })).rejects.toThrow('pas-pret');
+    const sansDistance = { ...FICHIER, distance_min_canards: undefined };
+    await expect(chargerCachettes('lille', repondre({ ok: true, json: async () => sansDistance })))
+      .rejects.toThrow('pas-pret');
   });
 
   it('prépare les canards d’un défi pour la scène', async () => {
@@ -66,6 +69,7 @@ describe('aimant', () => {
   });
 
   it('refuse au-delà de 30 canards', () => {
+    // les numéros 100 à 129 n'existent pas dans `cachettes` exprès : le test « plein » rend avant de les lire
     const trente = Array.from({ length: 30 }, (_, i) => i + 100);
     expect(aimanter({ x: 125, y: 100 }, ecran, cachettes, trente, options)).toEqual({ raison: 'plein' });
   });

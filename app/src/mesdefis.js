@@ -72,6 +72,7 @@ export function retenirPrenom(stockage, prenom) {
 }
 
 /** Le défi correspond-il encore à sa ville (même version, mêmes cachettes) ? */
+// « Mes défis » garde la `version` entière (jamais l'octet décodé d'un lien) : d'où la comparaison directe.
 export const estValable = (defi, scenes) => scenes.some(
   (s) => s.id === defi.ville && s.version === defi.version && s.empreinte === defi.empreinte,
 );

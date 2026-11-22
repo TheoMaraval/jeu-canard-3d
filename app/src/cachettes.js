@@ -19,7 +19,8 @@ export async function chargerCachettes(ville, lire = globalThis.fetch) {
   } catch {
     d = null;
   }
-  if (!d || !Array.isArray(d.cachettes)) throw new Error('pas-pret');
+  if (!d || !Array.isArray(d.cachettes) || typeof d.distance_min_canards !== 'number'
+    || typeof d.empreinte !== 'string') throw new Error('pas-pret');
   const k = d.echelle ?? 1;
   return {
     version: d.version,
