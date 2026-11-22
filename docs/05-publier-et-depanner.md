@@ -197,8 +197,8 @@ s'est éteint ou l'onglet est passé en arrière-plan pendant la mesure ; recomm
 
 Conclusion : sur un iPhone récent le jeu est fluide, avec une marge de 2 à 4 fois (7 ms
 au pire pour 16,7 ms disponibles). Le budget de triangles n'est donc pas un problème sur
-ce type d'appareil. **Pas encore mesuré** : un Android d'entrée de gamme ou un téléphone de
-plus de 4 ans, qui peuvent être 5 à 10 fois plus lents.
+ce type d'appareil. Sur un téléphone modeste, l'utilisateur a aussi trouvé le jeu fluide,
+sans relever les chiffres : les noter au prochain essai pour compléter le tableau.
 
 Lecture des chiffres :
 - Safari arrondit le chronomètre à la milliseconde : « image calculée » y tombe en

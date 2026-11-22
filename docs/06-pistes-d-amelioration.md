@@ -9,10 +9,11 @@ Les idées sont classées par thème, avec une estimation de l'effort :
 
 Ces estimations supposent le code actuel ; elles n'ont pas été vérifiées en le faisant.
 
-**Ordre conseillé** : la fluidité est mesurée sur un iPhone récent (bonne marge, voir
-[05](05-publier-et-depanner.md)) ; vérifier aussi un téléphone modeste avant d'ajouter
-beaucoup de contenu. Ensuite le mode « Cacher mes canards » (le meilleur rapport plaisir /
-effort, il réutilise presque tout), puis les niveaux de difficulté.
+**Ordre conseillé** : la fluidité est vérifiée sur un iPhone récent et sur un téléphone
+modeste, et une partie complète a été jouée (voir [01](01-comprendre-le-projet.md)). D'abord
+le mode « Cacher mes canards » (le meilleur rapport plaisir / effort, il réutilise presque
+tout), puis les niveaux de difficulté : le premier retour de jeu est « bien réglé mais
+parfois assez facile », ce qui plaide pour un niveau « expert ».
 
 ---
 
@@ -163,7 +164,7 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 
 | Idée | Pourquoi | Effort |
 |---|---|---|
-| **Mesurer la fluidité sur d'autres téléphones** | Fluide sur un iPhone récent (59 images/s, docs/05) ; reste un Android d'entrée de gamme et un téléphone ancien, avec `&debug` | S |
+| **Relever les chiffres sur un téléphone modeste** | Jugé fluide par l'utilisateur, mais sans les chiffres de `&debug` ; les noter dans le tableau de docs/05 | S |
 | **Compresser les modèles** (Meshopt ou Draco) | Le site pèse environ 16 Mo : long en 4G | S à M |
 | **Niveaux de détail** | Passants et arbres simplifiés en vue d'ensemble | M |
 | **Application installable, hors ligne** (PWA) | Icône sur l'écran d'accueil, jeu sans réseau | S |
@@ -176,9 +177,9 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 
 ## Limites connues aujourd'hui
 
-- Fluidité mesurée seulement sur un iPhone récent : jamais sur un Android modeste, un
-  vieux téléphone ni une tablette.
-- Aucune partie complète jouée pour régler la difficulté.
+- Fluidité chiffrée seulement sur un iPhone récent ; jugée fluide sur un téléphone modeste
+  sans chiffres ; jamais essayée sur tablette.
+- Une seule partie complète jouée : difficulté « parfois assez facile », pas encore réglée.
 - Les images de `docs/previews/` n'ont ni traits d'encre ni toutes les couleurs.
 - Les tags ne vont que sur les bandeaux entre étages et sur les rideaux de fer.
 - Les saynètes de rue sont à l'étroit (trottoirs de 2 à 2,5 m).

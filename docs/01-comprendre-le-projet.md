@@ -214,12 +214,15 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 41 tests du générateur et les 38 de l'app passent, et sont relancés par GitHub à
+- Les 41 tests du générateur et les 51 de l'app passent, et sont relancés par GitHub à
   chaque publication (ceux de l'app seulement).
 - Les quatre villes ont été contrôlées à l'image dans un navigateur d'ordinateur.
 - **Fluidité** : mesurée sur un iPhone récent (Delhi, la ville la plus lourde) : 59 images/s
-  sans saccade, 4 à 7 ms par image, malgré 590 000 à 810 000 triangles. Pas encore mesurée
-  sur un Android d'entrée de gamme ou un vieux téléphone. Outil : `&debug` dans l'adresse,
-  voir [05](05-publier-et-depanner.md).
-- **Pas joué** : aucune partie complète n'a servi à régler la difficulté. Tous les
-  réglages sont des valeurs de départ.
+  sans saccade, 4 à 7 ms par image, malgré 590 000 à 810 000 triangles. Vérifiée aussi par
+  l'utilisateur sur un téléphone modeste : fluide (chiffres non relevés). Outil : `&debug`
+  dans l'adresse, voir [05](05-publier-et-depanner.md).
+- **Sons** : écoutés sur téléphone par l'utilisateur.
+- **Difficulté** : une partie complète jouée sur téléphone (22/11/2026). Verdict : bien
+  réglée, mais parfois assez facile. Pas encore modifiée à la suite de ce retour (pistes :
+  [03](03-regler-la-difficulte.md), et les niveaux de difficulté de
+  [06](06-pistes-d-amelioration.md)).

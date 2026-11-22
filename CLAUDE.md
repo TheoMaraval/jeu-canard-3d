@@ -78,7 +78,7 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
 (taille d'écran, sauvegarde et record injectés, zoom sur un canard, sons neutralisés) :
 `docs/05`, section « Tester dans le navigateur ».
 
-## État (21/11/2026)
+## État (22/11/2026)
 
 - **Générateur** : quatre villes publiées ; style dessiné (toon + traits d'encre) ; vitres ;
   kit de 81 modèles (passants, véhicules, animaux, tags, végétation) ; 18 saynètes ;
@@ -95,11 +95,11 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
   - panneau de mesure de fluidité avec `&debug` dans l'adresse.
 - **Mesuré** : fluidité sur un iPhone récent, Delhi (la plus lourde) : 59 images/s sans
   saccade, 4 à 7 ms par image, 590 000 à 810 000 triangles. Le jeu y tourne bien.
-- **Jamais mesuré ni vérifié** : fluidité sur un Android modeste ou un vieux téléphone ;
-  les sons écoutés sur téléphone (seulement analysés dans le navigateur) ; une partie
-  complète jouée pour régler la difficulté.
+- **Vérifié par l'utilisateur sur téléphone (22/11/2026)** : une partie complète jouée,
+  difficulté « bien réglée mais parfois assez facile » ; fluide sur un téléphone modeste
+  (chiffres de `&debug` non relevés) ; « coin coin » et musique de fin écoutés.
 - **Prochaine étape conseillée** : le mode « Cacher mes canards » (conception dans
-  `docs/06`), ou un `&debug` sur un téléphone modeste avant d'ajouter du contenu.
+  `docs/06`). Ensuite, un niveau « expert » répondrait au « parfois assez facile ».
 
 ## Pièges pour Claude
 
