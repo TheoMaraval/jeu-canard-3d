@@ -3,9 +3,10 @@
 
 export const cle = (ville, version) => `jeu-canard-3d:${ville}:v${version}`;
 
-export function charger(stockage, ville, version) {
+/** Progression {trouves, taps, ecouleMs} rangée sous la clé `k`, ou null. */
+export function chargerCle(stockage, k) {
   try {
-    const d = JSON.parse(stockage.getItem(cle(ville, version)));
+    const d = JSON.parse(stockage.getItem(k));
     if (!d || !Array.isArray(d.trouves) || typeof d.taps !== 'number') return null;
     return { trouves: d.trouves, taps: d.taps, ecouleMs: Number(d.ecouleMs) || 0 };
   } catch {
@@ -13,21 +14,25 @@ export function charger(stockage, ville, version) {
   }
 }
 
-export function enregistrer(stockage, ville, version, donnees) {
+export function enregistrerCle(stockage, k, donnees) {
   try {
-    stockage.setItem(cle(ville, version), JSON.stringify(donnees));
+    stockage.setItem(k, JSON.stringify(donnees));
   } catch {
     // stockage plein ou bloqué (navigation privée) : la partie continue sans sauvegarde
   }
 }
 
-export function effacer(stockage, ville, version) {
+export function effacerCle(stockage, k) {
   try {
-    stockage.removeItem(cle(ville, version));
+    stockage.removeItem(k);
   } catch {
     // idem
   }
 }
+
+export const charger = (stockage, ville, version) => chargerCle(stockage, cle(ville, version));
+export const enregistrer = (stockage, ville, version, donnees) => enregistrerCle(stockage, cle(ville, version), donnees);
+export const effacer = (stockage, ville, version) => effacerCle(stockage, cle(ville, version));
 
 // ----------------------------------------------------------------------- record
 // Le meilleur résultat d'une ville terminée, gardé à part de la partie : « Rejouer » efface
