@@ -93,3 +93,26 @@ describe('cachettes libres', () => {
     expect(cachettesLibres(toutes, posees, 6)).toEqual([]);
   });
 });
+
+describe('repères et aimant d’accord', () => {
+  // Un repère n'est montré que sur une cachette libre : taper pile dessus doit y poser un
+  // canard (ou sur une autre cachette libre), jamais répondre « Pas de cachette ici ».
+  const cachettes = [
+    [0, 0, 0], [3, 0, 0], [8, 0, 0], [8, 2, 0], [15, 0, 0], [15.5, 0, 1], [30, 0, 0], [31, 0, 0], [50, 4, 2],
+  ].map((centre, numero) => ({ numero, centre }));
+  // projections : la 3 tombe sur le même pixel que la 2, la 5 juste à côté de la 4
+  const pixels = [[100, 100], [130, 100], [180, 100], [180, 100], [250, 100], [252, 98], [400, 100], [410, 100], [600, 60]];
+  const ecran = pixels.map(([x, y], numero) => ({ numero, x, y }));
+
+  for (const posees of [[], [0], [2], [4, 6], [1, 5, 8]]) {
+    it(`taper sur chaque repère libre pose un canard libre (posés : ${posees.join(', ') || 'aucun'})`, () => {
+      const libres = cachettesLibres(cachettes, posees, 6);
+      expect(libres.length).toBeGreaterThan(0);
+      for (const numero of libres) {
+        const choix = aimanter(ecran[numero], ecran, cachettes, posees, { revele: true, distanceMin: 6 });
+        expect(choix.raison).toBeUndefined();
+        expect(libres).toContain(choix.numero);
+      }
+    });
+  }
+});

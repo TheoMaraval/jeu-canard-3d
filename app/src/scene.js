@@ -385,9 +385,11 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
   }
 
   // --- repères des cachettes libres (mode « Cacher » seulement, créés à la demande) ---
+  // Jusqu'à ~4 800 repères par ville : géométrie indexée et légère (36 triangles), et seules
+  // les cachettes libres sont dessinées (instances compactées en tête, `count` ajusté).
   let reperes = null;
   let reperesCentres = [];
-  const NB_ROND = 20;
+  const NB_ROND = 12; // segments : assez rond pour un repère de ~11 px
   const RAYON_REPERE = 0.14; // m : ~11 px au zoom de révélation
   const DECALAGE_REPERE = 0.15; // m vers la caméra : évite le z-fighting avec la surface
 
@@ -395,44 +397,62 @@ export async function chargerScene(canvas, info, { canards: fournis = null, capa
   function geometrieRepere() {
     const disque = new THREE.CircleGeometry(RAYON_REPERE * 0.72, NB_ROND);
     const anneau = new THREE.RingGeometry(RAYON_REPERE * 0.72, RAYON_REPERE, NB_ROND);
+    // les deux sont indexées : mergeGeometries les fusionne telles quelles (sommets partagés)
     const teinte = (g, couleur) => {
-      const plat = g.toNonIndexed(); // mergeGeometries exige des géométries de même nature
       const c = new THREE.Color(couleur);
-      const n = plat.attributes.position.count;
-      plat.setAttribute('color', new THREE.Float32BufferAttribute(Array.from({ length: n }, () => [c.r, c.g, c.b]).flat(), 3));
-      return plat;
+      const n = g.attributes.position.count;
+      const couleurs = new Float32Array(n * 3);
+      for (let i = 0; i < n; i += 1) couleurs.set([c.r, c.g, c.b], i * 3);
+      g.setAttribute('color', new THREE.BufferAttribute(couleurs, 3));
+      return g;
     };
-    return mergeGeometries([teinte(disque, '#ffffff'), teinte(anneau, ENCRE)]);
+    const g = mergeGeometries([teinte(disque, '#ffffff'), teinte(anneau, ENCRE)]);
+    disque.dispose();
+    anneau.dispose();
+    return g;
   }
 
   /** Crée un repère par centre (un seul maillage instancié) ; cachés tant que `majReperes` n'est pas appelé. */
   function creerReperes(centres) {
-    if (reperes) { scene.remove(reperes); reperes.dispose(); }
+    if (reperes) {
+      scene.remove(reperes);
+      reperes.dispose(); // ne libère que les matrices d'instance
+      reperes.geometry.dispose();
+      reperes.material.dispose();
+    }
     reperesCentres = centres;
-    const materiau = new THREE.MeshBasicMaterial({ vertexColors: true, depthWrite: false });
+    // depthWrite : le rond cache les traits d'encre dessinés après lui (transparents) ;
+    // le décalage vers la caméra suffit contre le z-fighting
+    const materiau = new THREE.MeshBasicMaterial({ vertexColors: true });
     reperes = new THREE.InstancedMesh(geometrieRepere(), materiau, Math.max(1, centres.length));
-    reperes.frustumCulled = false;
-    reperes.renderOrder = 10; // après le décor opaque
+    reperes.frustumCulled = false; // les instances changent : la sphère englobante calculée au départ serait fausse
+    reperes.renderOrder = 10; // en dernier parmi les opaques, avant le verre et les traits
     reperes.visible = false;
     scene.add(reperes);
     majReperes([]);
   }
 
-  /** Affiche uniquement les repères des cachettes `libres` (numéros) ; les autres passent à l'échelle 0. */
+  /**
+   * Affiche uniquement les repères des cachettes `libres` (numéros). Les instances sont
+   * compactées : l'instance i porte le repère de `libres[i]` (pas du numéro i) ; les repères
+   * ne servent pas au picking (l'aimant travaille sur les cachettes elles-mêmes).
+   */
   function majReperes(libres) {
     if (!reperes) return;
-    const ouverts = new Set(libres);
     const q = camera.quaternion; // orientation fixe : les ronds font face à la caméra
     const m = new THREE.Matrix4();
     const decalage = new THREE.Vector3(...versCamera).normalize().multiplyScalar(DECALAGE_REPERE);
     const p = new THREE.Vector3();
-    const echelle = new THREE.Vector3();
-    for (let i = 0; i < reperesCentres.length; i += 1) {
-      p.set(...reperesCentres[i]).add(decalage);
-      const s = ouverts.has(i) ? 1 : 0;
-      m.compose(p, q, echelle.set(s, s, s));
-      reperes.setMatrixAt(i, m);
+    const un = new THREE.Vector3(1, 1, 1);
+    let n = 0;
+    for (const numero of libres) {
+      const centre = reperesCentres[numero];
+      if (!centre) continue;
+      m.compose(p.set(...centre).add(decalage), q, un);
+      reperes.setMatrixAt(n, m);
+      n += 1;
     }
+    reperes.count = n; // seules les n premières instances sont dessinées
     reperes.instanceMatrix.needsUpdate = true;
     demanderRendu();
   }
