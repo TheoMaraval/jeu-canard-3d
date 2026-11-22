@@ -713,3 +713,44 @@ html, body {
 }
 .champ-texte:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .panneau .pied { margin: 8px 0 16px; text-align: left; }
+
+#cacher { margin-bottom: 12px; }
+.mode-cacher .carte-ville { outline: 3px dashed var(--orange); outline-offset: 3px; }
+
+.mes-defis { margin: 12px 0 24px; }
+.liste-defis { display: grid; gap: 12px; }
+.carte-defi {
+  --couleur: #3f6fd8;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 14px 12px 22px;
+  background: linear-gradient(var(--couleur), var(--couleur)) left / 10px 100% no-repeat, var(--carton);
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-petite);
+}
+.carte-defi.perime { opacity: 0.6; }
+.carte-defi .embleme { font-size: 30px; line-height: 1; }
+.carte-defi .nom { display: block; font-family: var(--titre); font-size: 20px; font-weight: 700; }
+.carte-defi .detail { display: block; font-size: 14px; font-weight: 700; color: var(--doux); }
+.carte-defi .actions-defi { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.mini-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 14px;
+  font-family: var(--titre);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--encre);
+  background: var(--jaune);
+  border: 2px solid var(--encre);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--encre);
+  cursor: pointer;
+}
+.mini-bouton.discret { background: var(--carton); }
+.mini-bouton .ico { width: 18px; height: 18px; }

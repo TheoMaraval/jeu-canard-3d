@@ -13,10 +13,10 @@ import { choisirCanard } from './picking.js';
 import { creerSon } from './son.js';
 import { canardsDuDefi, chargerCachettes } from './cachettes.js';
 import {
-  decoderDefi, libelleRenvoi, lienCacher, lienDefi, messageRejet, texteInvitationDefi, texteTempsDefi, titreDefi,
-  titreFinDefi, verifierDefi,
+  decoderDefi, encoderDefi, libelleRenvoi, lienCacher, lienDefi, messageRejet, texteInvitationDefi, texteTempsDefi,
+  titreDefi, titreFinDefi, verifierDefi,
 } from './defi.js';
-import { cleDefiRecu } from './mesdefis.js';
+import { cleDefiRecu, detailDefi, estValable, listerDefis, supprimerDefi, trouverDefi } from './mesdefis.js';
 import {
   borner, creerVue, deplacer, estRevele, ppmMini, ppmRevelation, projeter, zoomer,
 } from './vue.js';
@@ -31,7 +31,7 @@ import {
 } from './partage.js';
 import {
   afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
-  afficherMessage, afficherSon, afficherStats, celebrer, chrono,
+  afficherMesDefis, afficherMessage, afficherSon, afficherStats, celebrer, chrono,
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
@@ -70,6 +70,46 @@ function accueil(scenes) {
   afficherAccueil(villes, {
     choisir: allerA,
     inviter: () => partagerAvecRetour({ texte: TEXTE_INVITATION, url: lienJeu(location.href) }),
+    cacher: (ville) => { location.href = lienCacher(location.href, ville); },
+  });
+  montrerMesDefis(scenes);
+}
+
+/** Section « Mes défis » : renvoyer, modifier ou supprimer un défi créé sur cet appareil. */
+function montrerMesDefis(scenes) {
+  const parId = new Map(scenes.map((s) => [s.id, s]));
+  const nomVille = (id) => decouperNom(parId.get(id).nom).ville;
+  // un brouillon sans canard n'a rien à envoyer (enregistrerDefi les retire déjà, mais on ne s'y fie pas)
+  const defis = listerDefis(localStorage).filter((d) => parId.has(d.ville) && d.numeros.length > 0);
+  afficherMesDefis(defis.map((d) => ({
+    id: d.id,
+    embleme: parId.get(d.ville).embleme ?? '🏙️',
+    couleur: parId.get(d.ville).couleur ?? '#3f6fd8',
+    ville: nomVille(d.ville),
+    detail: detailDefi(d),
+    valable: estValable(d, scenes),
+  })), {
+    envoyer: (id) => {
+      const d = trouverDefi(localStorage, id);
+      if (!d) return;
+      let url;
+      try {
+        url = lienDefi(location.href, d.ville, encoderDefi(d));
+      } catch {
+        afficherBref('Impossible de créer le lien de ce défi.');
+        return;
+      }
+      partagerAvecRetour({ texte: texteInvitationDefi({ prenom: d.prenom, n: d.numeros.length, ville: nomVille(d.ville) }), url });
+    },
+    modifier: (id) => {
+      const d = trouverDefi(localStorage, id);
+      if (d) location.href = lienCacher(location.href, d.ville, id);
+    },
+    supprimer: (id) => {
+      if (!window.confirm('Supprimer ce défi ? Les liens déjà envoyés continueront de marcher.')) return;
+      supprimerDefi(localStorage, id);
+      montrerMesDefis(scenes);
+    },
   });
 }
 

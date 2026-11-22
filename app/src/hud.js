@@ -152,7 +152,21 @@ export function demanderPrenom(initial) {
  * Écran d'accueil : un ticket par ville.
  * @param villes [{id, embleme, couleur, ville, quartier, etat, avance (0–1), fini, record (« 8:12 » ou null)}]
  */
-export function afficherAccueil(villes, { choisir, inviter }) {
+export function afficherAccueil(villes, { choisir, inviter, cacher }) {
+  // « Cacher mes canards » : les tickets servent alors à choisir la ville où cacher
+  let modeCacher = false;
+  const majMode = () => {
+    $('titre-villes').textContent = modeCacher ? 'Où cacher tes canards ?' : 'Choisis ta ville';
+    $('cacher-texte').textContent = modeCacher ? 'Annuler' : 'Cacher mes canards';
+    $('cacher').classList.toggle('secondaire', modeCacher);
+    $('accueil').classList.toggle('mode-cacher', modeCacher);
+  };
+  majMode(); // ré-appelée (après un défi refusé) : repart du mode normal
+  $('cacher').onclick = () => {
+    modeCacher = !modeCacher;
+    majMode();
+    if (modeCacher) $('titre-villes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   $('villes').replaceChildren(...villes.map((v) => {
     const b = element('button', `carte-ville${v.fini ? ' fini' : ''}${v.avance ? '' : ' neuve'}`);
     b.type = 'button';
@@ -178,13 +192,43 @@ export function afficherAccueil(villes, { choisir, inviter }) {
     etat.append(jauge, element('span', 'libelle', v.etat));
 
     b.append(element('span', 'embleme', v.embleme), texte, go, etat);
-    b.onclick = () => choisir(v.id);
+    b.onclick = () => (modeCacher ? cacher(v.id) : choisir(v.id));
     return b;
   }));
   $('inviter').onclick = inviter;
   $('accueil').hidden = false;
   $('hud').hidden = true;
   $('aide').hidden = true;
+}
+
+/**
+ * Section « Mes défis » de l'accueil, masquée si la liste est vide.
+ * @param defis [{id, embleme, couleur, ville, detail (« 7 canards · 21/11 »), valable}]
+ */
+export function afficherMesDefis(defis, { envoyer, modifier, supprimer }) {
+  $('mes-defis').hidden = !defis.length;
+  $('liste-defis').replaceChildren(...defis.map((d) => {
+    const carte = element('div', `carte-defi${d.valable ? '' : ' perime'}`);
+    carte.style.setProperty('--couleur', d.couleur);
+    const texte = element('span', 'texte');
+    texte.append(
+      element('span', 'nom', d.ville),
+      element('span', 'detail', d.valable ? d.detail : `${d.detail} · plus valable`),
+    );
+    const actions = element('span', 'actions-defi');
+    const bouton = (libelle, nomIcone, action, classe = '') => {
+      const b = element('button', `mini-bouton ${classe}`.trim());
+      b.type = 'button';
+      b.setAttribute('aria-label', `${libelle} le défi de ${d.ville}`);
+      b.append(icone(nomIcone), element('span', '', libelle));
+      b.onclick = () => action(d.id);
+      return b;
+    };
+    if (d.valable) actions.append(bouton('Envoyer', 'i-partager', envoyer), bouton('Modifier', 'i-tap', modifier));
+    actions.append(bouton('Supprimer', 'i-corbeille', supprimer, 'discret'));
+    carte.append(element('span', 'embleme', d.embleme), texte, actions);
+    return carte;
+  }));
 }
 
 // --------------------------------------------------------- chargement, messages
