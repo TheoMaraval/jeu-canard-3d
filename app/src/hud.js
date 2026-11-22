@@ -214,7 +214,7 @@ export function afficherMesDefis(defis, { envoyer, modifier, supprimer }) {
   $('mes-defis').hidden = !defis.length;
   $('liste-defis').replaceChildren(...defis.map((d) => {
     const carte = element('div', `carte-defi${d.valable ? '' : ' perime'}`);
-    carte.style.setProperty('--couleur', d.couleur);
+    if (d.valable) carte.style.setProperty('--couleur', d.couleur); // périmé : bande grise de la feuille de style
     const texte = element('span', 'texte');
     texte.append(
       element('span', 'nom', d.ville),

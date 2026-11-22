@@ -24,8 +24,15 @@ villes est fait : ne pas le relancer.
 | 10 écran « Cacher » | fait, vérifié dans le navigateur (390 px, cachettes 150, 0, 300 de Lille), relu (spec + qualité) | `eda11fc` |
 | Corrections de relecture 10 (id du brouillon dans l'adresse, champ prénom sélectionnable sur iOS, panneau `role=dialog` + Échap + retour du focus, double tap bloqué 400 ms, brouillon abîmé ou périmé → nouveau défi avec message, erreur d'encodage affichée, chargement avant `cachettes.json`) | fait, revérifié | `8e8ccfa` |
 | Correctif : accueil cassé (`charger` retiré par erreur en `30f0af5`, publié de 14 h 26 à la republication suivante) | fait, vérifié | `871dacf` |
-| 11 accueil « Mes défis » | fait, vérifié dans le navigateur (390 px et ordinateur) ; relecture en cours | `e891309` |
+| 11 accueil « Mes défis » | fait, vérifié dans le navigateur (390 px et ordinateur), relu (spec + qualité) | `e891309` |
+| Corrections de relecture 11 (focus et libellés des tickets en mode Cacher, défi d'une ville disparue grisé, `pageshow` après retour arrière, carte périmée lisible à bande grise, mini-boutons 44 px, focus après suppression, ville dans la confirmation) | fait, revérifié | `866234e`, + bande grise |
+| Garde-fou : ESLint `no-undef` (`npm run lint`), lancé avant les tests dans la publication | fait | `adfec66` |
 | 12 doc | à faire | |
+
+Publication GitHub Pages : l'étape `deploy-pages` échoue parfois (« No artifacts named
+github-pages », « Deployment failed, try again later ») alors que build et tests passent ;
+erreur passagère de GitHub, déjà vue le 21/11. Remède : republier (nouveau push, au besoin
+`git commit --allow-empty`), puis vérifier le site en contournant le cache (`?v=<sha>`).
 
 Écarts par rapport au texte ci-dessous, à appliquer en reprenant :
 
