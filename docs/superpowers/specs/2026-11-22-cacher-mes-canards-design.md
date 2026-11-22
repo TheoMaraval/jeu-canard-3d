@@ -16,7 +16,7 @@ canards habituels (part visible, bec et œil tournés vers la caméra).
 
 | Question | Décision |
 |---|---|
-| Comment on pose | **Tap libre + aimant** : le canard saute sur la cachette valable la plus proche ; rien ne montre les cachettes à l'avance |
+| Comment on pose | **Tap libre + aimant** : le canard saute sur la cachette valable la plus proche ; au zoom de pose, de petits ronds montrent les cachettes libres (révisé, voir le journal) |
 | Combien de canards | **Libre, de 1 à 30** ; « Partager » dès le premier |
 | Prénom | **Facultatif**, dans le lien ; proposé d'office d'après le dernier défi |
 | Garder ses défis | **Liste « Mes défis »** sur le téléphone : renvoyer, modifier, supprimer |
@@ -118,12 +118,14 @@ pour que l'aiguillage actuel (`?ville=`) ne change pas.
 1. « Cacher mes canards » → choix de la ville (mêmes tickets) → rechargement de la page.
 2. La ville **sans les 30 canards habituels**, avec tous les leurres. En haut : « 7 / 30
    canards cachés », **Partager** (actif dès 1 canard), menu. En bas, aide : « Zoome, puis
-   tape là où cacher un canard ».
+   tape là où cacher un canard. » ; au zoom de pose : « Tape un petit rond pour cacher un
+   canard ; tape un canard posé pour le retirer. » À ce zoom, un petit rond blanc cerclé
+   d'encre marque chaque cachette libre (mêmes règles que l'aimant).
 3. **Poser** : seulement au zoom de révélation (canard ≥ 28 px), comme pour trouver. Le tap
    est aimanté sur la cachette libre la plus proche à l'écran, à 40 px au plus du doigt ;
    petit rebond. Sinon, un message bref :
    - `zoom` : « Zoome davantage pour cacher un canard » ;
-   - `aucune` : « Pas de cachette ici : essaie un rebord, un balcon, un toit… » ;
+   - `aucune` : « Pas de cachette ici : vise un des petits ronds. » ;
    - `trop-pres` (toutes les cachettes proches du doigt sont à moins de
      `distance_min_canards` d'un canard posé ; sinon la plus proche qui convient est prise) :
      « Trop près d'un autre canard » ;
@@ -262,3 +264,13 @@ Un commit et un push par étape :
   Lille 408 → 2659, Delhi 827 → 3379 ; `cachettes.json` de 117 à 215 Ko (16 à 29 Ko
   compressé). Les empreintes changent (Paris `tw1y`, New York `bwzm`, Lille `cccn`, Delhi
   `iaae`) : **les défis envoyés avant sont invalidés** (« créé pour une ancienne version »).
+- 2026-11-22 (repères) : toujours après le retour « très restreint », et avec l'accord de
+  l'utilisateur, l'écran « Cacher » montre les cachettes libres : au zoom de pose
+  seulement, un petit rond blanc cerclé d'encre sur chaque cachette où un canard peut être
+  posé (`cachettesLibres`, mêmes règles que l'aimant, qui reste). Le § 2 disait « rien ne
+  montre les cachettes à l'avance » : révisé. Message `aucune` : « Pas de cachette ici :
+  vise un des petits ronds. » ; aide de près : « Tape un petit rond pour cacher un
+  canard ; tape un canard posé pour le retirer. » Relecture : repères en géométrie indexée
+  (36 triangles au lieu de 60) et seules les cachettes libres dessinées ; un test vérifie
+  qu'un tap sur un repère libre pose toujours un canard. Côté générateur, le drapeau
+  `denses` de `Plan` / `make_layout` prouve que les cachettes denses ne tirent rien au sort.

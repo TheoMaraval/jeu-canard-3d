@@ -31,7 +31,7 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 | `index.html` | Structure des écrans (accueil, barre de jeu, chargement, fin) ; icônes SVG et mascotte canard en `<symbol>` | — |
 | `src/style.css` | Charte « autocollant de BD » ; variables en tête (`--encre`, `--jaune`…) | — |
 | `src/main.js` | Assemble tout : accueil sans `?ville=` (avec « Mes défis »), sinon la partie, un défi reçu (`&defi=`) ou l'écran « Cacher » (`&cacher`) | — |
-| `src/scene.js` | Charge les fichiers de `assets/`, rendu toon + traits d'encre, instanciation ; canards fournis (défi), emplacements vides, `placerCanards`, `rebondir` | — |
+| `src/scene.js` | Charge les fichiers de `assets/`, rendu toon + traits d'encre, instanciation ; canards fournis (défi), emplacements vides, `placerCanards`, `rebondir` ; repères des cachettes libres du mode Cacher (`creerReperes`, `majReperes`, `afficherReperes` : un seul maillage instancié, seules les libres dessinées) | — |
 | `src/entrees.js` | Glisser, pincer, molette, tap | — |
 | `src/vue.js` | Position, zoom, seuil de révélation, projection écran | oui |
 | `src/picking.js` | Quel canard est sous le doigt | oui |
@@ -40,13 +40,13 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 | `src/hud.js` | Affichage : accueil (mode Cacher, cartes « Mes défis »), compteur, chrono, aide, toasts, fin, confettis, HUD « Cacher », panneau du prénom | formats |
 | `src/partage.js` | Textes de score et d'invitation, partage natif ou copie (`partagerAvecRetour`), titres de fin (`sousTitreFin`) | oui |
 | `src/defi.js` | Code du lien de défi (encode, décode, vérifie), messages de rejet, textes, liens `&defi=` et `&cacher=` | oui |
-| `src/cachettes.js` | Charge `cachettes.json` ; aimant qui pose un canard sur la cachette la plus proche ; `canardsDuDefi` | oui |
+| `src/cachettes.js` | Charge `cachettes.json` ; aimant qui pose un canard sur la cachette la plus proche ; `cachettesLibres` (celles où poser, pour les repères : mêmes règles que l'aimant) ; `canardsDuDefi` | oui |
 | `src/mesdefis.js` | « Mes défis », dernier prénom, clé de progression d'un défi reçu | oui |
 | `src/cacher.js` | Écran « Cacher mes canards » : poser, retirer, brouillon automatique, partager | — |
 | `src/mesure.js` | Mesure de fluidité, avec `&debug` dans l'adresse (chargé à la demande) | oui |
 | `src/son.js` | « coin coin » et musique de fin enregistrés (`assets/sons/`), cri synthétisé en secours, bouton son | oui |
 
-Tests : `app/tests/` (90). Polices Fredoka et Nunito embarquées via `@fontsource`.
+Tests : `app/tests/` (98). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -72,11 +72,11 @@ Blender n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.
 (trouvé tout seul par `tout_generer.sh`).
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 55 tests, sans Blender, quelques secondes
+python -m unittest discover -s blender/tests -t blender   # 57 tests, sans Blender, une vingtaine de secondes
 bash blender/tout_generer.sh                              # tout régénérer (environ 30 min : le placement mesure 6 000 à 9 000 cachettes denses, 4 à 10 min par ville)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
-cd app && npm test                                        # 90 tests
+cd app && npm test                                        # 98 tests
 cd app && npm run lint                                    # no-undef : bloque la publication si un nom n'est pas déclaré
 ```
 
@@ -108,7 +108,8 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
   (chiffres de `&debug` non relevés) ; « coin coin » et musique de fin écoutés.
 - **Mode « Cacher mes canards » : fait (22/11/2026)**. On cache de 1 à 30 canards sur des
   cachettes garanties visibles (`cachettes.json`, 2 659 à 4 783 par ville : toutes les
-  fenêtres, grilles au sol, sur les toits et les balcons), on envoie un lien
+  fenêtres sont candidates, grilles au sol, sur les toits et les balcons ; au zoom de pose, un
+  petit rond blanc marque chaque cachette libre), on envoie un lien
   `?ville=…&defi=<code>`, l'ami les retrouve (progression gardée à part, record de la ville
   intact). « Mes défis » sur l'accueil : envoyer, modifier, supprimer. Spec
   `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`, plan
@@ -133,9 +134,13 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
 - Ajouter un tirage aléatoire dans du code commun du générateur déplace les canards de
   **toutes** les villes : régénérer tout et augmenter `version`.
 - Cachettes denses du mode Cacher (`Plan.dense`, `layout.py`) : **jamais** de tirage
-  (`self.rng`) pour elles, sinon les canards du jeu bougent sans bruit.
-  `tests/test_cachettes_denses.py` garde l'empreinte du plan du jeu ; après un placement
-  relancé, `git diff --stat assets/scenes/*/placements.json` doit rester vide.
+  (`self.rng`) pour elles, sinon les canards du jeu bougent sans bruit ; tout leur code sous
+  `if self.avec_denses:`. `tests/test_cachettes_denses.py` garde l'empreinte du plan du jeu et
+  des cachettes denses, et compare le plan avec et sans elles. La mesure (`mesurer`,
+  `orientation_canard`, `DEGAGEMENT`, `ECHANTILLONS`, `ECARTS` dans `place_objets.py`) est
+  partagée avec le jeu : un réglage propre aux denses passe par un paramètre explicite, sans
+  toucher aux défauts. Après un placement relancé,
+  `git diff --stat assets/scenes/*/placements.json` doit rester vide.
 - Décor : ne pas utiliser `bmesh` (plus de 7 min par ville) ; passer par `citygen/maillage.py`.
 - Blender 5 : matériaux et monde créés par script ont un arbre de nœuds vide ; créer les
   nœuds explicitement (`material()` dans `blender/citygen/geo.py`).

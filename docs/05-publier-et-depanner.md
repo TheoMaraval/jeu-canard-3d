@@ -32,9 +32,9 @@ npm run dev        # http://localhost:5173
 ## Les tests
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 55 tests du générateur, sans Blender
+python -m unittest discover -s blender/tests -t blender   # 57 tests du générateur, sans Blender
 cd app && npm run lint                                    # ESLint no-undef (nom non déclaré)
-cd app && npm test                                        # 85 tests de l'app
+cd app && npm test                                        # 98 tests de l'app
 ```
 
 ## Publier
@@ -72,6 +72,10 @@ avant de pousser.
 `cachettes.json` et son `empreinte`. Une empreinte modifiée invalide les défis déjà envoyés
 pour cette ville : le jeu le dit au joueur qui ouvre le lien (« ancienne version »), et
 « Mes défis » grise les défis concernés. Ne relancer le placement que si c'est voulu.
+Avec les cachettes denses (environ quatre fois plus de cachettes), une simple régénération
+sur une autre machine ou avec une autre version de Blender a plus de chances de déplacer
+une cachette de quelques millimètres ou d'en garder une de plus ou de moins, donc de changer
+l'empreinte : comparer `git diff --stat assets/scenes/*/cachettes.json` avant de publier.
 
 **Important** : le générateur ne tourne pas sur GitHub (il faudrait Blender). Les fichiers
 de `assets/` doivent donc être générés en local et **commités** avec le thème.

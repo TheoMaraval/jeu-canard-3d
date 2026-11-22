@@ -97,11 +97,11 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 |---|---|
 | `blender/themes/` | Une ville par fichier, plus `_commun.json` (valeurs par défaut) |
 | `blender/citygen/` | Le générateur, en Python pur (sauf `geo.py`, seul à utiliser Blender) |
-| `blender/tests/` | 55 tests du générateur, lancés sans Blender |
+| `blender/tests/` | 57 tests du générateur, lancés sans Blender |
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
-| `app/` | L'application ; `app/tests/` : 90 tests |
+| `app/` | L'application ; `app/tests/` : 98 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -201,8 +201,9 @@ Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands B
   `placements.json`. Son **numéro est sa position dans la liste** (0 pour la première) : c'est
   ce numéro que le lien de défi transporte. Ne jamais trier ni filtrer ce fichier à la main.
 - D'où viennent les cachettes : d'abord les `slots` du plan (ceux d'où sont tirés les canards
-  du jeu), puis les **cachettes denses** de `make_layout(theme)["cachettes_denses"]` : chaque
-  fenêtre non condamnée (3 places à l'appui), les vitrines (tous les 0,6 m), les balcons
+  du jeu), puis les **cachettes denses** de `make_layout(theme)["cachettes_denses"]` : toutes
+  les fenêtres non condamnées sont candidates (3 places à l'appui ; environ la moitié des
+  places « vitre » sont écartées, car vues en partie hors de la vitre), les vitrines (tous les 0,6 m), les balcons
   (0,8 m), une grille de 1,2 m sur les toits plats et les plateaux de mansarde, une grille de
   1 m sur trottoirs et places (2 m sur la chaussée). `layout.py` les pose **sans aucun tirage
   au sort** et `place_objets.py` les mesure **après** avoir choisi canards et leurres : la
@@ -257,7 +258,7 @@ place des 30 habituels (compteur 0 / n, mêmes règles de zoom et de tap).
 | Module | Rôle |
 |---|---|
 | `src/defi.js` | Encode, décode et vérifie le code du lien ; messages de rejet ; textes d'invitation, de fin et de temps renvoyé ; liens `?ville=…&defi=…` et `?ville=…&cacher=<id>` |
-| `src/cachettes.js` | Charge `cachettes.json` ; `aimanter` (tap + cachettes projetées + canards posés : numéro ou raison de refus) ; `canardsDuDefi` |
+| `src/cachettes.js` | Charge `cachettes.json` ; `aimanter` (tap + cachettes projetées + canards posés : numéro ou raison de refus) ; `cachettesLibres` (numéros où un canard peut être posé, pour les repères) ; `canardsDuDefi` |
 | `src/mesdefis.js` | « Mes défis », dernier prénom, clé de progression d'un défi reçu |
 | `src/cacher.js` | Écran « Cacher » (pas de test unitaire : vérifié dans le navigateur) |
 
@@ -296,6 +297,12 @@ d'un message et d'un retour à l'accueil :
 - Le canard se pose par **aimant** : tap au zoom de révélation, sur la cachette libre la plus
   proche à 40 px au plus qui respecte l'écart minimal. Raisons de refus : `zoom`, `aucune`,
   `trop-pres`, `plein` (30 canards). Taper un canard posé le retire.
+- **Repères** : au zoom de pose seulement, et seulement dans l'écran « Cacher », un petit
+  rond blanc cerclé d'encre (~11 px) marque chaque cachette libre (`cachettesLibres` : mêmes
+  règles que l'aimant, donc taper sur un rond pose toujours un canard). Il disparaît dès
+  qu'un canard posé rend la cachette trop proche. Un seul maillage instancié dans
+  `scene.js` (36 triangles par rond), seules les cachettes libres sont dessinées. Message
+  `aucune` : « Pas de cachette ici : vise un des petits ronds. »
 - Le brouillon est enregistré dans « Mes défis » à **chaque canard posé ou retiré** ; un
   brouillon vidé de ses canards est supprimé. Son identifiant est mis dans l'adresse
   (`history.replaceState`) : un rechargement rouvre le même brouillon.
@@ -339,7 +346,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 55 tests du générateur et les 93 de l'app passent. GitHub relance à chaque publication
+- Les 57 tests du générateur et les 98 de l'app passent. GitHub relance à chaque publication
   ceux de l'app, précédés de `npm run lint` (ESLint `no-undef` : un nom non déclaré, par
   exemple un import retiré par erreur, bloque la publication).
 - Le mode défi a été vérifié dans le navigateur à 390 px (cacher, partager, ouvrir le lien,

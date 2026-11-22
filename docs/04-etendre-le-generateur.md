@@ -18,11 +18,13 @@ Après chaque modification : `python -m unittest discover -s blender/tests -t bl
 > alors refusés.
 >
 > **Cachettes denses : jamais de tirage.** Les cachettes du mode « Cacher » (voir plus bas)
-> sont posées par `Plan.dense()`, qui ne doit **jamais** appeler `self.rng` (ni aucun autre
-> hasard) : un seul tirage de plus déplacerait les 30 canards et les leurres du jeu sans que
-> rien ne le signale à l'écran. `tests/test_cachettes_denses.py` garde l'empreinte du plan du
-> jeu (clés `prims`, `insts`, `slots`, `lots`, `blocs`) et vérifie qu'aucun tirage n'est
-> consommé.
+> sont posées par `Plan.dense()` ; ni lui ni les boucles qui le préparent n'appellent
+> `self.rng` (ni aucun autre hasard) : un seul tirage de plus déplacerait les 30 canards et
+> les leurres du jeu sans que rien ne le signale à l'écran. Tout ce code vit sous le drapeau
+> `if self.avec_denses:` (`Plan(theme, denses=True)`, `make_layout(theme, denses=True)`).
+> `tests/test_cachettes_denses.py` garde l'empreinte du plan du jeu (clés `prims`, `insts`,
+> `slots`, `lots`, `blocs`) et celle des cachettes denses, et vérifie pour les quatre villes
+> que le plan avec `denses=False` est identique (même état final du tirage).
 
 ## Où est quoi
 
@@ -173,13 +175,23 @@ Règles :
   essayé en premier pour le bec) est calculée à partir de la position. On l'appelle après les
   tirages qui décident d'une fenêtre (jharokha, planches) en lisant leur résultat, jamais en
   en ajoutant.
+- Tout nouveau bloc dense (la boucle **et** l'appel à `dense()`) se met sous
+  `if self.avec_denses:` ; `dense()` lève une erreur s'il est appelé avec `denses=False`, et le
+  test qui compare les deux plans attrape un tirage glissé dans la boucle.
 - La grille du sol est posée **à la fin** de `construire()` (`_sol_dense`), quand toutes les
   emprises sont connues.
 - On peut poser large : `place_objets.py` mesure chaque cachette dense comme un slot
   (`mesurer`, `orientation_canard`), **après** avoir choisi canards et leurres, puis garde
   celles qui passent `cachettes_valables` et retire celles à moins de 0,35 m d'une cachette
-  déjà gardée (`dedoublonner`). Une cachette dans un objet, sous une marchandise ou derrière
-  un buste est donc écartée par la mesure.
+  déjà gardée (`dedoublonner`). Une cachette dans un objet ou derrière un buste est donc
+  écartée par la mesure ; une cachette de vitrine sur une marchandise basse (0,3 m au plus)
+  est posée dessus, sinon écartée.
+- **La mesure est partagée avec le jeu.** `mesurer`, `orientation_canard`, `DEGAGEMENT`,
+  `ECHANTILLONS` et `ECARTS` (`place_objets.py`) servent aussi aux slots du jeu : un réglage
+  propre aux cachettes denses passe par un paramètre explicite (par exemple
+  `mesurer(..., dense=True)`) sans toucher aux valeurs par défaut, sinon les canards du jeu
+  bougent. Après tout placement relancé, `git diff --stat assets/scenes/*/placements.json`
+  doit rester vide.
 - Budget : environ 40 lancers de rayons par cachette ; 6 000 à 9 000 candidates par ville
   (voir `docs/01` pour les temps et les tailles). Au-delà d'environ 10 000 cachettes gardées,
   `cachettes.json` grossit trop : baisser une densité plutôt que tronquer la liste.

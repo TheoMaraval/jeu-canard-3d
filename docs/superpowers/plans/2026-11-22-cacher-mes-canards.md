@@ -31,7 +31,8 @@ villes est fait : ne pas le relancer.
 | Relecture finale de l'ensemble + corrections (décodage plus strict, `pageshow` après refus, doc : distance aux leurres, octet `version`, taille des fichiers, invalidation des défis) | fait | `02e20e4`, `fc21374` |
 | 13 (après retour de l'utilisateur : « très restreint », pas de cachette derrière les vitres) cachettes denses dans le générateur (toutes les fenêtres, grille sol / toits / balcons, sans toucher au tirage des 30 canards : `placements.json` doit rester identique) + relance du placement Blender des 4 villes (accord de l'utilisateur) | fait : Lille 408 → 2659 (864 vitres), Paris 1123 → 4654, New York 1038 → 4783, Delhi 827 → 3379 ; `placements.json` identiques ; nouvelles empreintes (défis envoyés avant : invalides) | `23ff8d2` |
 | 14 repères des cachettes libres en mode Cacher, au zoom de pose (accord de l'utilisateur) | fait | `bc58bb0` |
-| 15 vérification navigateur (390 px : repères sur chaque fenêtre de Lille, canard posé derrière la vitre 905, lien reçu 0 / 1) | fait ; relecture des tâches 13-14 en cours | |
+| 15 vérification navigateur (390 px : repères sur chaque fenêtre de Lille, canard posé derrière la vitre 905, lien reçu 0 / 1) | fait ; relu | |
+| Corrections de relecture 13-14 (repères indexés et compactés, garde-fou `denses`, doc) | fait | `95a8ef9`, `2e765f2`, ce commit |
 
 Mode terminé le 22/11/2026 ; publication contrôlée sur `?ville=lille&cacher=` (408 cachettes). Suite : `docs/06` (niveau expert, restes du mode défi).
 

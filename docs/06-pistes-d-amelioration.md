@@ -59,10 +59,10 @@ Le joueur choisit combien de canards cacher (par exemple 5, 10 ou 30).
 ### Déroulé côté joueur
 
 1. Menu → « Cacher mes canards » → choix de la ville et du nombre de canards.
-2. La ville s'affiche ; en zoomant, des repères discrets montrent les cachettes possibles
-   (ou bien : le joueur tape où il veut, et le jeu « aimante » le canard sur la cachette
-   valable la plus proche, en expliquant sinon : « trop caché ici », « on ne verrait pas
-   sa tête »).
+2. La ville s'affiche ; en zoomant, des repères discrets montrent les cachettes libres, et
+   en plus le jeu « aimante » le canard sur la cachette valable la plus proche du doigt, en
+   expliquant sinon (« Pas de cachette ici : vise un des petits ronds. », « Trop près d'un
+   autre canard. »). Les deux sont faits.
 3. Chaque canard posé apparaît ; on peut le retirer d'un tap.
 4. « Partager » produit un lien du type
    `…/jeu-canard-3d/#defi=paris.3.AAEC…`, à envoyer par message.
