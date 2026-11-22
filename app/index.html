@@ -138,12 +138,12 @@
   </section>
 
   <!-- PANNEAU « ENVOYER LE DÉFI » (mode Cacher) -->
-  <section id="panneau-defi" class="voile" hidden>
-    <form id="panneau-form" class="carte-fin panneau" role="dialog" aria-labelledby="panneau-titre">
+  <section id="panneau-defi" class="voile" role="dialog" aria-modal="true" aria-labelledby="panneau-titre" hidden>
+    <form id="panneau-form" class="carte-fin panneau">
       <h2 id="panneau-titre">Envoyer le défi</h2>
       <label class="champ" for="prenom">Ton prénom <span>(facultatif)</span></label>
-      <input id="prenom" class="champ-texte" type="text" maxlength="20" autocomplete="given-name" enterkeyhint="send">
-      <p class="pied">Il apparaît dans le lien : ton ami saura que le défi vient de toi.</p>
+      <input id="prenom" class="champ-texte" type="text" maxlength="20" autocomplete="given-name" enterkeyhint="send" aria-describedby="prenom-aide">
+      <p id="prenom-aide" class="pied">Il apparaît dans le lien : ton ami saura que le défi vient de toi.</p>
       <div class="actions">
         <button class="bouton large" type="submit">
           <svg class="ico" aria-hidden="true"><use href="#i-partager"/></svg> Envoyer le défi

@@ -689,7 +689,10 @@ html, body {
 
 .rond:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
 
-.panneau { padding-top: 22px; }
+.rond:disabled:hover { background-color: var(--carton); }
+
+/* .carte-fin réserve une marge en haut pour la mascotte : pas ici */
+.panneau { margin-top: 0; padding-top: 22px; }
 .panneau h2 { margin: 0 0 14px; font-family: var(--titre); font-size: 26px; }
 .champ { display: block; margin-bottom: 6px; text-align: left; font-weight: 800; }
 .champ span { color: var(--doux); font-weight: 600; }
@@ -703,6 +706,10 @@ html, body {
   background: #fff;
   border: var(--trait) solid var(--encre);
   border-radius: 14px;
+  /* html et body désactivent la sélection (jeu tactile) : le champ de saisie doit rester éditable sur iOS */
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 .champ-texte:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .panneau .pied { margin: 8px 0 16px; text-align: left; }

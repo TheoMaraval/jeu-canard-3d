@@ -124,14 +124,17 @@ export function activerPartage(actif) {
 export function demanderPrenom(initial) {
   const panneau = $('panneau-defi');
   const champ = $('prenom');
+  const avant = document.activeElement;
   champ.value = initial;
   panneau.hidden = false;
   champ.focus();
   return new Promise((resoudre) => {
     const fermer = (valeur) => {
       panneau.hidden = true;
+      panneau.onkeydown = null;
       $('panneau-form').onsubmit = null;
       $('panneau-annuler').onclick = null;
+      avant?.focus?.();
       resoudre(valeur);
     };
     $('panneau-form').onsubmit = (e) => {
@@ -139,6 +142,7 @@ export function demanderPrenom(initial) {
       fermer(champ.value);
     };
     $('panneau-annuler').onclick = () => fermer(null);
+    panneau.onkeydown = (e) => { if (e.key === 'Escape') fermer(null); };
   });
 }
 

@@ -4,7 +4,7 @@ import { chargerScene } from './scene.js';
 import { ecouterEntrees } from './entrees.js';
 import { choisirCanard } from './picking.js';
 import { aimanter, canardsDuDefi, chargerCachettes, idCachette } from './cachettes.js';
-import { MAX_CANARDS, encoderDefi, lienDefi, nettoyerPrenom, texteInvitationDefi } from './defi.js';
+import { MAX_CANARDS, encoderDefi, lienCacher, lienDefi, nettoyerPrenom, texteInvitationDefi } from './defi.js';
 import { dernierPrenom, enregistrerDefi, nouvelId, retenirPrenom, trouverDefi } from './mesdefis.js';
 import { borner, creerVue, deplacer, estRevele, projeter, zoomer } from './vue.js';
 import { decouperNom, lienJeu, partagerAvecRetour } from './partage.js';
@@ -27,6 +27,7 @@ const RAISONS = {
  */
 export async function cacher(canvas, info, idDefi) {
   const { ville } = decouperNom(info.nom);
+  afficherChargement(true, `Chargement de ${ville}…`);
   let lot;
   try {
     lot = await chargerCachettes(info.id);
@@ -37,7 +38,10 @@ export async function cacher(canvas, info, idDefi) {
   // un défi fait pour une autre version de la ville ne se modifie plus : on en commence un neuf
   const existant = idDefi ? trouverDefi(localStorage, idDefi) : null;
   const valable = existant && existant.ville === info.id
-    && existant.version === lot.version && existant.empreinte === lot.empreinte;
+    && existant.version === lot.version && existant.empreinte === lot.empreinte
+    && existant.numeros.length <= MAX_CANARDS
+    && new Set(existant.numeros).size === existant.numeros.length
+    && existant.numeros.every((n) => n < lot.cachettes.length);
   const defi = valable ? { ...existant } : {
     id: nouvelId(),
     ville: info.id,
@@ -47,12 +51,13 @@ export async function cacher(canvas, info, idDefi) {
     numeros: [],
     cree: Date.now(),
   };
-
-  afficherChargement(true, `Chargement de ${ville}…`);
+  // l'identifiant dans l'adresse : un rechargement (fréquent sur iOS au retour de la messagerie) rouvre le même brouillon
+  history.replaceState(null, '', lienCacher(location.href, info.id, defi.id));
   const scene = await chargerScene(canvas, info, {
     canards: canardsDuDefi(lot.cachettes, defi.numeros), capacite: MAX_CANARDS,
   });
   afficherChargement(false);
+  if (idDefi && existant && !valable) afficherBref(`Ce défi n’est plus valable pour ${ville} : on en commence un nouveau.`);
 
   const ecran = () => ({ w: canvas.clientWidth, h: canvas.clientHeight });
   let vue = creerVue(ecran(), scene.limites);
@@ -75,16 +80,27 @@ export async function cacher(canvas, info, idDefi) {
     majCompteur();
   };
 
+  // après la fermeture du panneau, un double tap sur « Envoyer » / « Annuler » ne doit pas retomber sur la scène
+  let bloqueJusqua = 0;
+
   const partager = async () => {
     if (!defi.numeros.length) return;
     const prenom = await demanderPrenom(defi.prenom);
+    bloqueJusqua = performance.now() + 400;
     if (prenom === null) return; // panneau fermé
     defi.prenom = nettoyerPrenom(prenom);
     retenirPrenom(localStorage, defi.prenom);
     enregistrerDefi(localStorage, defi);
+    let url;
+    try {
+      url = lienDefi(location.href, info.id, encoderDefi(defi));
+    } catch {
+      afficherBref('Impossible de créer le lien de ce défi.');
+      return;
+    }
     partagerAvecRetour({
       texte: texteInvitationDefi({ prenom: defi.prenom, n: defi.numeros.length, ville }),
-      url: lienDefi(location.href, info.id, encoderDefi(defi)),
+      url,
     });
   };
 
@@ -100,6 +116,7 @@ export async function cacher(canvas, info, idDefi) {
       rafraichir();
     },
     taper: (point) => {
+      if (performance.now() < bloqueJusqua) return;
       const e = ecran();
       // un canard déjà posé sous le doigt : on le retire
       const posees = scene.canards.map((c) => ({
