@@ -210,3 +210,32 @@ Un commit et un push par étape :
   canard) ; `empreinte` ajoutée à `scenes.json` (validité des défis sur l'accueil) ; raison
   `plein` à 30 canards ; l'aimant prend la plus proche cachette **qui respecte l'écart**,
   `trop-pres` seulement si aucune ne le respecte.
+- 2026-11-22 (livraison, écarts constatés entre cette spec et le code ; le code fait foi) :
+  - le compteur du mode Cacher affiche « 7 / 30 » sans « canards cachés » (place à 390 px) ;
+    le mot est porté par l'`aria-label` « Canards cachés » ;
+  - le dernier prénom est retenu dès la validation du panneau, même si le partage est
+    ensuite annulé (et pas seulement après un partage abouti) ;
+  - « Envoyer » dans « Mes défis » réutilise le prénom enregistré avec le défi, sans rouvrir
+    le panneau, et ne change pas le dernier prénom ;
+  - un brouillon périmé (version ou empreinte changée, numéros invalides) ouvert par
+    `cacher=<id>` : un nouveau défi est commencé, avec le message « Ce défi n'est plus
+    valable pour <ville> : on en commence un nouveau. » ;
+  - un défi dont la ville a disparu de `scenes.json` reste listé, grisé, avec
+    « Supprimer » seul (comme un défi périmé) ;
+  - un brouillon sans canard n'est pas listé : il est supprimé dès que le dernier canard est
+    retiré ;
+  - l'identifiant du brouillon est mis dans l'adresse (`history.replaceState`) : un
+    rechargement rouvre le même brouillon ;
+  - sur l'accueil, le bouton « Cacher mes canards » devient « Annuler » tant que les tickets
+    servent à choisir la ville ; les tickets reçoivent alors un libellé « Cacher mes canards
+    à <ville> » ;
+  - le panneau du prénom se ferme avec Échap (`role="dialog"`), et un double tap sur
+    « Envoyer » / « Annuler » est ignoré pendant 400 ms (il retomberait sur la scène) ;
+  - en cours de partie, « Partager » d'un défi reçu fait suivre l'invitation au défi ; le
+    temps n'est renvoyé qu'une fois le défi fini ;
+  - messages de refus de pose terminés par un point ; aide du zoom de près : « Tape pour
+    cacher un canard ; tape un canard posé pour le retirer. » ;
+  - **non respecté** : § 8 (`localStorage` bloqué) : le lancement échoue encore, les accès
+    à `localStorage` n'étant pas gardés (voir « Restes du mode défi » dans `docs/06`) ;
+  - tests : 47 Python et 85 JS à la livraison ; `npm run lint` (ESLint `no-undef`) ajouté
+    avant les tests dans la publication.

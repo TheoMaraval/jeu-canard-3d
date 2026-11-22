@@ -20,7 +20,8 @@ Le jeu en ligne : **https://theomaraval.github.io/jeu-canard-3d/**
   270 leurres jaunes, et écrit le résultat dans `assets/`.
 - L'**application** (`app/`, Three.js) affiche ce résultat dans le navigateur et gère le
   jeu : accueil et choix de la ville, zoom, taps, compteurs, « coin coin » et musique de fin,
-  partage, sauvegarde et record par ville, mesure de fluidité (`&debug`).
+  partage, sauvegarde et record par ville, mesure de fluidité (`&debug`), et le mode
+  « Cacher mes canards » (défi par lien, liste « Mes défis »).
 - Chaque envoi sur la branche `main` de GitHub **republie le site automatiquement**.
 
 ## Reprendre avec Claude après un « clear »

@@ -10,14 +10,20 @@ Les idées sont classées par thème, avec une estimation de l'effort :
 Ces estimations supposent le code actuel ; elles n'ont pas été vérifiées en le faisant.
 
 **Ordre conseillé** : la fluidité est vérifiée sur un iPhone récent et sur un téléphone
-modeste, et une partie complète a été jouée (voir [01](01-comprendre-le-projet.md)). D'abord
-le mode « Cacher mes canards » (le meilleur rapport plaisir / effort, il réutilise presque
-tout), puis les niveaux de difficulté : le premier retour de jeu est « bien réglé mais
-parfois assez facile », ce qui plaide pour un niveau « expert ».
+modeste, et une partie complète a été jouée (voir [01](01-comprendre-le-projet.md)). Le mode
+« Cacher mes canards » est fait (22/11/2026). Prochaine étape : les niveaux de difficulté,
+car le premier retour de jeu est « bien réglé mais parfois assez facile », ce qui plaide
+pour un niveau « expert » ; puis les restes du mode défi (liste ci-dessous).
 
 ---
 
-## 1. Mode « Cacher mes canards » (défi entre amis)
+## 1. Mode « Cacher mes canards » (défi entre amis) — fait (22/11/2026)
+
+Livré : les cachettes (`cachettes.json`), le lien de défi, l'écran « Cacher », « Mes défis »
+et la partie de défi. Description et formats : [01](01-comprendre-le-projet.md), section
+« Le mode défi ». Conception : `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`.
+Le texte ci-dessous est l'idée de départ, gardée pour mémoire ; la « variante plus libre »
+reste une idée.
 
 **L'idée** : un joueur cache lui-même ses canards dans une ville, puis envoie un lien ; son
 ami doit les retrouver.
@@ -79,6 +85,28 @@ Le joueur choisit combien de canards cacher (par exemple 5, 10 ou 30).
 | Charger un défi au lieu des canards habituels | S |
 | Écran « Cacher » : poser, retirer, compteur, bouton partager | M |
 | **Total** | **M à L** |
+
+### Restes du mode défi
+
+Points laissés volontairement de côté à la livraison :
+
+- Pas de plafond ni de ménage des clés `jeu-canard-3d:defi:*` (une par défi reçu joué) :
+  elles s'accumulent dans `localStorage`.
+- `localStorage` bloqué (cookies refusés) fait encore échouer le lancement (`accueil`,
+  `jouer`, `cacher` y accèdent sans garde), alors que la spec (§8) veut un jeu qui marche
+  sans stockage.
+- Le panneau du prénom et l'écran de fin n'ont pas de piège à focus : un `<dialog>` avec
+  `showModal()` serait mieux. La suppression passe par `window.confirm`, que certains
+  navigateurs intégrés bloquent.
+- À essayer sur un vrai iPhone : le champ du prénom (clavier, sélection) et le retour
+  arrière (`pageshow`) vers l'accueil.
+- `defi.js` importe `chrono` de `hud.js` (dépendance inversée : le module pur dépend de
+  l'affichage). Mettre `chrono` dans un module neutre.
+- `HAUTEUR_CENTRE` est dupliquée (`scene.js`, `cachettes.js`).
+- `main.js` fait environ 340 lignes : déplacer `accueil` et `montrerMesDefis` dans un
+  `accueil.js` permettrait un test jsdom du chemin d'accueil.
+- `estValable` (accueil) et la validation de `cacher.js` ne vérifient pas exactement les
+  mêmes choses (la seconde contrôle aussi les numéros et les doublons).
 
 ### Variante plus libre (plus tard)
 

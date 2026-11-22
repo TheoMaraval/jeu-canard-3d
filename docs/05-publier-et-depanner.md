@@ -32,8 +32,9 @@ npm run dev        # http://localhost:5173
 ## Les tests
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 41 tests du générateur, sans Blender
-cd app && npm test                                        # 51 tests de l'app
+python -m unittest discover -s blender/tests -t blender   # 47 tests du générateur, sans Blender
+cd app && npm run lint                                    # ESLint no-undef (nom non déclaré)
+cd app && npm test                                        # 85 tests de l'app
 ```
 
 ## Publier
@@ -47,13 +48,30 @@ git push
 ```
 
 À chaque envoi sur `main`, le workflow `.github/workflows/pages.yml` installe l'app, lance
-ses tests, la construit (en y copiant tout `assets/`) et publie le résultat. Compter deux à
-cinq minutes. Si les tests échouent, le site reste sur la version précédente.
+`npm run lint` puis ses tests, la construit (en y copiant tout `assets/`) et publie le résultat. Compter deux à
+cinq minutes. Si le lint ou les tests échouent, le site reste sur la version précédente.
+`npm run lint` (ESLint `no-undef`) bloque la publication quand un nom n'est pas déclaré :
+il a été ajouté après qu'un import retiré par erreur a cassé l'accueil en ligne. Le lancer
+avant de pousser.
 
 - Suivre la publication : onglet **Actions** du dépôt sur GitHub.
 - Le site : **https://theomaraval.github.io/jeu-canard-3d/**
+- **`deploy-pages` en échec passager** : l'étape échoue parfois (« No artifacts named
+  github-pages », « Deployment failed, try again later ») alors que build et tests passent.
+  Remède : pousser de nouveau (`git commit --allow-empty -m "ci: republier"`, puis
+  `git push`), en espaçant les pushs d'au moins 2 minutes (des pushs rapprochés font échouer
+  le déploiement). `gh` n'est pas installé : suivre les exécutions par l'API publique
+  `https://api.github.com/repos/TheoMaraval/jeu-canard-3d/actions/runs?per_page=5`.
+- **Vérifier le site en ligne** en contournant le cache (Pages garde environ 10 min) :
+  ajouter `?v=<sha>` à l'adresse, par exemple `…/jeu-canard-3d/?v=1a2b3c4` (ou
+  `?ville=lille&v=…`).
 - Sur téléphone, après une mise à jour : recharger la page ; si l'ancienne version reste,
   fermer et rouvrir l'onglet.
+
+**Mode défi** : relancer seulement le placement d'une ville (`place_objets.py`) réécrit
+`cachettes.json` et son `empreinte`. Une empreinte modifiée invalide les défis déjà envoyés
+pour cette ville : le jeu le dit au joueur qui ouvre le lien (« ancienne version »), et
+« Mes défis » grise les défis concernés. Ne relancer le placement que si c'est voulu.
 
 **Important** : le générateur ne tourne pas sur GitHub (il faudrait Blender). Les fichiers
 de `assets/` doivent donc être générés en local et **commités** avec le thème.
@@ -110,6 +128,45 @@ pos(); // coordonnées du canard à l'écran : taper (vrai clic) à cet endroit
 ```
 
 Le canard n'est « révélé » (bec visible, tap accepté) qu'à partir de `jeu.vue().ppm` ≥ 80.
+
+**Construire un lien de défi à la main** (console, sur n'importe quelle page du jeu servie
+par Vite). L'empreinte est celle de la ville dans `scenes.json` ; Lille n'a que 408
+cachettes : numéros < 408.
+
+```js
+const d = await import('/src/defi.js');
+d.lienDefi(location.href, 'lille', d.encoderDefi({
+  version: 3, empreinte: 'm4nz', numeros: [0, 150, 300], prenom: 'Camille',
+}));
+```
+
+Ouvrir le lien obtenu : partie de défi à 3 canards. `defi=AQ` donne « abîmé » ; `defi=abc`
+donne « version plus récente » (premier octet ≠ 1).
+
+**Zoomer sur une cachette dans l'écran « Cacher »** (`/?ville=lille&cacher`) : comme pour un
+canard, avec `jeu.cachettes` (la liste de `cachettes.json`, centres compris) :
+
+```js
+const cible = jeu.cachettes[150]; // le reste est identique à la recette du canard ci-dessus
+```
+
+Dézoomer d'abord complètement, puis zoomer sur la cible jusqu'à `jeu.vue().ppm >= 110`.
+Poser le canard par un **vrai clic** sur les coordonnées données par `pos()` ; le facteur
+entre ces coordonnées et celles du clic dépend de la taille du volet (reprendre un point
+connu pour l'étalonner). `jeu.defi()` donne le brouillon (numéros posés).
+
+**Ne pas toucher au presse-papiers de l'utilisateur** : avant de partager, remplacer la copie
+par un journal :
+`navigator.clipboard.writeText = async (t) => console.log(t)`. Avant « Supprimer » dans
+« Mes défis », `window.confirm = () => true` (une vraie boîte de dialogue bloque le
+navigateur intégré).
+
+**Lister puis remettre les sauvegardes de test** (page sans jeu, `/scenes.json`) :
+
+```js
+Object.keys(localStorage).filter((k) => k.startsWith('jeu-canard-3d:')).forEach((k) => console.log(k, localStorage[k]));
+// à la fin : removeItem de chaque clé créée pour le test (mes-defis, prenom, defi:<code>, parties)
+```
 
 **Analyser les sons sans les jouer** (on ne peut pas les écouter depuis un script) :
 

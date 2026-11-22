@@ -11,7 +11,7 @@ Successeur de `../jeuFind` (prototype 2D, référence historique seulement).
 
 | Tâche | Fichier |
 |---|---|
-| Architecture, formats de fichiers, sauvegarde, charte de l'interface, son | `docs/01-comprendre-le-projet.md` |
+| Architecture, formats de fichiers (dont `cachettes.json`, lien de défi), sauvegarde, charte de l'interface, son | `docs/01-comprendre-le-projet.md` |
 | Créer ou modifier une ville (+ référence de toutes les clés de thème) | `docs/02-ajouter-une-ville.md` |
 | Difficulté | `docs/03-regler-la-difficulte.md` |
 | Nouveau modèle, saynète, place, toit, véhicule, leurre | `docs/04-etendre-le-generateur.md` |
@@ -30,19 +30,23 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 |---|---|---|
 | `index.html` | Structure des écrans (accueil, barre de jeu, chargement, fin) ; icônes SVG et mascotte canard en `<symbol>` | — |
 | `src/style.css` | Charte « autocollant de BD » ; variables en tête (`--encre`, `--jaune`…) | — |
-| `src/main.js` | Assemble tout : accueil sans `?ville=`, sinon la partie | — |
-| `src/scene.js` | Charge les fichiers de `assets/`, rendu toon + traits d'encre, instanciation | — |
+| `src/main.js` | Assemble tout : accueil sans `?ville=` (avec « Mes défis »), sinon la partie, un défi reçu (`&defi=`) ou l'écran « Cacher » (`&cacher`) | — |
+| `src/scene.js` | Charge les fichiers de `assets/`, rendu toon + traits d'encre, instanciation ; canards fournis (défi), emplacements vides, `placerCanards`, `rebondir` | — |
 | `src/entrees.js` | Glisser, pincer, molette, tap | — |
 | `src/vue.js` | Position, zoom, seuil de révélation, projection écran | oui |
 | `src/picking.js` | Quel canard est sous le doigt | oui |
 | `src/partie.js` | Trouvés, taps, temps | oui |
 | `src/sauvegarde.js` | Progression et record (meilleur temps) par ville (`localStorage`) | oui |
-| `src/hud.js` | Affichage : accueil, compteur, chrono, aide, toasts, fin, confettis | formats |
-| `src/partage.js` | Textes de score et d'invitation, partage natif ou copie, titre de fin | oui |
+| `src/hud.js` | Affichage : accueil (mode Cacher, cartes « Mes défis »), compteur, chrono, aide, toasts, fin, confettis, HUD « Cacher », panneau du prénom | formats |
+| `src/partage.js` | Textes de score et d'invitation, partage natif ou copie (`partagerAvecRetour`), titres de fin (`sousTitreFin`) | oui |
+| `src/defi.js` | Code du lien de défi (encode, décode, vérifie), messages de rejet, textes, liens `&defi=` et `&cacher=` | oui |
+| `src/cachettes.js` | Charge `cachettes.json` ; aimant qui pose un canard sur la cachette la plus proche ; `canardsDuDefi` | oui |
+| `src/mesdefis.js` | « Mes défis », dernier prénom, clé de progression d'un défi reçu | oui |
+| `src/cacher.js` | Écran « Cacher mes canards » : poser, retirer, brouillon automatique, partager | — |
 | `src/mesure.js` | Mesure de fluidité, avec `&debug` dans l'adresse (chargé à la demande) | oui |
 | `src/son.js` | « coin coin » et musique de fin enregistrés (`assets/sons/`), cri synthétisé en secours, bouton son | oui |
 
-Tests : `app/tests/` (51). Polices Fredoka et Nunito embarquées via `@fontsource`.
+Tests : `app/tests/` (85). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -53,6 +57,9 @@ Tests : `app/tests/` (51). Polices Fredoka et Nunito embarquées via `@fontsourc
   qu'à partir de ce zoom.
 - Un canard par case d'une grille 6 × 5 ; visibilité 30–80 % (jamais < 15 %), bec et un
   œil tournés vers la caméra ; « derrière une vitre » vérifié par lancer de rayons.
+- Mode défi : un canard de défi n'est posé que sur une cachette de `cachettes.json`
+  (garantie visible, mêmes règles que les 30 canards) ; son numéro est sa position dans la
+  liste, ne jamais réordonner ce fichier.
 - Pas de pénalité pour un tap raté. Temps, taps et précision affichés en direct.
 - Sans `?ville=` dans l'adresse (ou avec une ville inconnue) : écran d'accueil. Changer de
   ville recharge la page : une seule scène 3D par page.
@@ -65,11 +72,11 @@ Blender n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.
 (trouvé tout seul par `tout_generer.sh`).
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 41 tests, sans Blender, quelques secondes
+python -m unittest discover -s blender/tests -t blender   # 47 tests, sans Blender, quelques secondes
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
-cd app && npm test                                        # 51 tests
+cd app && npm test                                        # 85 tests
 cd app && npm run lint                                    # no-undef : bloque la publication si un nom n'est pas déclaré
 ```
 
@@ -99,13 +106,15 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
 - **Vérifié par l'utilisateur sur téléphone (22/11/2026)** : une partie complète jouée,
   difficulté « bien réglée mais parfois assez facile » ; fluide sur un téléphone modeste
   (chiffres de `&debug` non relevés) ; « coin coin » et musique de fin écoutés.
-- **EN COURS : mode « Cacher mes canards »** (spec
+- **Mode « Cacher mes canards » : fait (22/11/2026)**. On cache de 1 à 30 canards sur des
+  cachettes garanties visibles (`cachettes.json`, 408 à 1123 par ville), on envoie un lien
+  `?ville=…&defi=<code>`, l'ami les retrouve (progression gardée à part, record de la ville
+  intact). « Mes défis » sur l'accueil : envoyer, modifier, supprimer. Spec
   `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`, plan
-  `docs/superpowers/plans/2026-11-22-cacher-mes-canards.md`). **Reprendre ici** : lire la
-  section « Avancement » en tête du plan. Tâches 1 à 9 faites et poussées (cachettes.json,
-  modules `defi.js` / `cachettes.js` / `mesdefis.js`, jouer un défi reçu par
-  `?ville=…&defi=…`) ; restent 10 (écran « Cacher »), 11 (accueil « Mes défis »), 12 (doc).
-- **Ensuite** : un niveau « expert » répondrait au « parfois assez facile ».
+  `docs/superpowers/plans/2026-11-22-cacher-mes-canards.md`. Vérifié dans le navigateur à
+  390 px ; pas encore sur un vrai téléphone.
+- **Ensuite** : un niveau « expert » répondrait au « parfois assez facile » ; puis les
+  restes du mode défi (liste dans `docs/06`, « Restes du mode défi »).
 
 ## Pièges pour Claude
 
@@ -114,6 +123,12 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
 - `location.reload()` et tout départ de page déclenchent `pagehide`, donc une sauvegarde :
   « Rejouer » coupe les sauvegardes (`rejoue = true` dans `main.js`). Pour injecter ou
   effacer une sauvegarde de test, le faire depuis une page sans jeu (`/scenes.json`).
+- Augmenter la `version` d'une ville, ou régénérer son placement, change son `empreinte` :
+  les défis déjà envoyés pour cette ville deviennent invalides (le jeu le dit au joueur).
+- Publication : l'étape `deploy-pages` échoue parfois pour une raison passagère de GitHub
+  (build et tests verts). Republier (`git commit --allow-empty -m "ci: republier"`, push,
+  pushs espacés de 2 min) ; vérifier le site avec `?v=<sha>` (cache Pages ~10 min). Détails :
+  `docs/05`.
 - Ajouter un tirage aléatoire dans du code commun du générateur déplace les canards de
   **toutes** les villes : régénérer tout et augmenter `version`.
 - Décor : ne pas utiliser `bmesh` (plus de 7 min par ville) ; passer par `citygen/maillage.py`.
@@ -130,7 +145,8 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
   - zoomer avec des `WheelEvent` synthétiques ; les `PointerEvent` synthétiques échouent,
     faire de vrais clics (capture d'écran d'abord pour avoir le repère des coordonnées) ;
   - pas de `navigator.share` : le partage passe par la copie, qui écrit dans le
-    presse-papiers de l'utilisateur ;
+    presse-papiers de l'utilisateur : neutraliser `navigator.clipboard.writeText` d'abord ;
+    `window.confirm` (suppression d'un défi) bloque le navigateur : `window.confirm = () => true` ;
   - modifier un fichier source recharge la partie ouverte (Vite) : la sauvegarde de
     `pagehide` réécrit alors l'état en mémoire (et peut noter un record). Remettre les
     sauvegardes de test à zéro depuis `/scenes.json` à la fin.
