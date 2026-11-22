@@ -1,6 +1,6 @@
 // Partage du score, invitations et résumés de progression. Fonctions pures, sauf `partager`
 // qui reçoit le navigateur en paramètre (testable avec un faux).
-import { chrono } from './hud.js';
+import { afficherBref, chrono } from './hud.js';
 import { meilleur } from './sauvegarde.js';
 
 /** « Paris — Grands Boulevards » → { ville: « Paris », quartier: « Grands Boulevards » }. */
@@ -90,3 +90,15 @@ export async function partager({ titre, texte, url }, nav = globalThis.navigator
   }
   return 'impossible';
 }
+
+export const TITRE = 'Où sont les canards ?';
+
+/** Partage, avec un retour visible quand le lien a été copié plutôt que partagé. */
+export async function partagerAvecRetour(contenu) {
+  const issue = await partager({ titre: TITRE, ...contenu });
+  if (issue === 'copie') afficherBref('Message et lien copiés : colle-les dans un SMS ou une messagerie.');
+  if (issue === 'impossible') afficherBref(`Copie impossible ici. Le lien : ${contenu.url}`, 6000);
+}
+
+/** Sous-titre de l'écran de fin. */
+export const sousTitreFin = (n) => (n > 1 ? `Les ${n} canards sont trouvés` : 'Le canard est trouvé');

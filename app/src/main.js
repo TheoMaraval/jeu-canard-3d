@@ -17,7 +17,7 @@ import '@fontsource/nunito/400.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';
 import {
-  TEXTE_INVITATION, decouperNom, lienJeu, partager, progression, resumeVille, texteRecord, texteScore, titreFin,
+  TEXTE_INVITATION, decouperNom, lienJeu, partagerAvecRetour, progression, resumeVille, texteRecord, texteScore, titreFin,
 } from './partage.js';
 import {
   afficherAccueil, afficherAide, afficherBref, afficherChargement, afficherCompteur, afficherFin, afficherHud,
@@ -25,7 +25,6 @@ import {
 } from './hud.js';
 
 const canvas = document.getElementById('scene');
-const TITRE = 'Où sont les canards ?';
 
 async function chargerIndex() {
   const r = await fetch('scenes.json');
@@ -39,13 +38,6 @@ async function chargerIndex() {
 }
 
 const allerA = (ville) => { location.href = lienJeu(location.href, ville); };
-
-/** Partage, avec un retour visible quand le lien a été copié plutôt que partagé. */
-async function partagerAvecRetour(contenu) {
-  const issue = await partager({ titre: TITRE, ...contenu });
-  if (issue === 'copie') afficherBref('Message et lien copiés : colle-les dans un SMS ou une messagerie.');
-  if (issue === 'impossible') afficherBref(`Copie impossible ici. Le lien : ${contenu.url}`, 6000);
-}
 
 function accueil(scenes) {
   const villes = scenes.map((s) => {

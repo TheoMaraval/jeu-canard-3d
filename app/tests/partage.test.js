@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  decouperNom, lienJeu, partager, progression, resumeVille, texteRecord, texteScore, titreFin,
+  decouperNom, lienJeu, partager, progression, resumeVille, sousTitreFin, texteRecord, texteScore, titreFin,
 } from '../src/partage.js';
 
 describe('partage', () => {
@@ -88,5 +88,10 @@ describe('partage', () => {
     expect(await partager({ titre: 'T', texte: 'a', url: 'b' }, {})).toBe('impossible');
     const casse = { clipboard: { writeText: async () => { throw new Error('bloqué'); } } };
     expect(await partager({ titre: 'T', texte: 'a', url: 'b' }, casse)).toBe('impossible');
+  });
+
+  it('écrit le sous-titre de fin selon le nombre de canards', () => {
+    expect(sousTitreFin(30)).toBe('Les 30 canards sont trouvés');
+    expect(sousTitreFin(1)).toBe('Le canard est trouvé');
   });
 });
