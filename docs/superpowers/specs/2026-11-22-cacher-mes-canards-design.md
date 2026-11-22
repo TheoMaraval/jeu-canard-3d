@@ -45,7 +45,7 @@ Format (repère glTF, comme `placements.json`), numéroté par la position dans 
 ```json
 {
   "ville": "lille", "version": 3, "empreinte": "k7f2",
-  "gabarit": 0.35, "distance_min_canards": 6.0,
+  "echelle": 0.7, "gabarit": 0.35, "distance_min_canards": 6.0,
   "cachettes": [[x, y, z, rotation, visibilite, "lieu"], …]
 }
 ```
@@ -57,6 +57,8 @@ Format (repère glTF, comme `placements.json`), numéroté par la position dans 
 - **Aucun tirage aléatoire ajouté** : canards et leurres actuels inchangés, pas de `version`
   à augmenter. Seule l'étape de placement des quatre villes est relancée (les `.blend` sont
   déjà dans `blender/scenes/`).
+- `place_objets.py` ajoute aussi `"empreinte"` à la ligne de la ville dans `scenes.json` :
+  l'accueil sait ainsi, sans charger `cachettes.json`, si un défi de « Mes défis » vaut encore.
 - Écart entre deux canards d'un défi : `distance_min_canards` du thème (6 m aujourd'hui),
   la même règle que le générateur. Valeur à régler au playtest si elle gêne celui qui cache.
 
@@ -119,8 +121,11 @@ pour que l'aiguillage actuel (`?ville=`) ne change pas.
    petit rebond. Sinon, un message bref :
    - `zoom` : « Zoome davantage pour cacher un canard » ;
    - `aucune` : « Pas de cachette ici : essaie un rebord, un balcon, un toit… » ;
-   - `trop-pres` (la cachette la plus proche est à moins de `distance_min_canards` d'un
-     canard posé) : « Trop près d'un autre canard ».
+   - `trop-pres` (toutes les cachettes proches du doigt sont à moins de
+     `distance_min_canards` d'un canard posé ; sinon la plus proche qui convient est prise) :
+     « Trop près d'un autre canard » ;
+   - `plein` (30 canards déjà posés) : « 30 canards au maximum : retires-en un pour le
+     déplacer ».
 4. **Retirer** : taper un canard déjà posé (priorité sur la pose).
 5. **Partager** : panneau « Ton prénom (facultatif) » prérempli, bouton **Envoyer le défi**.
    Partage natif, sinon copie (comme aujourd'hui). Texte : « Camille a caché 7 canards dans
@@ -201,3 +206,7 @@ Un commit et un push par étape :
 ## Journal des révisions
 
 - 2026-11-22 : première version, validée avec l'utilisateur.
+- 2026-11-22 (plan d'implémentation) : `echelle` ajoutée à `cachettes.json` (centre du
+  canard) ; `empreinte` ajoutée à `scenes.json` (validité des défis sur l'accueil) ; raison
+  `plein` à 30 canards ; l'aimant prend la plus proche cachette **qui respecte l'écart**,
+  `trop-pres` seulement si aucune ne le respecte.
