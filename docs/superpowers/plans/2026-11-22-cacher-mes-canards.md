@@ -28,7 +28,10 @@ villes est fait : ne pas le relancer.
 | Corrections de relecture 11 (focus et libellés des tickets en mode Cacher, défi d'une ville disparue grisé, `pageshow` après retour arrière, carte périmée lisible à bande grise, mini-boutons 44 px, focus après suppression, ville dans la confirmation) | fait, revérifié | `866234e`, + bande grise |
 | Garde-fou : ESLint `no-undef` (`npm run lint`), lancé avant les tests dans la publication | fait | `adfec66` |
 | 12 doc (`docs/01`, `05`, `06`, `CLAUDE.md`, journal de la spec) | fait | `aa0ddbd` |
-| Relecture finale de l'ensemble + corrections (décodage plus strict, `pageshow` après refus, doc : distance aux leurres, octet `version`, taille des fichiers, invalidation des défis) | fait | `02e20e4`, ce commit |
+| Relecture finale de l'ensemble + corrections (décodage plus strict, `pageshow` après refus, doc : distance aux leurres, octet `version`, taille des fichiers, invalidation des défis) | fait | `02e20e4`, `fc21374` |
+| 13 (après retour de l'utilisateur : « très restreint », pas de cachette derrière les vitres) cachettes denses dans le générateur (toutes les fenêtres, grille sol / toits / balcons, sans toucher au tirage des 30 canards : `placements.json` doit rester identique) + relance du placement Blender des 4 villes (accord de l'utilisateur) | fait : Lille 408 → 2659 (864 vitres), Paris 1123 → 4654, New York 1038 → 4783, Delhi 827 → 3379 ; `placements.json` identiques ; nouvelles empreintes (défis envoyés avant : invalides) | `23ff8d2` |
+| 14 repères des cachettes libres en mode Cacher, au zoom de pose (accord de l'utilisateur) | fait | `bc58bb0` |
+| 15 vérification navigateur (390 px : repères sur chaque fenêtre de Lille, canard posé derrière la vitre 905, lien reçu 0 / 1) | fait ; relecture des tâches 13-14 en cours | |
 
 Mode terminé le 22/11/2026 ; publication contrôlée sur `?ville=lille&cacher=` (408 cachettes). Suite : `docs/06` (niveau expert, restes du mode défi).
 
