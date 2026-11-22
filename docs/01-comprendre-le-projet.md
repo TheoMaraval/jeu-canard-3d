@@ -97,7 +97,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 |---|---|
 | `blender/themes/` | Une ville par fichier, plus `_commun.json` (valeurs par défaut) |
 | `blender/citygen/` | Le générateur, en Python pur (sauf `geo.py`, seul à utiliser Blender) |
-| `blender/tests/` | 47 tests du générateur, lancés sans Blender |
+| `blender/tests/` | 55 tests du générateur, lancés sans Blender |
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
@@ -190,7 +190,7 @@ Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands B
 ### `assets/scenes/<ville>/cachettes.json` — où un canard de défi peut se cacher
 
 ```json
-{"ville": "lille", "version": 3, "empreinte": "m4nz", "echelle": 0.7, "gabarit": 0.35,
+{"ville": "lille", "version": 3, "empreinte": "cccn", "echelle": 0.7, "gabarit": 0.35,
  "distance_min_canards": 6.0, "cachettes": [
 [16.22, 0.0, -31.825, 5.061, 0.556, "sol"],
 [-50.876, 16.132, 48.318, 0.436, 1.0, "toit"],
@@ -200,16 +200,37 @@ Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands B
 - **Une cachette par ligne** : `[x, y, z, rotation, visibilite, "lieu"]`, repère glTF comme
   `placements.json`. Son **numéro est sa position dans la liste** (0 pour la première) : c'est
   ce numéro que le lien de défi transporte. Ne jamais trier ni filtrer ce fichier à la main.
+- D'où viennent les cachettes : d'abord les `slots` du plan (ceux d'où sont tirés les canards
+  du jeu), puis les **cachettes denses** de `make_layout(theme)["cachettes_denses"]` : chaque
+  fenêtre non condamnée (3 places à l'appui), les vitrines (tous les 0,6 m), les balcons
+  (0,8 m), une grille de 1,2 m sur les toits plats et les plateaux de mansarde, une grille de
+  1 m sur trottoirs et places (2 m sur la chaussée). `layout.py` les pose **sans aucun tirage
+  au sort** et `place_objets.py` les mesure **après** avoir choisi canards et leurres : la
+  partie normale ne change pas (`placements.json` identique, même `version`). Détails :
+  `docs/04-etendre-le-generateur.md`, « Cachettes denses ».
 - Une cachette est gardée si sa visibilité est ≥ 0,3, si une orientation montre le bec et un
-  œil, et si elle est à `distance_min` (1 m, `_commun.json`) au moins de chaque leurre.
+  œil, et si elle est à `distance_min` (1 m, `_commun.json`) au moins de chaque leurre. Une
+  cachette à moins de 0,35 m d'une cachette déjà gardée est retirée (`dedoublonner`).
 - `echelle` sert à calculer le centre du canard à l'écran ; `distance_min_canards` est
   l'écart minimal entre deux canards d'un même défi.
 - **`empreinte`** : CRC32 du contenu de `cachettes`, en 4 caractères base 36. Relancer
   `place_objets.py` réécrit `cachettes.json` **et** l'empreinte (dans le fichier et dans
   `scenes.json`). Si l'empreinte change, les défis déjà envoyés pour cette ville sont
   refusés par le jeu (« créé pour une ancienne version »).
-- Nombre de cachettes : Paris 1123, New York 1038, Lille 408 (pas de balcons), Delhi 827.
-- Chargé seulement en mode défi (cacher ou jouer un défi), 19 à 53 Ko selon la ville.
+- Nombre de cachettes (22/11/2026, avec les cachettes denses) :
+
+  | Ville | Total | sol | vitre | toit | balcon | Avant les denses |
+  |---|---|---|---|---|---|---|
+  | Paris | 4654 | 1367 | 1353 | 1353 | 581 | 1123 |
+  | New York | 4783 | 1611 | 1140 | 1484 | 548 | 1038 |
+  | Lille | 2659 | 1277 | 864 | 518 | — | 408 |
+  | Delhi | 3379 | 890 | 869 | 1620 | — | 827 |
+
+  Lille a peu de toits plats (pignons) ; Delhi n'a pas de balcon ouvert (jharokhas fermés).
+  Beaucoup de candidates au sol sont écartées parce que cachées par les immeubles (vues
+  depuis la caméra, au nord-ouest de chaque îlot).
+- Chargé seulement en mode défi (cacher ou jouer un défi), 117 à 215 Ko selon la ville
+  (16 à 29 Ko compressé, comme le sert GitHub Pages).
 - Absent : le jeu dit que le mode défi n'est pas prêt pour la ville.
 - Produit par `citygen/cachettes.py` (pur, testé), appelé par `place_objets.py`.
 
@@ -318,7 +339,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 47 tests du générateur et les 90 de l'app passent. GitHub relance à chaque publication
+- Les 55 tests du générateur et les 93 de l'app passent. GitHub relance à chaque publication
   ceux de l'app, précédés de `npm run lint` (ESLint `no-undef` : un nom non déclaré, par
   exemple un import retiré par erreur, bloque la publication).
 - Le mode défi a été vérifié dans le navigateur à 390 px (cacher, partager, ouvrir le lien,

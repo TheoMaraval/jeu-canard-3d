@@ -1,7 +1,8 @@
 """Cachettes valables pour le mode « Cacher mes canards ». Python pur.
 
 Entrée : les slots mesurés par place_objets.py ({lieu, pos, rot, vis, rot_canard}, repère
-Blender) et les leurres placés. Sortie : la liste compacte de cachettes.json, en repère glTF,
+Blender) : ceux du jeu puis les cachettes denses (make_layout()["cachettes_denses"]), et les
+leurres placés. Sortie : la liste compacte de cachettes.json, en repère glTF,
 et son empreinte. L'ordre des slots est conservé : le numéro d'une cachette est sa position
 dans la liste, et c'est ce numéro que porte le lien de défi.
 """
@@ -23,6 +24,24 @@ def cachettes_valables(slots, leurres, theme):
             if s["vis"] >= vis_min
             and s.get("rot_canard") is not None
             and all(_dist(s["pos"], l["pos"]) >= dmin for l in leurres)]
+
+
+def dedoublonner(slots, ecart):
+    """Garde les slots dans l'ordre, sauf ceux à moins de `ecart` m d'un slot déjà gardé.
+
+    Sert à fondre les cachettes denses (layout.Plan.dense) avec les slots du jeu : deux
+    cachettes presque au même endroit n'aident pas l'aimant de l'app et grossissent le fichier.
+    """
+    cases, gardes = {}, []
+    for s in slots:
+        c = tuple(int(v // ecart) for v in s["pos"])
+        voisins = (cases.get((c[0] + i, c[1] + j, c[2] + k), ())
+                   for i in (-1, 0, 1) for j in (-1, 0, 1) for k in (-1, 0, 1))
+        if any(_dist(s["pos"], g["pos"]) < ecart for case in voisins for g in case):
+            continue
+        cases.setdefault(c, []).append(s)
+        gardes.append(s)
+    return gardes
 
 
 def en_gltf(slot):

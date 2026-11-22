@@ -32,7 +32,7 @@ npm run dev        # http://localhost:5173
 ## Les tests
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 47 tests du générateur, sans Blender
+python -m unittest discover -s blender/tests -t blender   # 55 tests du générateur, sans Blender
 cd app && npm run lint                                    # ESLint no-undef (nom non déclaré)
 cd app && npm test                                        # 85 tests de l'app
 ```
@@ -130,13 +130,13 @@ pos(); // coordonnées du canard à l'écran : taper (vrai clic) à cet endroit
 Le canard n'est « révélé » (bec visible, tap accepté) qu'à partir de `jeu.vue().ppm` ≥ 80.
 
 **Construire un lien de défi à la main** (console, sur n'importe quelle page du jeu servie
-par Vite). L'empreinte est celle de la ville dans `scenes.json` ; Lille n'a que 408
-cachettes : numéros < 408.
+par Vite). L'empreinte est celle de la ville dans `scenes.json` ; Lille a 2659
+cachettes : numéros < 2659.
 
 ```js
 const d = await import('/src/defi.js');
 d.lienDefi(location.href, 'lille', d.encoderDefi({
-  version: 3, empreinte: 'm4nz', numeros: [0, 150, 300], prenom: 'Camille',
+  version: 3, empreinte: 'cccn', numeros: [0, 150, 300], prenom: 'Camille',
 }));
 ```
 

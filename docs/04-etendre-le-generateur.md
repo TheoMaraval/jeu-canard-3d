@@ -16,6 +16,13 @@ Après chaque modification : `python -m unittest discover -s blender/tests -t bl
 > Même sans changer `version`, modifier la borne basse de `visibilite_canard`, `distance_min` ou
 > tout ce qui change la liste des cachettes change l'empreinte : les défis déjà envoyés sont
 > alors refusés.
+>
+> **Cachettes denses : jamais de tirage.** Les cachettes du mode « Cacher » (voir plus bas)
+> sont posées par `Plan.dense()`, qui ne doit **jamais** appeler `self.rng` (ni aucun autre
+> hasard) : un seul tirage de plus déplacerait les 30 canards et les leurres du jeu sans que
+> rien ne le signale à l'écran. `tests/test_cachettes_denses.py` garde l'empreinte du plan du
+> jeu (clés `prims`, `insts`, `slots`, `lots`, `blocs`) et vérifie qu'aucun tirage n'est
+> consommé.
 
 ## Où est quoi
 
@@ -28,6 +35,7 @@ Après chaque modification : `python -m unittest discover -s blender/tests -t bl
 | Un type de toit ou de balcon | `layout.py` (`immeuble`, `balcons`, `TOITS`, `BALCONS`) |
 | Un véhicule | `build_kit.py`, puis `VEHICULES` et `vehicule()` dans `layout.py` |
 | Un leurre jaune | `blender/build_assets.py`, `LEURRES` dans `blender/citygen/placement.py`, `leurres_par_lieu` dans les thèmes |
+| Des cachettes pour le mode « Cacher » | `layout.py` : un appel à `self.dense(lieu, x, y, z)` là où la géométrie est connue (voir « Cachettes denses ») |
 
 La validation des thèmes (`valider_theme` dans `layout.py`) découvre automatiquement les
 saynètes et les places ; pour les toits, balcons, éléments de toit et véhicules, il faut
@@ -141,6 +149,40 @@ S'inspirer de `square_lille` (beffroi au nord-ouest, braderie) ou `square_delhi`
 Dans `extra_toit()`, une branche qui dessine l'objet et renvoie
 `(demi-largeur, hauteur)` : ces deux nombres servent à créer des cachettes **derrière**
 l'objet, à moitié masquées. Puis ajouter le nom à `EXTRAS_TOIT`.
+
+## Cachettes denses du mode « Cacher »
+
+Les `slots` du plan (2 000 à 3 500 par ville) servent à tirer au sort les 30 canards et les
+leurres ; ils sont clairsemés (un tiers des fenêtres seulement). Pour que le joueur qui cache
+ses canards trouve une cachette presque partout, `layout.py` pose en plus des **cachettes
+denses**, renvoyées à part dans `make_layout(theme)["cachettes_denses"]`, même format que les
+slots :
+
+| Lieu | Où | Pas |
+|---|---|---|
+| `vitre` | chaque fenêtre non condamnée des façades visibles, à l'appui | 3 places : milieu et ± 0,36 m (`DECALAGES_FENETRE`) |
+| `vitre` | vitrines du rez-de-chaussée (sauf rideau de fer et porte) | 0,6 m (`PAS_VITRINE`) |
+| `balcon` | balcons filants (Paris), paliers d'escalier de secours (New York) | 0,8 m (`PAS_BALCON`) |
+| `toit` | toits plats et plateau des mansardes, dans l'acrotère | grille de 1,2 m (`PAS_TOIT`) |
+| `sol` | trottoirs et places, là où `libre()` le permet | grille de 1 m (`PAS_SOL`) |
+| `sol` | chaussée | un point sur deux de la même grille (`RUE_UN_SUR`) |
+
+Règles :
+
+- `Plan.dense()` **ne tire rien au sort** (voir la règle en tête de page) ; sa `rot` (angle
+  essayé en premier pour le bec) est calculée à partir de la position. On l'appelle après les
+  tirages qui décident d'une fenêtre (jharokha, planches) en lisant leur résultat, jamais en
+  en ajoutant.
+- La grille du sol est posée **à la fin** de `construire()` (`_sol_dense`), quand toutes les
+  emprises sont connues.
+- On peut poser large : `place_objets.py` mesure chaque cachette dense comme un slot
+  (`mesurer`, `orientation_canard`), **après** avoir choisi canards et leurres, puis garde
+  celles qui passent `cachettes_valables` et retire celles à moins de 0,35 m d'une cachette
+  déjà gardée (`dedoublonner`). Une cachette dans un objet, sous une marchandise ou derrière
+  un buste est donc écartée par la mesure.
+- Budget : environ 40 lancers de rayons par cachette ; 6 000 à 9 000 candidates par ville
+  (voir `docs/01` pour les temps et les tailles). Au-delà d'environ 10 000 cachettes gardées,
+  `cachettes.json` grossit trop : baisser une densité plutôt que tronquer la liste.
 
 ## Ajouter un leurre jaune
 

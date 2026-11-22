@@ -72,8 +72,8 @@ Blender n'est pas dans le PATH : `C:\Program Files\Blender Foundation\Blender 5.
 (trouvé tout seul par `tout_generer.sh`).
 
 ```bash
-python -m unittest discover -s blender/tests -t blender   # 47 tests, sans Blender, quelques secondes
-bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
+python -m unittest discover -s blender/tests -t blender   # 55 tests, sans Blender, quelques secondes
+bash blender/tout_generer.sh                              # tout régénérer (environ 30 min : le placement mesure 6 000 à 9 000 cachettes denses, 4 à 10 min par ville)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
 cd app && npm test                                        # 90 tests
@@ -107,7 +107,8 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
   difficulté « bien réglée mais parfois assez facile » ; fluide sur un téléphone modeste
   (chiffres de `&debug` non relevés) ; « coin coin » et musique de fin écoutés.
 - **Mode « Cacher mes canards » : fait (22/11/2026)**. On cache de 1 à 30 canards sur des
-  cachettes garanties visibles (`cachettes.json`, 408 à 1123 par ville), on envoie un lien
+  cachettes garanties visibles (`cachettes.json`, 2 659 à 4 783 par ville : toutes les
+  fenêtres, grilles au sol, sur les toits et les balcons), on envoie un lien
   `?ville=…&defi=<code>`, l'ami les retrouve (progression gardée à part, record de la ville
   intact). « Mes défis » sur l'accueil : envoyer, modifier, supprimer. Spec
   `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`, plan
@@ -131,6 +132,10 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
   `docs/05`.
 - Ajouter un tirage aléatoire dans du code commun du générateur déplace les canards de
   **toutes** les villes : régénérer tout et augmenter `version`.
+- Cachettes denses du mode Cacher (`Plan.dense`, `layout.py`) : **jamais** de tirage
+  (`self.rng`) pour elles, sinon les canards du jeu bougent sans bruit.
+  `tests/test_cachettes_denses.py` garde l'empreinte du plan du jeu ; après un placement
+  relancé, `git diff --stat assets/scenes/*/placements.json` doit rester vide.
 - Décor : ne pas utiliser `bmesh` (plus de 7 min par ville) ; passer par `citygen/maillage.py`.
 - Blender 5 : matériaux et monde créés par script ont un arbre de nœuds vide ; créer les
   nœuds explicitement (`material()` dans `blender/citygen/geo.py`).

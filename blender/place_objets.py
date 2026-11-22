@@ -2,7 +2,7 @@
 
     blender --background blender/scenes/<ville>.blend --python blender/place_objets.py -- --ville paris
 
-Écrit assets/scenes/<ville>/placements.json et met à jour assets/scenes.json.
+Écrit assets/scenes/<ville>/placements.json et cachettes.json, et met à jour assets/scenes.json.
 La visibilité d'une cachette est la part de 27 points du volume d'un canard d'où un
 rayon atteint la caméra de jeu sans toucher le décor ni les passants, véhicules et
 mobilier du kit. Les vitres ne bloquent pas : on compte celles que le rayon traverse.
@@ -11,6 +11,7 @@ import json
 import math
 import os
 import sys
+import time
 
 import bpy
 from mathutils import Vector
@@ -20,7 +21,7 @@ sys.path.insert(0, os.path.join(ROOT, "blender"))
 
 from citygen.layout import AZIMUT, ELEVATION, charger_theme, make_layout  # noqa: E402
 from citygen.placement import CANARD, PlacementImpossible, cellule, choisir  # noqa: E402
-from citygen.cachettes import cachettes_valables, empreinte, en_gltf  # noqa: E402
+from citygen.cachettes import cachettes_valables, dedoublonner, empreinte, en_gltf  # noqa: E402
 
 EL, AZ = math.radians(ELEVATION), math.radians(AZIMUT)
 VERS_CAMERA = Vector((math.cos(EL) * math.sin(AZ), -math.cos(EL) * math.cos(AZ), math.sin(EL)))
@@ -32,6 +33,7 @@ YEUX = ((0.20, 0.075, 0.37), (0.20, -0.075, 0.37))
 FACE_CAMERA = -math.radians(AZIMUT)  # rotation Z qui tourne le bec vers la caméra
 ECARTS = [math.radians(a) for a in (0, 25, -25, 50, -50, 70, -70)]
 DEGAGEMENT = 0.22  # m libres autour du centre, sinon l'objet traverserait un mur
+ECART_CACHETTES = 0.35  # m : en deçà, deux cachettes du mode défi n'en font qu'une
 
 
 def argument(nom, defaut):
@@ -111,8 +113,10 @@ def main():
     scene = bpy.context.scene
     dg = bpy.context.evaluated_depsgraph_get()
 
+    plan = make_layout(theme)
+    debut = time.time()
     slots = []
-    for s in make_layout(theme)["slots"]:
+    for s in plan["slots"]:
         vis = mesurer(scene, dg, s, k)
         if vis is not None:
             s["vis"] = vis
@@ -143,10 +147,21 @@ def main():
             "objets": [gltf(o) for o in objets],
         }, f, ensure_ascii=False, indent=1)
 
-    # Mode « Cacher mes canards » : toutes les cachettes où un canard reste trouvable.
-    # Aucun tirage aléatoire ici : canards et leurres ne bougent pas.
+    # Mode « Cacher mes canards » : toutes les cachettes où un canard reste trouvable, celles
+    # du jeu puis les denses (toutes les fenêtres, grilles au sol, sur les toits et les
+    # balcons), mesurées de la même façon mais APRÈS le choix : elles ne changent ni les
+    # canards ni les leurres. Aucun tirage aléatoire ici.
+    duree_jeu = time.time() - debut
+    denses = []
+    for s in plan["cachettes_denses"]:
+        vis = mesurer(scene, dg, s, k)
+        if vis is not None:
+            s["vis"] = vis
+            denses.append(s)
+    duree_denses = time.time() - debut - duree_jeu
     leurres = [o for o in objets if o["type"] != CANARD]
-    cachettes = [en_gltf(s) for s in cachettes_valables(slots, leurres, theme)]
+    valables = cachettes_valables(slots, leurres, theme) + cachettes_valables(denses, leurres, theme)
+    cachettes = [en_gltf(s) for s in dedoublonner(valables, ECART_CACHETTES)]
     emp = empreinte(cachettes)
     entete = {"ville": ville, "version": theme["version"], "empreinte": emp, "echelle": k,
               "gabarit": round(0.5 * k, 3), "distance_min_canards": theme["distance_min_canards"]}
@@ -174,7 +189,11 @@ def main():
         histo[k] = histo.get(k, 0) + 1
     par = lambda objs, cle: {v: sum(1 for o in objs if o[cle] == v) for v in sorted({o[cle] for o in objs})}
     return {
-        "slots_utilisables": len(slots), "cachettes_defi": len(cachettes), "histogramme_visibilite": dict(sorted(histo.items())),
+        "slots_utilisables": len(slots), "cachettes_defi": len(cachettes),
+        "cachettes_par_lieu": par([{"lieu": c[5]} for c in cachettes], "lieu"),
+        "denses_mesurees": f"{len(denses)}/{len(plan['cachettes_denses'])}",
+        "secondes_mesure": {"jeu": round(duree_jeu), "denses": round(duree_denses)},
+        "histogramme_visibilite": dict(sorted(histo.items())),
         "candidats_canard": sum(1 for s in slots if lo <= s["vis"] <= hi),
         "canards_par_lieu": par(canards, "lieu"),
         "leurres_par_lieu": par([o for o in objets if o["type"] != CANARD], "lieu"),

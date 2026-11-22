@@ -26,8 +26,11 @@ canards habituels (part visible, bec et œil tournés vers la caméra).
 ## 3. Les cachettes (générateur)
 
 `place_objets.py` écrit `assets/scenes/<ville>/cachettes.json` à partir des cachettes qu'il
-mesure déjà (2 000 à 3 500 par ville). Le filtre est une fonction pure,
-`blender/citygen/cachettes.py`, testée sans Blender.
+mesure déjà (2 000 à 3 500 par ville) **et des cachettes denses** (6 000 à 9 000 candidates
+par ville : chaque fenêtre, vitrines, grilles au sol, sur les toits et les balcons, posées par
+`layout.py` sans aucun tirage, mesurées après le choix des canards du jeu ; voir
+`docs/04-etendre-le-generateur.md`). Deux cachettes à moins de 0,35 m n'en font qu'une. Le
+filtre est une fonction pure, `blender/citygen/cachettes.py`, testée sans Blender.
 
 Une cachette est gardée si :
 
@@ -246,3 +249,16 @@ Un commit et un push par étape :
   vieil onglet) = `format`, soit « recharge la page » ; invisibles (U+061C, U+200B, U+200C,
   U+200E, U+200F, U+2028, U+2029, U+FEFF) retirés du prénom, le U+200D des émoji composés
   gardé.
+- 2026-11-22 (cachettes denses) : retour de l'utilisateur, le choix des cachettes est « très
+  restreint » (« Pas de cachette ici » presque partout, impossible de cacher derrière la
+  plupart des fenêtres : seules 30 % des fenêtres avaient une cachette, à une place tirée au
+  sort). `layout.py` pose en plus des cachettes denses (`cachettes_denses` : chaque fenêtre
+  non condamnée à 3 places, vitrines tous les 0,6 m, balcons tous les 0,8 m, grille de 1,2 m
+  sur les toits, de 1 m sur trottoirs et places, de 2 m sur la chaussée), **sans aucun
+  tirage** ; `place_objets.py` les mesure après le choix des canards du jeu, avec les mêmes
+  règles (§ 3), et retire celles à moins de 0,35 m d'une cachette gardée. Canards et leurres
+  du jeu inchangés (`placements.json` identique, `version` inchangée, garanti par
+  `tests/test_cachettes_denses.py`). Cachettes : Paris 1123 → 4654, New York 1038 → 4783,
+  Lille 408 → 2659, Delhi 827 → 3379 ; `cachettes.json` de 117 à 215 Ko (16 à 29 Ko
+  compressé). Les empreintes changent (Paris `tw1y`, New York `bwzm`, Lille `cccn`, Delhi
+  `iaae`) : **les défis envoyés avant sont invalidés** (« créé pour une ancienne version »).
