@@ -18,7 +18,7 @@ elle seule.
 |---|---|---|---|
 | `echelle_objets` | 0,7 | plus petit | Taille des canards et leurres (0,7 → 0,35 m). Plus petit : il faut zoomer davantage, donc on voit moins de ville à la fois |
 | `leurres` | 270 | plus grand | Nombre de leurres. Avec 30 canards, 1 objet jaune sur 10 est un canard. Au-delà de 400, risque d'exaspérer |
-| `visibilite_canard` | `[0.3, 0.8]` | bornes plus basses | Part du canard visible depuis la caméra. Ne jamais descendre sous 0,15 : le placement le refuse, un canard caché à 90 % est introuvable |
+| `visibilite_canard` | `[0.3, 0.8]` | bornes plus basses | Part du canard visible depuis la caméra. Ne jamais descendre sous 0,15 : le placement le refuse, un canard caché à 90 % est introuvable. Changer la borne basse de `visibilite_canard` ou `distance_min` (ou tout ce qui modifie la liste des cachettes) change l'empreinte et invalide les défis déjà envoyés, même sans changer `version`. |
 | `visibilite_leurre` | `[0.3, 1.0]` | plus proche de celle des canards | Si les leurres sont tous bien en vue et les canards tous à moitié cachés, « à moitié caché » devient un indice |
 | `distance_min_canards` | 6 | plus petit | Distance minimale entre deux canards (m) |
 | `canards` + `grille` | 30, `[6, 5]` | — | Nombre de canards ; `grille` doit avoir exactement autant de cases |

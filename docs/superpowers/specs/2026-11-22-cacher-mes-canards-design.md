@@ -50,7 +50,7 @@ Format (repère glTF, comme `placements.json`), numéroté par la position dans 
 }
 ```
 
-- Environ 100 Ko par ville ; chargé seulement en mode défi (cacher ou jouer un défi).
+- 19 à 53 Ko selon la ville ; chargé seulement en mode défi (cacher ou jouer un défi).
 - **`empreinte`** : 4 caractères (base 36) tirés d'un CRC32 du contenu de `cachettes`.
   Si une ville est régénérée sans changer de `version`, les numéros ne correspondent plus :
   l'empreinte le détecte et le jeu refuse le défi au lieu de cacher des canards ailleurs.
@@ -71,7 +71,7 @@ Format (repère glTF, comme `placements.json`), numéroté par la position dans 
 | Octets | Contenu |
 |---|---|
 | 1 | Format (`1`) |
-| 2 | `version` de la ville |
+| 1 | `version` de la ville (modulo 256) |
 | 3 | `empreinte` des cachettes (les 4 caractères base 36 tiennent dans 3 octets) |
 | 1 | Nombre de canards *n* (1 à 30) |
 | 2 × *n* | Numéros des cachettes (0 à 65 535) |
@@ -239,3 +239,10 @@ Un commit et un push par étape :
     à `localStorage` n'étant pas gardés (voir « Restes du mode défi » dans `docs/06`) ;
   - tests : 47 Python et 85 JS à la livraison ; `npm run lint` (ESLint `no-undef`) ajouté
     avant les tests dans la publication.
+- 2026-11-22 (relecture finale) : l'octet `version` du lien est **modulo 256**
+  (`ENTETE = 6`, `version & 255`), la table du § 4 est corrigée. Décodage plus strict : code
+  de plus de 200 caractères = abîmé ; empreinte qui ne tient pas en 4 caractères base 36
+  (≥ 36⁴) = abîmé ; défi de `version` supérieure à celle des fichiers locaux (cache de Pages,
+  vieil onglet) = `format`, soit « recharge la page » ; invisibles (U+061C, U+200B, U+200C,
+  U+200E, U+200F, U+2028, U+2029, U+FEFF) retirés du prénom, le U+200D des émoji composés
+  gardé.

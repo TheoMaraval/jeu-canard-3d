@@ -12,6 +12,10 @@ Après chaque modification : `python -m unittest discover -s blender/tests -t bl
 > nouvel objet sur tous les trottoirs, par exemple) décale toute la suite des tirages : **les
 > canards de toutes les villes changent de place**. Il faut alors régénérer toutes les
 > villes et augmenter `version` dans `_commun.json` (et dans les thèmes qui la redéfinissent).
+>
+> Même sans changer `version`, modifier la borne basse de `visibilite_canard`, `distance_min` ou
+> tout ce qui change la liste des cachettes change l'empreinte : les défis déjà envoyés sont
+> alors refusés.
 
 ## Où est quoi
 

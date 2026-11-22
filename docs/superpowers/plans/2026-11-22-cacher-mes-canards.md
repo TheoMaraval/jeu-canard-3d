@@ -28,6 +28,9 @@ villes est fait : ne pas le relancer.
 | Corrections de relecture 11 (focus et libellés des tickets en mode Cacher, défi d'une ville disparue grisé, `pageshow` après retour arrière, carte périmée lisible à bande grise, mini-boutons 44 px, focus après suppression, ville dans la confirmation) | fait, revérifié | `866234e`, + bande grise |
 | Garde-fou : ESLint `no-undef` (`npm run lint`), lancé avant les tests dans la publication | fait | `adfec66` |
 | 12 doc (`docs/01`, `05`, `06`, `CLAUDE.md`, journal de la spec) | fait | `aa0ddbd` |
+| Relecture finale de l'ensemble + corrections (décodage plus strict, `pageshow` après refus, doc : distance aux leurres, octet `version`, taille des fichiers, invalidation des défis) | fait | `02e20e4`, ce commit |
+
+Mode terminé le 22/11/2026 ; publication contrôlée sur `?ville=lille&cacher=` (408 cachettes). Suite : `docs/06` (niveau expert, restes du mode défi).
 
 Publication GitHub Pages : l'étape `deploy-pages` échoue parfois (« No artifacts named
 github-pages », « Deployment failed, try again later ») alors que build et tests passent ;

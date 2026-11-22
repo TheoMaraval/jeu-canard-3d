@@ -46,7 +46,7 @@ Le générateur et l'app ne communiquent que par `assets/` (formats dans `docs/0
 | `src/mesure.js` | Mesure de fluidité, avec `&debug` dans l'adresse (chargé à la demande) | oui |
 | `src/son.js` | « coin coin » et musique de fin enregistrés (`assets/sons/`), cri synthétisé en secours, bouton son | oui |
 
-Tests : `app/tests/` (85). Polices Fredoka et Nunito embarquées via `@fontsource`.
+Tests : `app/tests/` (90). Polices Fredoka et Nunito embarquées via `@fontsource`.
 
 ## Règles qui définissent le jeu (ne pas casser)
 
@@ -58,8 +58,8 @@ Tests : `app/tests/` (85). Polices Fredoka et Nunito embarquées via `@fontsourc
 - Un canard par case d'une grille 6 × 5 ; visibilité 30–80 % (jamais < 15 %), bec et un
   œil tournés vers la caméra ; « derrière une vitre » vérifié par lancer de rayons.
 - Mode défi : un canard de défi n'est posé que sur une cachette de `cachettes.json`
-  (garantie visible, mêmes règles que les 30 canards) ; son numéro est sa position dans la
-  liste, ne jamais réordonner ce fichier.
+  (mêmes garanties de visibilité minimale et d'orientation, 1 m des leurres) ; son numéro
+  est sa position dans la liste, ne jamais réordonner ce fichier.
 - Pas de pénalité pour un tap raté. Temps, taps et précision affichés en direct.
 - Sans `?ville=` dans l'adresse (ou avec une ville inconnue) : écran d'accueil. Changer de
   ville recharge la page : une seule scène 3D par page.
@@ -76,7 +76,7 @@ python -m unittest discover -s blender/tests -t blender   # 47 tests, sans Blend
 bash blender/tout_generer.sh                              # tout régénérer (moins de 10 min)
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
-cd app && npm test                                        # 85 tests
+cd app && npm test                                        # 90 tests
 cd app && npm run lint                                    # no-undef : bloque la publication si un nom n'est pas déclaré
 ```
 

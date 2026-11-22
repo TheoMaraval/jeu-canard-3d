@@ -101,7 +101,7 @@ changer l'un sans toucher à l'autre, tant que les formats ci-dessous sont respe
 | `blender/*.py` | Les étapes Blender ; `tout_generer.sh` les enchaîne |
 | `blender/*.blend`, `blender/scenes/` | Fichiers Blender générés (utiles pour inspecter, régénérables) |
 | `assets/` | **Ce que l'app charge** : `props.glb`, `kit.glb`, `scenes.json`, `scenes/<ville>/`, et `sons/` (seul dossier écrit à la main, pas par le générateur) |
-| `app/` | L'application ; `app/tests/` : 85 tests |
+| `app/` | L'application ; `app/tests/` : 90 tests |
 | `.github/workflows/pages.yml` | La publication automatique |
 | `.claude/skills/` | Fiches de conseils Blender (dépôt `arjun988/blender-skills`, licence MIT) |
 | `docs/previews/` | Rendus Blender de contrôle (sans traits d'encre : le vrai rendu est dans l'app) |
@@ -201,7 +201,7 @@ Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands B
   `placements.json`. Son **numéro est sa position dans la liste** (0 pour la première) : c'est
   ce numéro que le lien de défi transporte. Ne jamais trier ni filtrer ce fichier à la main.
 - Une cachette est gardée si sa visibilité est ≥ 0,3, si une orientation montre le bec et un
-  œil, et si elle est à `distance_min_canards` (6 m) au moins de chaque leurre.
+  œil, et si elle est à `distance_min` (1 m, `_commun.json`) au moins de chaque leurre.
 - `echelle` sert à calculer le centre du canard à l'écran ; `distance_min_canards` est
   l'écart minimal entre deux canards d'un même défi.
 - **`empreinte`** : CRC32 du contenu de `cachettes`, en 4 caractères base 36. Relancer
@@ -209,7 +209,7 @@ Le nom est découpé au tiret long « — » : « Paris » en titre, « Grands B
   `scenes.json`). Si l'empreinte change, les défis déjà envoyés pour cette ville sont
   refusés par le jeu (« créé pour une ancienne version »).
 - Nombre de cachettes : Paris 1123, New York 1038, Lille 408 (pas de balcons), Delhi 827.
-- Chargé seulement en mode défi (cacher ou jouer un défi), environ 100 Ko par ville.
+- Chargé seulement en mode défi (cacher ou jouer un défi), 19 à 53 Ko selon la ville.
 - Absent : le jeu dit que le mode défi n'est pas prêt pour la ville.
 - Produit par `citygen/cachettes.py` (pur, testé), appelé par `place_objets.py`.
 
@@ -318,7 +318,7 @@ devenues fausses, seront ignorées au lieu d'afficher des canards « trouvés »
 
 ## Ce qui est vérifié, ce qui ne l'est pas
 
-- Les 47 tests du générateur et les 85 de l'app passent. GitHub relance à chaque publication
+- Les 47 tests du générateur et les 90 de l'app passent. GitHub relance à chaque publication
   ceux de l'app, précédés de `npm run lint` (ESLint `no-undef` : un nom non déclaré, par
   exemple un import retiré par erreur, bloque la publication).
 - Le mode défi a été vérifié dans le navigateur à 390 px (cacher, partager, ouvrir le lien,
