@@ -176,7 +176,8 @@ niveaux 2 et 3 qu'une fois le jeu validé par des joueurs.
 
 ## Limites connues aujourd'hui
 
-- Fluidité sur téléphone et tablette jamais mesurée.
+- Fluidité mesurée seulement sur un iPhone récent : jamais sur un Android modeste, un
+  vieux téléphone ni une tablette.
 - Aucune partie complète jouée pour régler la difficulté.
 - Les images de `docs/previews/` n'ont ni traits d'encre ni toutes les couleurs.
 - Les tags ne vont que sur les bandeaux entre étages et sur les rideaux de fer.
