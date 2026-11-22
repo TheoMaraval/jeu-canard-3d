@@ -70,6 +70,7 @@ bash blender/tout_generer.sh                              # tout régénérer (m
 bash blender/tout_generer.sh lille                        # une ville
 cd app && npm run dev                                     # http://localhost:5173 (accueil) ou /?ville=lille
 cd app && npm test                                        # 51 tests
+cd app && npm run lint                                    # no-undef : bloque la publication si un nom n'est pas déclaré
 ```
 
 Le serveur de dev se lance avec la configuration `canard-3d` de `.claude/launch.json`. Si le
