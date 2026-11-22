@@ -1,11 +1,12 @@
 """Plan d'un quartier, en Python pur (pas de bpy) : testable hors de Blender.
 
-make_layout(theme) renvoie :
+make_layout(theme, denses=True) renvoie :
   prims : primitives à mailler (bâti, sol, détails de façade et de toit)
   insts : instances de modèles du kit {type, pos, rot, k, c} (passants, véhicules, arbres, mobilier)
   slots : cachettes candidates {lieu, pos, rot}, lieu = sol | balcon | toit | vitre
   cachettes_denses : cachettes du mode « Cacher » seulement, même format que slots, posées
-          sans aucun tirage (voir Plan.dense) : canards et leurres du jeu n'en dépendent pas
+          sans aucun tirage (voir Plan.dense) : canards et leurres du jeu n'en dépendent pas ;
+          vide avec denses=False (aucune ligne de leur code ne tourne alors)
   lots  : emprises des immeubles [x0, y0, x1, y1]
   blocs : emprises des îlots, trottoir compris
 
@@ -174,8 +175,11 @@ def valider_theme(theme):
 
 
 class Plan:
-    def __init__(self, theme):
+    def __init__(self, theme, denses=True):
         self.t, self.s = theme, theme["style"]
+        # Faux : aucun bloc des cachettes denses ne s'exécute. Le test qui compare les deux
+        # plans prouve qu'elles ne tirent rien au sort (tout bloc dense est sous ce drapeau).
+        self.avec_denses = denses
         self.rng = random.Random(theme["graine"])
         self.demi = theme["taille"] / 2
         self.prims, self.slots, self.insts = [], [], []
@@ -243,7 +247,10 @@ class Plan:
         Ne tire JAMAIS au sort (ni self.rng ni autre) : un tirage de plus décalerait toute la
         suite du plan, donc les 30 canards et les leurres du jeu. Sa rotation, qui ne sert
         qu'à varier l'angle essayé en premier pour le bec, est tirée de la position.
+        Tout appel doit être sous `if self.avec_denses:` (avec la boucle qui le prépare).
         """
+        if not self.avec_denses:
+            raise RuntimeError("cachette dense posée hors d'un bloc `if self.avec_denses:`")
         rot = (abs(x) * 7.31 + abs(y) * 3.17 + z * 1.93) % (2 * math.pi)
         self.denses.append({"lieu": lieu, "pos": [round(x, 3), round(y, 3), round(z, 3)], "rot": round(rot, 3)})
 
@@ -645,7 +652,7 @@ class Plan:
                 else:
                     self.slot("vitre", x, y, z0 + 0.4)
             sx += rng.uniform(0.9, 1.5)
-        if not ferme:  # cachettes denses : tout le long de la vitrine, hors de la porte
+        if self.avec_denses and not ferme:  # cachettes denses : tout le long de la vitrine, hors de la porte
             for i in range(int((long - 1.8) / PAS_VITRINE) + 1):
                 sx = 0.9 + i * PAS_VITRINE
                 if porte is None or abs(sx - porte) > 0.85:
@@ -688,8 +695,9 @@ class Plan:
                 if rng.random() < s["planches"]:  # fenêtre condamnée
                     mural("Planches", c, 0.07, zs + hf / 2)
                     continue
-                for d in DECALAGES_FENETRE:  # cachettes denses : chaque fenêtre, plusieurs places
-                    self.dense("vitre", *self._pt(f, c + d, -0.47), zs)
+                if self.avec_denses:
+                    for d in DECALAGES_FENETRE:  # cachettes denses : chaque fenêtre, plusieurs places
+                        self.dense("vitre", *self._pt(f, c + d, -0.47), zs)
                 if volets:
                     self._el(f, volets, c - wf / 2 - 0.3, c - wf / 2, 0.06, 0.11, zs, zs + hf)
                     self._el(f, volets, c + wf / 2, c + wf / 2 + 0.3, 0.06, 0.11, zs, zs + hf)
@@ -728,8 +736,9 @@ class Plan:
                     else:
                         self.slot("balcon", x, y, zf)
                     sx += 1.3
-                for i in range(int((long - 1.2) / PAS_BALCON) + 1):  # cachettes denses
-                    self.dense("balcon", *self._pt(f, 0.6 + i * PAS_BALCON, 0.4), zf)
+                if self.avec_denses:
+                    for i in range(int((long - 1.2) / PAS_BALCON) + 1):  # cachettes denses
+                        self.dense("balcon", *self._pt(f, 0.6 + i * PAS_BALCON, 0.4), zf)
         elif s["balcons"] == "secours":  # escalier de secours new-yorkais
             c = rng.uniform(1.7, long - 1.7) if long > 3.6 else long / 2
             demi = min(1.3, long / 2 - 0.2)
@@ -742,8 +751,9 @@ class Plan:
                 for d in (-0.5, 0.5):
                     x, y = self._pt(f, c + d * demi, rng.uniform(0.3, 0.7))
                     self.slot("balcon", x, y, zf)
-                for i in range(int((2 * demi - 0.6) / PAS_BALCON) + 1):  # cachettes denses
-                    self.dense("balcon", *self._pt(f, c - demi + 0.3 + i * PAS_BALCON, 0.5), zf)
+                if self.avec_denses:
+                    for i in range(int((2 * demi - 0.6) / PAS_BALCON) + 1):  # cachettes denses
+                        self.dense("balcon", *self._pt(f, c - demi + 0.3 + i * PAS_BALCON, 0.5), zf)
 
     # ---- toits ------------------------------------------------------------
     def extra_toit(self, typ, x, y, z):
@@ -853,7 +863,8 @@ class Plan:
         z = z0 + haut + 2.4
         self._acrotere(x0 + 0.9, y0 + 0.9, x1 - 0.9, y1 - 0.9, z, "zinc", 0.12, 0.4)
         self._garnir_toit(rect, z, 1.6)
-        self._toit_dense(x0 + 1.3, y0 + 1.3, x1 - 1.3, y1 - 1.3, z)
+        if self.avec_denses:
+            self._toit_dense(x0 + 1.3, y0 + 1.3, x1 - 1.3, y1 - 1.3, z)
 
     def toit_plat(self, rect, haut, mur):
         x0, y0, x1, y1 = rect
@@ -862,7 +873,8 @@ class Plan:
         self.box("toiture", (lx - 0.3, ly - 0.3, 0.1), (cx, cy, z - 0.05))
         self._acrotere(x0, y0, x1, y1, z - 0.1, mur, 0.25, 0.7)
         self._garnir_toit(rect, z, 1.5)
-        self._toit_dense(x0 + 0.6, y0 + 0.6, x1 - 0.6, y1 - 0.6, z)
+        if self.avec_denses:
+            self._toit_dense(x0 + 0.6, y0 + 0.6, x1 - 0.6, y1 - 0.6, z)
 
     def _toit_dense(self, a0, b0, a1, b1, z):
         """Cachettes denses sur un toit plat : grille régulière, centrée dans [a0, a1] x [b0, b1]."""
@@ -1166,7 +1178,8 @@ class Plan:
                     square(bx, by, bloc)
                 else:
                     self.ilot_bati(bx, by, bloc, fond=(i == 0 or j == n - 1))
-        self._sol_dense()
+        if self.avec_denses:
+            self._sol_dense()
         return {"prims": self.prims, "insts": self.insts, "slots": self.slots, "lots": self.lots,
                 "blocs": [list(b) for b in self.blocs], "cachettes_denses": self.denses}
 
@@ -1184,10 +1197,12 @@ class Plan:
             for j, y in enumerate(grille):
                 if (i % RUE_UN_SUR or j % RUE_UN_SUR) and not self._dans(x, y, self.blocs):
                     continue
-                if abs(y) < self.demi - 0.5 and not self._dans(x, y, emprises, MARGE_SLOT)                         and not self._dans(x, y, lots, 0.25):
+                if (abs(y) < self.demi - 0.5 and not self._dans(x, y, emprises, MARGE_SLOT)
+                        and not self._dans(x, y, lots, 0.25)):
                     self.dense("sol", x, y, self.sol_z(x, y))
 
 
-def make_layout(theme):
+def make_layout(theme, denses=True):
+    """denses=False : plan du jeu seul, sans le code des cachettes denses (garde-fou des tests)."""
     valider_theme(theme)
-    return Plan(theme).construire()
+    return Plan(theme, denses).construire()
