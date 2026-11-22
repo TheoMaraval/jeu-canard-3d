@@ -52,7 +52,7 @@ const allerA = (ville) => { location.href = lienJeu(location.href, ville); };
 function accueil(scenes) {
   const villes = scenes.map((s) => {
     const total = s.canards ?? 30;
-    const sauvegarde = charger(localStorage, s.id, s.version);
+    const sauvegarde = chargerCle(localStorage, cle(s.id, s.version));
     const fini = Boolean(sauvegarde && sauvegarde.trouves.length >= total);
     // une partie finie avant l'arrivée des records compte aussi
     const record = meilleur(chargerRecord(localStorage, s.id, s.version), fini ? sauvegarde : null);
