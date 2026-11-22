@@ -23,7 +23,8 @@ villes est fait : ne pas le relancer.
 | Corrections de relecture 8-9 (clé de sauvegarde unique, « Préparation du défi… », `rebondir` sur l'objet, teintes remises à zéro, `recu`, `{ok}`) | fait | `30f0af5` |
 | 10 écran « Cacher » | fait, vérifié dans le navigateur (390 px, cachettes 150, 0, 300 de Lille), relu (spec + qualité) | `eda11fc` |
 | Corrections de relecture 10 (id du brouillon dans l'adresse, champ prénom sélectionnable sur iOS, panneau `role=dialog` + Échap + retour du focus, double tap bloqué 400 ms, brouillon abîmé ou périmé → nouveau défi avec message, erreur d'encodage affichée, chargement avant `cachettes.json`) | fait, revérifié | `8e8ccfa` |
-| 11 accueil « Mes défis » | à faire | |
+| Correctif : accueil cassé (`charger` retiré par erreur en `30f0af5`, publié de 14 h 26 à la republication suivante) | fait, vérifié | `871dacf` |
+| 11 accueil « Mes défis » | fait, vérifié dans le navigateur (390 px et ordinateur) ; relecture en cours | `e891309` |
 | 12 doc | à faire | |
 
 Écarts par rapport au texte ci-dessous, à appliquer en reprenant :
