@@ -8,6 +8,39 @@
 
 **Tech Stack:** Python 3 pur + Blender 5.3 (`--background`), Vite + Three.js, Vitest, `localStorage`.
 
+## Avancement (22/11/2026, pour reprendre dans une autre session)
+
+Exécution par sous-agents (skill `superpowers:subagent-driven-development`), sur `main`,
+commit et push à chaque tâche (accord de l'utilisateur). Le placement Blender des quatre
+villes est fait : ne pas le relancer.
+
+| Tâches | État | Commits |
+|---|---|---|
+| 1-2 générateur, `cachettes.json` (paris 1123, new_york 1038, lille **408**, delhi 827 cachettes) | fait, relu | `e244deb`, `81ae7bb` |
+| 3-7 modules purs | fait, relu (qualité) | `6b4aba3` … `24939c6` |
+| Corrections de relecture | fait | `482863b` |
+| 8-9 scène + jouer un défi reçu | fait, vérifié dans le navigateur ; **relecture qualité pas encore faite** | `ebaa108`, `77952dc` |
+| 10 écran « Cacher » | à faire | |
+| 11 accueil « Mes défis » | à faire | |
+| 12 doc | à faire | |
+
+Écarts par rapport au texte ci-dessous, à appliquer en reprenant :
+
+- **`encoderDefi` lève une erreur** si l'empreinte n'est pas 4 caractères `[0-9a-z]` ou si
+  `numeros` n'a pas 1 à 30 entiers 0–65535 ; `nettoyerPrenom` retire aussi caractères de
+  contrôle et d'inversion de sens. `chargerCachettes` exige `distance_min_canards` et
+  `empreinte`. Tests : 47 Python, 85 JS (avant les tâches 10-11).
+- **Lille n'a que 408 cachettes** (pas de balcons) : dans les vérifications navigateur,
+  utiliser des numéros < 408 (par ex. 0, 150, 300 au lieu de 200, 900, 1800).
+- Tâche 9 étape 8.3 : `defi=abc` donne le message « version plus récente » (premier octet
+  ≠ 1 → `format`), pas « abîmé » ; c'est correct. `defi=AQ` donne « abîmé ».
+- Points de relecture laissés pour plus tard (mineurs) : `chrono` importé de `hud.js` par
+  `defi.js` (dépendance inversée), constante `HAUTEUR_CENTRE` en double (`scene.js`,
+  `cachettes.js`), pas de plafond ni de ménage des clés `jeu-canard-3d:defi:*` (à noter
+  dans `docs/06` à la tâche 12).
+- Vérifications navigateur : sauvegardes à lister puis restaurer depuis `/scenes.json` ;
+  couper le son (`jeu-canard-3d:son` = `non`) et neutraliser `start`/`stop` avant tout tap.
+
 **Spec :** `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`. Lire aussi `CLAUDE.md` (pièges) et `docs/05` (« Tester dans le navigateur »).
 
 **Commandes :**

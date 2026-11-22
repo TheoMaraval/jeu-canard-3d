@@ -98,8 +98,13 @@ ouvrir directement `http://localhost:5173`. Recettes pour tester dans le navigat
 - **Vérifié par l'utilisateur sur téléphone (22/11/2026)** : une partie complète jouée,
   difficulté « bien réglée mais parfois assez facile » ; fluide sur un téléphone modeste
   (chiffres de `&debug` non relevés) ; « coin coin » et musique de fin écoutés.
-- **Prochaine étape conseillée** : le mode « Cacher mes canards » (conception dans
-  `docs/06`). Ensuite, un niveau « expert » répondrait au « parfois assez facile ».
+- **EN COURS : mode « Cacher mes canards »** (spec
+  `docs/superpowers/specs/2026-11-22-cacher-mes-canards-design.md`, plan
+  `docs/superpowers/plans/2026-11-22-cacher-mes-canards.md`). **Reprendre ici** : lire la
+  section « Avancement » en tête du plan. Tâches 1 à 9 faites et poussées (cachettes.json,
+  modules `defi.js` / `cachettes.js` / `mesdefis.js`, jouer un défi reçu par
+  `?ville=…&defi=…`) ; restent 10 (écran « Cacher »), 11 (accueil « Mes défis »), 12 (doc).
+- **Ensuite** : un niveau « expert » répondrait au « parfois assez facile ».
 
 ## Pièges pour Claude
 
